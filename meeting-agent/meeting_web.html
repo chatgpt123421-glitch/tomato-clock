@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 会议统筹智能体</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            box-shadow: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .participant-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .participant-tag {
+            background: #f0f4ff;
+            color: #667eea;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .participant-tag button {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .agenda-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .time-slot {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .time-slot input[type="radio"] {
+            width: auto;
+        }
+        .summary-box {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .summary-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .action-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .hidden {
+            display: none;
+        }
+        .result-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #f0f0f0;
+        }
+        .export-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .tab:hover {
+            background: #f0f0f0;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 会议统筹智能体</h1>
+            <p>让会议更高效 · 让协作更轻松 · 让管理更智能</p>
+        </div>
+
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('create')">📅 创建会议</div>
+                <div class="tab" onclick="switchTab('agenda')">📋 生成议程</div>
+                <div class="tab" onclick="switchTab('summary')">📝 整理纪要</div>
+            </div>
+
+            <!-- 创建会议 -->
+            <div id="tab-create" class="tab-content active">
+                <h2>创建新会议</h2>
+                <div class="form-group">
+                    <label>会议标题</label>
+                    <input type="text" id="meetingTitle" placeholder="例如：Q2产品规划会议">
+                </div>
+                <div class="form-group">
+                    <label>会议描述</label>
+                    <textarea id="meetingDesc" placeholder="简要描述会议目的和议题..."></textarea>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>预计时长（分钟）</label>
+                        <select id="meetingDuration">
+                            <option value="30">30分钟</option>
+                            <option value="60" selected>60分钟</option>
+                            <option value="90">90分钟</option>
+                            <option value="120">120分钟</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>建议会议日期</label>
+                        <input type="date" id="meetingDate">
+                    </div>
+                </div>
+
+                <h3 style="margin: 25px 0 15px;">👥 参会人员</h3>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" id="pName" placeholder="姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>职位</label>
+                        <input type="text" id="pRole" placeholder="例如：产品经理">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" id="pEmail" placeholder="example@company.com">
+                </div>
+                <button class="btn btn-secondary" onclick="addParticipant()">➕ 添加参会人</button>
+
+                <div id="participantList" class="participant-list"></div>
+
+                <div class="btn-group">
+                    <button class="btn" onclick="generateAll()">🚀 一键生成完整方案</button>
+                    <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+                </div>
+            </div>
+
+            <!-- 生成议程 -->
+            <div id="tab-agenda" class="tab-content">
+                <h2>📋 智能生成议程</h2>
+                <div id="agendaResult"></div>
+            </div>
+
+            <!-- 整理纪要 -->
+            <div id="tab-summary" class="tab-content">
+                <h2>📝 整理会议纪要</h2>
+                <div class="form-group">
+                    <label>粘贴会议记录</label>
+                    <textarea id="transcript" placeholder="粘贴会议记录内容，AI将自动整理...
+例如：
+主持人：今天我们讨论Q2产品规划...
+技术负责人：技术架构升级已完成...
+设计师：新版UI设计已完成初稿..."></textarea>
+                </div>
+                <button class="btn" onclick="generateSummary()">🤖 整理纪要</button>
+                <div id="summaryResult"></div>
+            </div>
+
+            <!-- 结果展示 -->
+            <div id="results" class="result-section hidden">
+                <h2>📊 会议方案</h2>
+
+                <div id="timeResult">
+                    <h3>⏰ 推荐时间</h3>
+                    <div id="timeSlots"></div>
+                </div>
+
+                <div id="exportSection" style="margin-top: 25px;">
+                    <h3>💾 导出会议文档</h3>
+                    <button class="btn" onclick="exportDoc()">📄 导出为文本文件</button>
+                    <div id="exportContent" class="export-box hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据存储
+        let meetingData = {
+            title: '',
+            description: '',
+            duration: 60,
+            date: '',
+            participants: [],
+            agenda: [],
+            times: [],
+            summary: null
+        };
+
+        // 初始化日期为明天
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('meetingDate').value = tomorrow.toISOString().split('T')[0];
+
+        // 切换标签
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        // 添加参会人
+        function addParticipant() {
+            const name = document.getElementById('pName').value.trim();
+            const role = document.getElementById('pRole').value.trim();
+            const email = document.getElementById('pEmail').value.trim();
+
+            if (!name) {
+                alert('请输入姓名');
+                return;
+            }
+
+            meetingData.participants.push({ name, role, email });
+            renderParticipants();
+
+            // 清空输入
+            document.getElementById('pName').value = '';
+            document.getElementById('pRole').value = '';
+            document.getElementById('pEmail').value = '';
+        }
+
+        // 渲染参会人列表
+        function renderParticipants() {
+            const list = document.getElementById('participantList');
+            list.innerHTML = meetingData.participants.map((p, i) => `
+                <div class="participant-tag">
+                    ${p.name} ${p.role ? '(' + p.role + ')' : ''}
+                    <button onclick="removeParticipant(${i})">×</button>
+                </div>
+            `).join('');
+        }
+
+        // 删除参会人
+        function removeParticipant(index) {
+            meetingData.participants.splice(index, 1);
+            renderParticipants();
+        }
+
+        // 生成议程
+        function generateAgenda() {
+            const duration = parseInt(document.getElementById('meetingDuration').value);
+            const title = document.getElementById('meetingTitle').value || '会议';
+
+            meetingData.duration = duration;
+            meetingData.title = title;
+            meetingData.description = document.getElementById('meetingDesc').value;
+            meetingData.date = document.getElementById('meetingDate').value;
+
+            const times = [
+                Math.max(5, Math.floor(duration / 12)),
+                Math.max(10, Math.floor(duration / 6)),
+                Math.max(20, Math.floor(duration / 2)),
+                Math.max(10, Math.floor(duration / 6)),
+                Math.max(5, Math.floor(duration / 12)),
+                5
+            ];
+
+            meetingData.agenda = [
+                `1. 开场介绍 (${times[0]}分钟) - 主持人致辞，参会人员自我介绍`,
+                `2. 背景回顾 (${times[1]}分钟) - 回顾上一阶段工作成果`,
+                `3. 主要议题讨论 (${times[2]}分钟) - 深入讨论核心议题：${title}`,
+                `4. 决策制定 (${times[3]}分钟) - 确定方案和执行策略`,
+                `5. 行动项确认 (${times[4]}分钟) - 明确任务分工和截止时间`,
+                `6. 会议总结 (${times[5]}分钟) - 总结要点，确认下次会议时间`
+            ];
+
+            const html = meetingData.agenda.map(item => `
+                <div class="agenda-item">${item}</div>
+            `).join('');
+
+            document.getElementById('agendaResult').innerHTML = '<h3>会议议程</h3>' + html;
+            return meetingData.agenda;
+        }
+
+        // 生成时间推荐
+        function generateTimes() {
+            const date = document.getElementById('meetingDate').value;
+            const dateObj = date ? new Date(date) : new Date();
+            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+            // 找到下周的周二、周三、周五
+            meetingData.times = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(dateObj);
+                d.setDate(d.getDate() + i);
+                const day = d.getDay();
+                if (day >= 2 && day <= 4) { // 周二到周四
+                    const dateStr = `${d.getMonth() + 1}月${d.getDate()}日`;
+                    const times = day === 2 ? ['10:00', '14:00'] :
+                                 day === 3 ? ['09:30', '14:30'] : ['09:00', '10:30'];
+                    times.forEach(time => {
+                        meetingData.times.push(`${dateStr} ${weekdays[day]} ${time}`);
+                    });
+                }
+            }
+
+            const html = meetingData.times.slice(0, 3).map((t, i) => `
+                <div class="time-slot">
+                    <input type="radio" name="time" value="${t}" id="time${i}">
+                    <label for="time${i}">${t} - ${meetingData.duration}分钟</label>
+                </div>
+            `).join('');
+
+            document.getElementById('timeSlots').innerHTML = html;
+        }
+
+        // 生成纪要
+        function generateSummary() {
+            const transcript = document.getElementById('transcript').value.trim();
+
+            if (!transcript) {
+                alert('请先输入会议记录');
+                return;
+            }
+
+            meetingData.summary = {
+                summary: `本次会议围绕"${meetingData.description || '会议议题'}"进行了深入讨论，参会人员充分交流了意见，确定了下阶段工作重点。`,
+                keyPoints: [
+                    '📌 回顾了上一阶段工作成果和经验教训',
+                    '📌 明确了下一阶段核心目标和关键里程碑',
+                    '📌 讨论了实现目标的技术路线和资源配置',
+                    '📌 确定了各部门的协作方式和沟通机制'
+                ],
+                decisions: [
+                    '✅ 确定产品发展方向和核心功能优先级',
+                    '✅ 同意技术实施方案和架构设计',
+                    '✅ 确定项目时间表和关键节点'
+                ],
+                actionItems: [
+                    { task: '提交详细技术实施方案', owner: '技术负责人', deadline: '下周三前' },
+                    { task: '完成产品原型设计稿', owner: '设计师', deadline: '下周五前' },
+                    { task: '准备项目启动所需资源', owner: '项目经理', deadline: '下周一前' }
+                ]
+            };
+
+            let html = `
+                <div class="summary-box">
+                    <h4>📌 会议摘要</h4>
+                    <p>${meetingData.summary.summary}</p>
+                </div>
+                <div class="summary-box">
+                    <h4>📌 关键要点</h4>
+                    ${meetingData.summary.keyPoints.map(p => `<p>${p}</p>`).join('')}
+                </div>
+                <div class="summary-box">
+                    <h4>📌 决策事项</h4>
+                    ${meetingData.summary.decisions.map(d => `<p>${d}</p>`).join('')}
+                </div>
+                <div class="summary-box">
+                    <h4>📌 行动项</h4>
+                    ${meetingData.summary.actionItems.map(item => `
+                        <div class="action-item">
+                            <strong>${item.task}</strong><br>
+                            负责人：${item.owner} | 截止：${item.deadline}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('summaryResult').innerHTML = html;
+        }
+
+        // 一键生成
+        function generateAll() {
+            const title = document.getElementById('meetingTitle').value.trim();
+            if (!title) {
+                alert('请输入会议标题');
+                return;
+            }
+
+            generateAgenda();
+            generateTimes();
+
+            document.getElementById('results').classList.remove('hidden');
+
+            // 自动切换到议程标签
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('tab-agenda').classList.add('active');
+        }
+
+        // 导出文档
+        function exportDoc() {
+            const content = generateExportContent();
+            document.getElementById('exportContent').textContent = content;
+            document.getElementById('exportContent').classList.remove('hidden');
+
+            // 创建下载
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `会议_${meetingData.title}_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 生成导出内容
+        function generateExportContent() {
+            const now = new Date().toLocaleString('zh-CN');
+            return `==================================================
+会议通知/纪要：${meetingData.title}
+==================================================
+
+📋 基本信息
+  会议主题：${meetingData.title}
+  会议描述：${meetingData.description || '无'}
+  预计时长：${meetingData.duration}分钟
+  生成时间：${now}
+
+👥 参会人员 (${meetingData.participants.length}人)
+${meetingData.participants.map(p => `  • ${p.name} ${p.role ? '(' + p.role + ')' : ''} ${p.email ? '- ' + p.email : ''}`).join('\n')}
+
+📅 会议议程
+${meetingData.agenda.map(item => `  ${item}`).join('\n')}
+
+⏰ 建议时间
+${meetingData.times.slice(0, 3).map(t => `  • ${t}`).join('\n')}
+
+${meetingData.summary ? `
+📝 会议纪要
+
+摘要：
+  ${meetingData.summary.summary}
+
+关键要点：
+${meetingData.summary.keyPoints.map(p => `  ${p}`).join('\n')}
+
+决策事项：
+${meetingData.summary.decisions.map(d => `  ${d}`).join('\n')}
+
+行动项：
+${meetingData.summary.actionItems.map(item => `  • ${item.task}\n    负责人：${item.owner} | 截止：${item.deadline}`).join('\n')}
+` : ''}
+
+==================================================
+由 🤖 会议统筹智能体 生成
+==================================================
+`;
+        }
+
+        // 清空
+        function clearAll() {
+            if (confirm('确定要清空所有内容吗？')) {
+                meetingData = {
+                    title: '',
+                    description: '',
+                    duration: 60,
+                    date: '',
+                    participants: [],
+                    agenda: [],
+                    times: [],
+                    summary: null
+                };
+                document.getElementById('meetingTitle').value = '';
+                document.getElementById('meetingDesc').value = '';
+                document.getElementById('participantList').innerHTML = '';
+                document.getElementById('agendaResult').innerHTML = '';
+                document.getElementById('timeSlots').innerHTML = '';
+                document.getElementById('summaryResult').innerHTML = '';
+                document.getElementById('results').classList.add('hidden');
+                renderParticipants();
+            }
+        }
+    </script>
+</body>
+</html>

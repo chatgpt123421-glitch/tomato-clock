@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"from meeting_agent import MeetingCoordinator; c = MeetingCoordinator\\(\\); print\\('OK'\\)\")",
+      "Bash(python meeting_agent.py)",
+      "Bash(/c/Users/Administrator/AppData/Local/Microsoft/WindowsApps/python *)",
+      "Bash(/c/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe meeting_agent.py)",
+      "Bash(winpty python *)",
+      "Bash(python3 meeting_agent.py)",
+      "Bash(py meeting_agent.py)"
+    ]
+  }
+}
