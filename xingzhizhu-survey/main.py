@@ -82,7 +82,7 @@ async def submit_survey(request: Request):
     # 推送飞书
     if FEISHU_WEBHOOK:
         try:
-            send_feishu(survey_id, data["report"])
+            send_feishu(survey_id, data["basic"], data["report"])
         except Exception as e:
             print(f"飞书推送失败: {e}")
 
@@ -104,6 +104,7 @@ async def list_surveys():
         result.append({
             "id": row["id"],
             "created_at": row["created_at"],
+            "name": basic.get("name", "-"),
             "people": basic.get("people", "-"),
             "area": basic.get("area", "-"),
             "budget": basic.get("budget", "-"),
@@ -170,6 +171,7 @@ async def admin_page():
                     <tr>
                         <th>ID</th>
                         <th>提交时间</th>
+                        <th>客户姓名</th>
                         <th>人口</th>
                         <th>面积</th>
                         <th>预算</th>
@@ -189,6 +191,7 @@ async def admin_page():
                         <tr>
                             <td>#${item.id}</td>
                             <td>${item.created_at}</td>
+                            <td>${item.name}</td>
                             <td>${item.people}人</td>
                             <td>${item.area}</td>
                             <td>${item.budget}</td>
@@ -260,6 +263,8 @@ async def report_page(survey_id: int):
                         <div class="report-section">
                             <h3>基础锚点</h3>
                             <table class="report-table">
+                                <tr><td>客户姓名</td><td>${{b.name || '-'}}</td></tr>
+                                <tr><td>手机号</td><td>${{b.phone || '-'}}</td></tr>
                                 <tr><td>常住人口</td><td>${{b.people || '-'}} 人</td></tr>
                                 <tr><td>人口结构</td><td>${{(b.structure || []).join('、') || '-'}}</td></tr>
                                 <tr><td>房屋面积</td><td>${{b.area || '-'}}</td></tr>
@@ -323,7 +328,7 @@ async def report_page(survey_id: int):
     """
 
 # ========== 飞书推送 ==========
-def send_feishu(survey_id: int, report: Dict[str, Any]):
+def send_feishu(survey_id: int, basic: Dict[str, Any], report: Dict[str, Any]):
     """推送结构化报告到飞书群/机器人"""
     if not FEISHU_WEBHOOK:
         return
@@ -331,6 +336,8 @@ def send_feishu(survey_id: int, report: Dict[str, Any]):
     scenes = report.get("scenes", {})
     pains = report.get("pains", [])
     params = report.get("params", [])
+    client_name = basic.get("name", "未知客户")
+    client_phone = basic.get("phone", "")
 
     # 构造痛点文本
     pain_text = "\n".join([f"• {p['scene']}：{p['text']}" for p in pains[:5]]) if pains else "暂无"
@@ -340,6 +347,7 @@ def send_feishu(survey_id: int, report: Dict[str, Any]):
     param_text = "\n".join([f"• {p['scene']}：{p['item']}" for p in must_params[:5]]) if must_params else "暂无"
 
     content = [
+        [{"tag": "text", "text": f"客户：{client_name} {client_phone}\n"}],
         [{"tag": "text", "text": f"核心场景：{', '.join(scenes.get('core', [])) or '待补充'}\n"}],
         [{"tag": "text", "text": f"次要场景：{', '.join(scenes.get('minor', [])) or '无'}\n"}],
         [{"tag": "text", "text": "\n📍 痛点清单：\n" + pain_text + "\n"}],
@@ -354,7 +362,7 @@ def send_feishu(survey_id: int, report: Dict[str, Any]):
         "content": {
             "post": {
                 "zh_cn": {
-                    "title": f"🎯 新客户需求画像 #{survey_id}",
+                    "title": f"🎯 新客户需求画像 | {client_name} #{survey_id}",
                     "content": content
                 }
             }

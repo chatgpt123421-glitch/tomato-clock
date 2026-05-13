@@ -257,6 +257,22 @@
             .progress-bar, .btn-group { display: none !important; }
             .report { box-shadow: none; }
         }
+        .text-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e5ea;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .text-input:focus {
+            border-color: #0071e3;
+        }
+        .text-input::placeholder {
+            color: #c7c7cc;
+        }
         @media (max-width: 640px) {
             .container { padding: 20px 16px; }
             h1 { font-size: 26px; }
@@ -305,6 +321,16 @@
     <div class="step" id="step-basic">
         <h2>基础信息</h2>
         <p class="subtitle">这些问题帮助设计师判断项目规模。</p>
+
+        <div class="question" id="q-name">
+            <div class="question-label">您的姓名？</div>
+            <input type="text" class="text-input" name="name" placeholder="请输入您的姓名" oninput="state.basic.name=this.value">
+        </div>
+
+        <div class="question" id="q-phone">
+            <div class="question-label">您的手机号？（选填）</div>
+            <input type="text" class="text-input" name="phone" placeholder="方便设计师联系您" oninput="state.basic.phone=this.value">
+        </div>
 
         <div class="question" id="q-people">
             <div class="question-label">家里常住几口人？</div>
@@ -363,7 +389,7 @@
 
         <div class="btn-group">
             <button class="btn btn-secondary" onclick="goTo('welcome')">返回</button>
-            <button class="btn btn-primary" onclick="goTo('kitchen')">下一步</button>
+            <button class="btn btn-primary" onclick="if(validateBasic()) goTo('kitchen')">下一步</button>
         </div>
     </div>
 
@@ -935,6 +961,14 @@ function checkBathFlow() {
     document.getElementById('bath-queue').classList.toggle('hidden', morning !== '会');
 }
 
+function validateBasic() {
+    if (!state.basic.name || state.basic.name.trim() === '') {
+        alert('请填写您的姓名');
+        return false;
+    }
+    return true;
+}
+
 function generateReport() {
     const r = analyzeData();
     const html = `
@@ -946,6 +980,8 @@ function generateReport() {
         <div class="report-section">
             <h3>基础锚点</h3>
             <table class="report-table">
+                <tr><td>客户姓名</td><td>${r.basic.name || '-'}</td></tr>
+                <tr><td>手机号</td><td>${r.basic.phone || '-'}</td></tr>
                 <tr><td>常住人口</td><td>${r.basic.people || '-'} 人</td></tr>
                 <tr><td>人口结构</td><td>${(r.basic.structure || []).join('、') || '-'}</td></tr>
                 <tr><td>房屋面积</td><td>${r.basic.area || '-'}</td></tr>
