@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
-from pydantic import BaseModel
 from typing import Dict, Any, List
 import sqlite3
 import requests
@@ -45,14 +44,6 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-# ========== 数据模型 ==========
-class SurveySubmit(BaseModel):
-    basic: Dict[str, Any]
-    kitchen: Dict[str, Any]
-    bathroom: Dict[str, Any]
-    sleep: Dict[str, Any]
-    report: Dict[str, Any]
-
 # ========== 路由 ==========
 @app.get("/", response_class=HTMLResponse)
 async def index():
@@ -61,8 +52,15 @@ async def index():
         return f.read()
 
 @app.post("/api/submit")
-async def submit_survey(data: SurveySubmit):
+async def submit_survey(request: Request):
     """接收问卷提交，存库，推送飞书"""
+    data = await request.json()
+
+    # 简单字段校验
+    for field in ["basic", "kitchen", "bathroom", "sleep", "report"]:
+        if field not in data:
+            return JSONResponse({"code": 400, "message": f"缺少字段: {field}"}, status_code=400)
+
     conn = get_db()
     c = conn.cursor()
 
@@ -70,11 +68,11 @@ async def submit_survey(data: SurveySubmit):
         INSERT INTO surveys (basic, kitchen, bathroom, sleep, report)
         VALUES (?, ?, ?, ?, ?)
     ''', (
-        json.dumps(data.basic, ensure_ascii=False),
-        json.dumps(data.kitchen, ensure_ascii=False),
-        json.dumps(data.bathroom, ensure_ascii=False),
-        json.dumps(data.sleep, ensure_ascii=False),
-        json.dumps(data.report, ensure_ascii=False)
+        json.dumps(data["basic"], ensure_ascii=False),
+        json.dumps(data["kitchen"], ensure_ascii=False),
+        json.dumps(data["bathroom"], ensure_ascii=False),
+        json.dumps(data["sleep"], ensure_ascii=False),
+        json.dumps(data["report"], ensure_ascii=False)
     ))
 
     survey_id = c.lastrowid
@@ -84,7 +82,7 @@ async def submit_survey(data: SurveySubmit):
     # 推送飞书
     if FEISHU_WEBHOOK:
         try:
-            send_feishu(survey_id, data.report)
+            send_feishu(survey_id, data["report"])
         except Exception as e:
             print(f"飞书推送失败: {e}")
 
