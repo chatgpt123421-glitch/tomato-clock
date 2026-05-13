@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸之住 · 家居需求洞察</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .progress-bar {
+            height: 4px;
+            background: #e5e5ea;
+            border-radius: 2px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #0071e3;
+            transition: width 0.4s ease;
+            border-radius: 2px;
+        }
+        .step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .step.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #86868b;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+        .question {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .question-label {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .question-tip {
+            font-size: 14px;
+            color: #0071e3;
+            background: rgba(0,113,227,0.08);
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid #e5e5ea;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        .option:hover {
+            border-color: #0071e3;
+            background: rgba(0,113,227,0.03);
+        }
+        .option.selected {
+            border-color: #0071e3;
+            background: rgba(0,113,227,0.06);
+        }
+        .option input {
+            display: none;
+        }
+        .option-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #c7c7cc;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .option.selected .option-check {
+            border-color: #0071e3;
+            background: #0071e3;
+        }
+        .option.selected .option-check::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+        }
+        .option-check.checkbox {
+            border-radius: 6px;
+        }
+        .option.selected .option-check.checkbox::after {
+            border-radius: 0;
+            width: 5px;
+            height: 10px;
+            background: transparent;
+            border: 2px solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #0071e3;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #0077ed; }
+        .btn-primary:disabled {
+            background: #c7c7cc;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #fff;
+            color: #1d1d1f;
+            border: 2px solid #e5e5ea;
+        }
+        .btn-secondary:hover { border-color: #0071e3; }
+        .hidden { display: none !important; }
+
+        /* 结果页样式 */
+        .report {
+            background: #fff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f5f5f7;
+        }
+        .report-header h2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .report-section {
+            margin-bottom: 32px;
+        }
+        .report-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .report-section h3::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: #0071e3;
+            border-radius: 2px;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .report-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f7;
+        }
+        .report-table td:first-child {
+            width: 30%;
+            color: #86868b;
+            font-weight: 500;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .tag-red { background: #ffe5e5; color: #d32f2f; }
+        .tag-yellow { background: #fff8e1; color: #f9a825; }
+        .tag-green { background: #e8f5e9; color: #388e3c; }
+        .tag-gray { background: #f5f5f5; color: #757575; }
+        .tag-blue { background: #e3f2fd; color: #1976d2; }
+        .pain-item {
+            background: #fff8f0;
+            border-left: 3px solid #ff9800;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 10px;
+        }
+        .pain-scene {
+            font-weight: 700;
+            font-size: 14px;
+            color: #e65100;
+            margin-bottom: 4px;
+        }
+        .pain-text {
+            font-size: 15px;
+            color: #424242;
+        }
+        @media print {
+            body { background: #fff; }
+            .container { padding: 0; max-width: 100%; }
+            .progress-bar, .btn-group { display: none !important; }
+            .report { box-shadow: none; }
+        }
+        @media (max-width: 640px) {
+            .container { padding: 20px 16px; }
+            h1 { font-size: 26px; }
+            .question { padding: 20px; }
+            .report { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+
+    <!-- 欢迎页 -->
+    <div class="step active" id="step-welcome">
+        <h1>幸之住 · 家居需求洞察</h1>
+        <p class="subtitle">约10分钟，帮你看清未来家的样子。<br>所有问题都从真实生活出发，没有专业术语。</p>
+        <div class="question">
+            <div class="question-label">本次将了解以下生活场景：</div>
+            <div class="options">
+                <div class="option" style="cursor: default;">
+                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
+                    <span>基础信息（人口、户型、预算）</span>
+                </div>
+                <div class="option" style="cursor: default;">
+                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
+                    <span>餐厨茶饮（烹饪、用餐、喝茶饮酒）</span>
+                </div>
+                <div class="option" style="cursor: default;">
+                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
+                    <span>卫浴漱妆（洗漱、如厕、沐浴）</span>
+                </div>
+                <div class="option" style="cursor: default;">
+                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
+                    <span>健康睡眠（遮光、隔音、伴侣动线）</span>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="goTo('basic')">开始</button>
+        </div>
+    </div>
+
+    <!-- 基础信息 -->
+    <div class="step" id="step-basic">
+        <h2>基础信息</h2>
+        <p class="subtitle">这些问题帮助设计师判断项目规模。</p>
+
+        <div class="question" id="q-people">
+            <div class="question-label">家里常住几口人？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="people" value="1" onchange="selectOption(this)"><span class="option-check"></span><span>1人</span></label>
+                <label class="option"><input type="radio" name="people" value="2" onchange="selectOption(this)"><span class="option-check"></span><span>2人</span></label>
+                <label class="option"><input type="radio" name="people" value="3" onchange="selectOption(this)"><span class="option-check"></span><span>3人</span></label>
+                <label class="option"><input type="radio" name="people" value="4" onchange="selectOption(this)"><span class="option-check"></span><span>4人</span></label>
+                <label class="option"><input type="radio" name="people" value="5+" onchange="selectOption(this)"><span class="option-check"></span><span>5人及以上</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-structure">
+            <div class="question-label">家里有哪些成员？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="structure" value="夫妻" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>夫妻/情侣</span></label>
+                <label class="option"><input type="checkbox" name="structure" value="0-3岁婴儿" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>0-3岁婴儿</span></label>
+                <label class="option"><input type="checkbox" name="structure" value="3-12岁儿童" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>3-12岁儿童</span></label>
+                <label class="option"><input type="checkbox" name="structure" value="青少年" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>13-18岁青少年</span></label>
+                <label class="option"><input type="checkbox" name="structure" value="老人" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>65岁以上老人</span></label>
+                <label class="option"><input type="checkbox" name="structure" value="独居" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>独居（无其他人）</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-area">
+            <div class="question-label">房屋面积大约多少？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="area" value="60以下" onchange="selectOption(this)"><span class="option-check"></span><span>60㎡以下</span></label>
+                <label class="option"><input type="radio" name="area" value="60-90" onchange="selectOption(this)"><span class="option-check"></span><span>60-90㎡</span></label>
+                <label class="option"><input type="radio" name="area" value="90-120" onchange="selectOption(this)"><span class="option-check"></span><span>90-120㎡</span></label>
+                <label class="option"><input type="radio" name="area" value="120-150" onchange="selectOption(this)"><span class="option-check"></span><span>120-150㎡</span></label>
+                <label class="option"><input type="radio" name="area" value="150以上" onchange="selectOption(this)"><span class="option-check"></span><span>150㎡以上</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-budget">
+            <div class="question-label">这次装修的预算区间大概是？</div>
+            <div class="question-tip">包含设计、硬装、主材、定制家具，不含家电和软装</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="budget" value="10万以下" onchange="selectOption(this)"><span class="option-check"></span><span>10万以下</span></label>
+                <label class="option"><input type="radio" name="budget" value="10-15万" onchange="selectOption(this)"><span class="option-check"></span><span>10-15万</span></label>
+                <label class="option"><input type="radio" name="budget" value="15-20万" onchange="selectOption(this)"><span class="option-check"></span><span>15-20万</span></label>
+                <label class="option"><input type="radio" name="budget" value="20-30万" onchange="selectOption(this)"><span class="option-check"></span><span>20-30万</span></label>
+                <label class="option"><input type="radio" name="budget" value="30万以上" onchange="selectOption(this)"><span class="option-check"></span><span>30万以上</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-type">
+            <div class="question-label">房屋类型是？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="type" value="毛坯" onchange="selectOption(this)"><span class="option-check"></span><span>毛坯新房</span></label>
+                <label class="option"><input type="radio" name="type" value="二手房翻新" onchange="selectOption(this)"><span class="option-check"></span><span>二手房整体翻新</span></label>
+                <label class="option"><input type="radio" name="type" value="局部改造" onchange="selectOption(this)"><span class="option-check"></span><span>局部改造（厨卫/墙面等）</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('welcome')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('kitchen')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 餐厨茶饮 -->
+    <div class="step" id="step-kitchen">
+        <h2>餐厨茶饮</h2>
+        <p class="subtitle">了解你的烹饪、用餐、喝茶饮酒习惯。</p>
+
+        <div class="question" id="q-k-freq">
+            <div class="question-label">家里平时开火做饭的频率是？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_freq" value="每天" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>每天1-2餐</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="每周3-5次" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>每周3-5次</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="偶尔" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>偶尔/基本外卖</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="从不" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>从不做饭</span></label>
+            </div>
+        </div>
+
+        <!-- 高频做饭才显示 -->
+        <div id="kitchen-cook" class="hidden">
+            <div class="question" id="q-k-style">
+                <div class="question-label">平时主要做什么类型的饭菜？（多选）</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="k_style" value="中式爆炒" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>中式爆炒（油烟大）</span></label>
+                    <label class="option"><input type="checkbox" name="k_style" value="轻食蒸煮" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>轻食蒸煮（清淡健康）</span></label>
+                    <label class="option"><input type="checkbox" name="k_style" value="烘焙西餐" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>烘焙西餐（需要烤箱）</span></label>
+                    <label class="option"><input type="checkbox" name="k_style" value="简餐热饭" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>简单热饭/煮面</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-together">
+                <div class="question-label">平时做饭一般是一个人，还是两个人同时在厨房？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_together" value="1人" onchange="selectOption(this)"><span class="option-check"></span><span>基本我一人</span></label>
+                    <label class="option"><input type="radio" name="k_together" value="2人" onchange="selectOption(this)"><span class="option-check"></span><span>两人一起做</span></label>
+                    <label class="option"><input type="radio" name="k_together" value="轮流" onchange="selectOption(this)"><span class="option-check"></span><span>轮流做</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-oil">
+                <div class="question-label">炒菜时，油烟会不会飘到客厅，身上有油烟味？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_oil" value="会" onchange="selectOption(this)"><span class="option-check"></span><span>会，很明显</span></label>
+                    <label class="option"><input type="radio" name="k_oil" value="不会" onchange="selectOption(this)"><span class="option-check"></span><span>不会</span></label>
+                    <label class="option"><input type="radio" name="k_oil" value="没注意" onchange="selectOption(this)"><span class="option-check"></span><span>没注意</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-board">
+                <div class="question-label">切菜备菜时，台面是不是经常堆满东西、不够用？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_board" value="是" onchange="selectOption(this)"><span class="option-check"></span><span>是，经常没地方切菜</span></label>
+                    <label class="option"><input type="radio" name="k_board" value="否" onchange="selectOption(this)"><span class="option-check"></span><span>基本够用</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-crowd">
+                <div class="question-label">两个人同时在厨房时，会不会互相挡路、转不开身？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_crowd" value="会" onchange="selectOption(this)"><span class="option-check"></span><span>会，跟打仗一样</span></label>
+                    <label class="option"><input type="radio" name="k_crowd" value="否" onchange="selectOption(this)"><span class="option-check"></span><span>不会，空间够</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-sink">
+                <div class="question-label">现在的水槽是大单槽还是双槽？满意吗？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_sink" value="大单槽满意" onchange="selectOption(this)"><span class="option-check"></span><span>大单槽，满意</span></label>
+                    <label class="option"><input type="radio" name="k_sink" value="双槽满意" onchange="selectOption(this)"><span class="option-check"></span><span>双槽，满意</span></label>
+                    <label class="option"><input type="radio" name="k_sink" value="大单槽不够" onchange="selectOption(this)"><span class="option-check"></span><span>大单槽，但还是觉得小</span></label>
+                    <label class="option"><input type="radio" name="k_sink" value="双槽不够" onchange="selectOption(this)"><span class="option-check"></span><span>双槽，大锅放不下</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-faucet">
+                <div class="question-label">龙头是固定的还是可抽拉的？洗锅洗菜方便吗？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_faucet" value="固定够用" onchange="selectOption(this)"><span class="option-check"></span><span>固定龙头，够用</span></label>
+                    <label class="option"><input type="radio" name="k_faucet" value="固定不够" onchange="selectOption(this)"><span class="option-check"></span><span>固定龙头，冲洗不方便</span></label>
+                    <label class="option"><input type="radio" name="k_faucet" value="抽拉" onchange="selectOption(this)"><span class="option-check"></span><span>已经有抽拉龙头</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-height">
+                <div class="question-label">主要做饭的人身高多少？（决定橱柜高度）</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_height" value="155以下" onchange="selectOption(this)"><span class="option-check"></span><span>155cm以下</span></label>
+                    <label class="option"><input type="radio" name="k_height" value="155-165" onchange="selectOption(this)"><span class="option-check"></span><span>155-165cm</span></label>
+                    <label class="option"><input type="radio" name="k_height" value="165-175" onchange="selectOption(this)"><span class="option-check"></span><span>165-175cm</span></label>
+                    <label class="option"><input type="radio" name="k_height" value="175以上" onchange="selectOption(this)"><span class="option-check"></span><span>175cm以上</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 所有用户都显示 -->
+        <div class="question" id="q-k-breakfast">
+            <div class="question-label">工作日早餐一般怎么解决？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_breakfast" value="快速出门" onchange="selectOption(this)"><span class="option-check"></span><span>快速出门，路上吃或不吃</span></label>
+                <label class="option"><input type="radio" name="k_breakfast" value="简单吃" onchange="selectOption(this)"><span class="option-check"></span><span>简单在家吃（面包/牛奶/煮蛋）</span></label>
+                <label class="option"><input type="radio" name="k_breakfast" value="认真做" onchange="selectOption(this)"><span class="option-check"></span><span>认真做早餐（煮粥/煎蛋/备菜）</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-dinner">
+            <div class="question-label">晚餐是全家一起吃，还是各自错开时间？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_dinner" value="全家" onchange="selectOption(this)"><span class="option-check"></span><span>全家一起吃</span></label>
+                <label class="option"><input type="radio" name="k_dinner" value="分拨" onchange="selectOption(this)"><span class="option-check"></span><span>分两拨吃</span></label>
+                <label class="option"><input type="radio" name="k_dinner" value="各自" onchange="selectOption(this)"><span class="option-check"></span><span>各自解决</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-guest">
+            <div class="question-label">周末会邀请朋友或亲戚来家里聚餐吗？一般来几个人？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_guest" value="不会" onchange="selectOption(this)"><span class="option-check"></span><span>不会</span></label>
+                <label class="option"><input type="radio" name="k_guest" value="1-3人" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔，1-3人</span></label>
+                <label class="option"><input type="radio" name="k_guest" value="4-6人" onchange="selectOption(this)"><span class="option-check"></span><span>经常，4-6人</span></label>
+                <label class="option"><input type="radio" name="k_guest" value="6人以上" onchange="selectOption(this)"><span class="option-check"></span><span>频繁，6人以上</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-table">
+            <div class="question-label">餐桌除了吃饭，还会用来做什么？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="k_table" value="工作" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>工作/办公</span></label>
+                <label class="option"><input type="checkbox" name="k_table" value="写作业" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>孩子写作业</span></label>
+                <label class="option"><input type="checkbox" name="k_table" value="喝茶聊天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>喝茶聊天</span></label>
+                <label class="option"><input type="checkbox" name="k_table" value="只吃饭" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>只吃饭，不做别的</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-tea">
+            <div class="question-label">家里有喝茶的习惯吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_tea" value="功夫茶" onchange="selectOption(this)"><span class="option-check"></span><span>功夫茶（需要茶台茶具）</span></label>
+                <label class="option"><input type="radio" name="k_tea" value="简单泡" onchange="selectOption(this)"><span class="option-check"></span><span>简单泡茶</span></label>
+                <label class="option"><input type="radio" name="k_tea" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔喝</span></label>
+                <label class="option"><input type="radio" name="k_tea" value="不喝" onchange="selectOption(this)"><span class="option-check"></span><span>完全不喝</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-coffee">
+            <div class="question-label">有喝咖啡的习惯吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_coffee" value="手冲" onchange="selectOption(this)"><span class="option-check"></span><span>每天手冲/意式</span></label>
+                <label class="option"><input type="radio" name="k_coffee" value="胶囊" onchange="selectOption(this)"><span class="option-check"></span><span>胶囊/速溶</span></label>
+                <label class="option"><input type="radio" name="k_coffee" value="外面买" onchange="selectOption(this)"><span class="option-check"></span><span>外面买</span></label>
+                <label class="option"><input type="radio" name="k_coffee" value="不喝" onchange="selectOption(this)"><span class="option-check"></span><span>不喝</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-wine">
+            <div class="question-label">家里有存酒或平时会小酌吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_wine" value="藏酒" onchange="selectOption(this)"><span class="option-check"></span><span>有藏酒，需要展示/存储</span></label>
+                <label class="option"><input type="radio" name="k_wine" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔喝点，不用专门存</span></label>
+                <label class="option"><input type="radio" name="k_wine" value="不喝" onchange="selectOption(this)"><span class="option-check"></span><span>不喝</span></label>
+            </div>
+        </div>
+
+        <!-- 高频做饭才显示 -->
+        <div id="kitchen-clean" class="hidden">
+            <div class="question" id="q-k-mess">
+                <div class="question-label">厨房台面是不是经常被锅碗瓢盆、调料、小家电占满？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_mess" value="是" onchange="selectOption(this)"><span class="option-check"></span><span>是，永远收拾不干净</span></label>
+                    <label class="option"><input type="radio" name="k_mess" value="否" onchange="selectOption(this)"><span class="option-check"></span><span>否，基本整洁</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-appliances">
+                <div class="question-label">厨房里现在有哪些小家电？（多选）</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="k_appliances" value="电饭煲" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>电饭煲</span></label>
+                    <label class="option"><input type="checkbox" name="k_appliances" value="微波炉" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>微波炉</span></label>
+                    <label class="option"><input type="checkbox" name="k_appliances" value="烤箱" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>烤箱/蒸烤箱</span></label>
+                    <label class="option"><input type="checkbox" name="k_appliances" value="空气炸锅" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>空气炸锅</span></label>
+                    <label class="option"><input type="checkbox" name="k_appliances" value="破壁机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>破壁机/豆浆机</span></label>
+                    <label class="option"><input type="checkbox" name="k_appliances" value="电水壶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>电水壶/养生壶</span></label>
+                    <label class="option"><input type="checkbox" name="k_appliances" value="其他" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>其他（三明治机、电饼铛等）</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-wash">
+                <div class="question-label">家里的碗一般是谁洗？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_wash" value="手洗" onchange="selectOption(this)"><span class="option-check"></span><span>我手洗</span></label>
+                    <label class="option"><input type="radio" name="k_wash" value="轮流" onchange="selectOption(this)"><span class="option-check"></span><span>轮流洗</span></label>
+                    <label class="option"><input type="radio" name="k_wash" value="洗碗机" onchange="selectOption(this)"><span class="option-check"></span><span>已经有洗碗机</span></label>
+                    <label class="option"><input type="radio" name="k_wash" value="不常洗" onchange="selectOption(this)"><span class="option-check"></span><span>基本不做饭，很少洗</span></label>
+                </div>
+            </div>
+
+            <div class="question" id="q-k-light">
+                <div class="question-label">晚上做饭时，操作台（切菜区）的灯光够亮吗？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="k_light" value="够" onchange="selectOption(this)"><span class="option-check"></span><span>够亮，清楚</span></label>
+                    <label class="option"><input type="radio" name="k_light" value="不够" onchange="selectOption(this)"><span class="option-check"></span><span>不够，背光、阴影重</span></label>
+                    <label class="option"><input type="radio" name="k_light" value="没注意" onchange="selectOption(this)"><span class="option-check"></span><span>没注意</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 社交互动（所有用户） -->
+        <div class="question" id="q-k-chat">
+            <div class="question-label">做饭时喜欢和家人聊聊天、让孩子在旁边看看吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_chat" value="喜欢" onchange="selectOption(this)"><span class="option-check"></span><span>喜欢，厨房是家庭交流的地方</span></label>
+                <label class="option"><input type="radio" name="k_chat" value="不喜欢" onchange="selectOption(this)"><span class="option-check"></span><span>不喜欢，希望厨房独立安静</span></label>
+                <label class="option"><input type="radio" name="k_chat" value="无所谓" onchange="selectOption(this)"><span class="option-check"></span><span>无所谓</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-k-look">
+            <div class="question-label">希望朋友来家里时，厨房/餐厅看起来整洁、有质感吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="k_look" value="是" onchange="selectOption(this)"><span class="option-check"></span><span>是，颜值很重要</span></label>
+                <label class="option"><input type="radio" name="k_look" value="否" onchange="selectOption(this)"><span class="option-check"></span><span>实用就行，不太在意</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('basic')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('bathroom')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 卫浴漱妆 -->
+    <div class="step" id="step-bathroom">
+        <h2>卫浴漱妆</h2>
+        <p class="subtitle">聚焦早晨的时间冲突和身体感受。</p>
+
+        <div class="question" id="q-b-count">
+            <div class="question-label">家里现在有几个卫生间？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_count" value="1" onchange="selectOption(this); checkBathFlow();"><span class="option-check"></span><span>1个</span></label>
+                <label class="option"><input type="radio" name="b_count" value="2" onchange="selectOption(this); checkBathFlow();"><span class="option-check"></span><span>2个</span></label>
+                <label class="option"><input type="radio" name="b_count" value="3+" onchange="selectOption(this); checkBathFlow();"><span class="option-check"></span><span>3个及以上</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-morning">
+            <div class="question-label">早上家里人用卫生间会排队或互相等待吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_morning" value="会" onchange="selectOption(this); checkBathFlow();"><span class="option-check"></span><span>会，经常要等</span></label>
+                <label class="option"><input type="radio" name="b_morning" value="不会" onchange="selectOption(this); checkBathFlow();"><span class="option-check"></span><span>不会</span></label>
+            </div>
+        </div>
+
+        <!-- 排队才显示 -->
+        <div id="bath-queue" class="hidden">
+            <div class="question" id="q-b-queue">
+                <div class="question-label">排队一般发生在哪个环节？（多选）</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="b_queue" value="洗漱台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>洗漱台（刷牙洗脸）</span></label>
+                    <label class="option"><input type="checkbox" name="b_queue" value="马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>马桶</span></label>
+                    <label class="option"><input type="checkbox" name="b_queue" value="淋浴" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>淋浴</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-night">
+            <div class="question-label">晚上睡前，夫妻两人能同时洗漱护肤吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_night" value="能" onchange="selectOption(this)"><span class="option-check"></span><span>能，空间够</span></label>
+                <label class="option"><input type="radio" name="b_night" value="不能" onchange="selectOption(this)"><span class="option-check"></span><span>不能，要轮流</span></label>
+                <label class="option"><input type="radio" name="b_night" value="独居" onchange="selectOption(this)"><span class="option-check"></span><span>独居，不存在这个问题</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-skin">
+            <div class="question-label">护肤品、化妆品是放在卫生间还是卧室？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_skin" value="卫生间" onchange="selectOption(this)"><span class="option-check"></span><span>全部放卫生间</span></label>
+                <label class="option"><input type="radio" name="b_skin" value="部分卧室" onchange="selectOption(this)"><span class="option-check"></span><span>部分放卧室</span></label>
+                <label class="option"><input type="radio" name="b_skin" value="卧室" onchange="selectOption(this)"><span class="option-check"></span><span>全部放卧室</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-makeup">
+            <div class="question-label">每天化妆的精细程度？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_makeup" value="全妆" onchange="selectOption(this)"><span class="option-check"></span><span>全妆（底妆+眼妆+唇妆）</span></label>
+                <label class="option"><input type="radio" name="b_makeup" value="简妆" onchange="selectOption(this)"><span class="option-check"></span><span>简妆（底妆+眉毛）</span></label>
+                <label class="option"><input type="radio" name="b_makeup" value="不化妆" onchange="selectOption(this)"><span class="option-check"></span><span>不化妆</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-light">
+            <div class="question-label">现在的镜子和灯光，化妆护肤时够用吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_light" value="够" onchange="selectOption(this)"><span class="option-check"></span><span>够用</span></label>
+                <label class="option"><input type="radio" name="b_light" value="不够" onchange="selectOption(this)"><span class="option-check"></span><span>不够，背光或太暗</span></label>
+                <label class="option"><input type="radio" name="b_light" value="不化妆" onchange="selectOption(this)"><span class="option-check"></span><span>不化妆，无所谓</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-hair">
+            <div class="question-label">有在卫生间吹头发、用卷发棒等电器的习惯吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_hair" value="经常" onchange="selectOption(this)"><span class="option-check"></span><span>经常</span></label>
+                <label class="option"><input type="radio" name="b_hair" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔</span></label>
+                <label class="option"><input type="radio" name="b_hair" value="从不" onchange="selectOption(this)"><span class="option-check"></span><span>从不</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-shower">
+            <div class="question-label">每次洗澡大概多长时间？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_shower" value="10分钟内" onchange="selectOption(this)"><span class="option-check"></span><span>10分钟内（速战速决）</span></label>
+                <label class="option"><input type="radio" name="b_shower" value="10-20分钟" onchange="selectOption(this)"><span class="option-check"></span><span>10-20分钟</span></label>
+                <label class="option"><input type="radio" name="b_shower" value="20分钟以上" onchange="selectOption(this)"><span class="option-check"></span><span>20分钟以上（享受型）</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-shower-type">
+            <div class="question-label">现在的淋浴区是什么形式？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_shower_type" value="玻璃隔断" onchange="selectOption(this)"><span class="option-check"></span><span>玻璃淋浴房/隔断</span></label>
+                <label class="option"><input type="radio" name="b_shower_type" value="浴帘" onchange="selectOption(this)"><span class="option-check"></span><span>浴帘</span></label>
+                <label class="option"><input type="radio" name="b_shower_type" value="开放式" onchange="selectOption(this)"><span class="option-check"></span><span>开放式（无隔断）</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-smell">
+            <div class="question-label">马桶区有没有明显的异味问题？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_smell" value="有" onchange="selectOption(this)"><span class="option-check"></span><span>有</span></label>
+                <label class="option"><input type="radio" name="b_smell" value="没有" onchange="selectOption(this)"><span class="option-check"></span><span>没有</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-toilet">
+            <div class="question-label">对马桶有什么偏好？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_toilet" value="智能马桶" onchange="selectOption(this)"><span class="option-check"></span><span>智能马桶（自动翻盖、座圈加热、冲洗）</span></label>
+                <label class="option"><input type="radio" name="b_toilet" value="壁挂马桶" onchange="selectOption(this)"><span class="option-check"></span><span>壁挂马桶（易清洁、颜值高）</span></label>
+                <label class="option"><input type="radio" name="b_toilet" value="普通马桶" onchange="selectOption(this)"><span class="option-check"></span><span>普通马桶，能用就行</span></label>
+                <label class="option"><input type="radio" name="b_toilet" value="没要求" onchange="selectOption(this)"><span class="option-check"></span><span>没特别要求</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-old">
+            <div class="question-label">家里有老人或膝盖不便的人吗？起坐马桶时需要扶手支撑吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_old" value="需要" onchange="selectOption(this)"><span class="option-check"></span><span>需要</span></label>
+                <label class="option"><input type="radio" name="b_old" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要</span></label>
+                <label class="option"><input type="radio" name="b_old" value="暂无" onchange="selectOption(this)"><span class="option-check"></span><span>目前没有，但未来可能接老人同住</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-temp">
+            <div class="question-label">现在的淋浴水温稳定吗？会不会忽冷忽热？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_temp" value="稳定" onchange="selectOption(this)"><span class="option-check"></span><span>稳定</span></label>
+                <label class="option"><input type="radio" name="b_temp" value="忽冷忽热" onchange="selectOption(this)"><span class="option-check"></span><span>忽冷忽热</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-tub">
+            <div class="question-label">家里有人喜欢用浴缸泡澡吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_tub" value="经常" onchange="selectOption(this)"><span class="option-check"></span><span>经常泡</span></label>
+                <label class="option"><input type="radio" name="b_tub" value="想尝试" onchange="selectOption(this)"><span class="option-check"></span><span>想尝试，但没条件</span></label>
+                <label class="option"><input type="radio" name="b_tub" value="不泡" onchange="selectOption(this)"><span class="option-check"></span><span>完全不泡</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-wet">
+            <div class="question-label">洗完澡后，卫生间地面会不会到处是水？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_wet" value="会" onchange="selectOption(this)"><span class="option-check"></span><span>会，经常湿漉漉</span></label>
+                <label class="option"><input type="radio" name="b_wet" value="不会" onchange="selectOption(this)"><span class="option-check"></span><span>不会，干湿分区好</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-b-laundry">
+            <div class="question-label">洗衣机/烘干机放在卫生间还是阳台？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="b_laundry" value="卫生间" onchange="selectOption(this)"><span class="option-check"></span><span>卫生间</span></label>
+                <label class="option"><input type="radio" name="b_laundry" value="阳台" onchange="selectOption(this)"><span class="option-check"></span><span>阳台</span></label>
+                <label class="option"><input type="radio" name="b_laundry" value="厨房" onchange="selectOption(this)"><span class="option-check"></span><span>厨房/其他位置</span></label>
+                <label class="option"><input type="radio" name="b_laundry" value="没有烘干机" onchange="selectOption(this)"><span class="option-check"></span><span>还没有烘干机</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('kitchen')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('sleep')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 健康睡眠 -->
+    <div class="step" id="step-sleep">
+        <h2>健康睡眠</h2>
+        <p class="subtitle">睡眠不是闭眼睛，是环境、动线和伴侣关系的总和。</p>
+
+        <div class="question" id="q-s-light">
+            <div class="question-label">卧室现在的遮光情况怎么样？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_light" value="完全遮光" onchange="selectOption(this)"><span class="option-check"></span><span>完全遮光，白天也像黑夜</span></label>
+                <label class="option"><input type="radio" name="s_light" value="基本遮光" onchange="selectOption(this)"><span class="option-check"></span><span>基本遮光，但边角漏光</span></label>
+                <label class="option"><input type="radio" name="s_light" value="不遮光" onchange="selectOption(this)"><span class="option-check"></span><span>不遮光，早上被阳光刺醒</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-noise">
+            <div class="question-label">晚上睡觉时，有没有被噪音打扰？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_noise" value="没有" onchange="selectOption(this)"><span class="option-check"></span><span>很安静</span></label>
+                <label class="option"><input type="radio" name="s_noise" value="室外" onchange="selectOption(this)"><span class="option-check"></span><span>室外噪音（车/施工/邻居）</span></label>
+                <label class="option"><input type="radio" name="s_noise" value="室内" onchange="selectOption(this)"><span class="option-check"></span><span>室内噪音（家人走动/卫生间水声）</span></label>
+                <label class="option"><input type="radio" name="s_noise" value="伴侣" onchange="selectOption(this)"><span class="option-check"></span><span>伴侣打呼/翻身/作息不同</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-partner">
+            <div class="question-label">和伴侣的睡眠习惯差别大吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_partner" value="差不多" onchange="selectOption(this)"><span class="option-check"></span><span>差不多，同时睡同时起</span></label>
+                <label class="option"><input type="radio" name="s_partner" value="我早睡" onchange="selectOption(this)"><span class="option-check"></span><span>我早睡，伴侣晚睡（或反之）</span></label>
+                <label class="option"><input type="radio" name="s_partner" value="我浅眠" onchange="selectOption(this)"><span class="option-check"></span><span>我浅眠，伴侣翻身/起床会醒</span></label>
+                <label class="option"><input type="radio" name="s_partner" value="分床" onchange="selectOption(this)"><span class="option-check"></span><span>已经分床/分房睡</span></label>
+                <label class="option"><input type="radio" name="s_partner" value="独居" onchange="selectOption(this)"><span class="option-check"></span><span>独居，不存在这个问题</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-posture">
+            <div class="question-label">平时习惯什么睡姿？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_posture" value="侧睡" onchange="selectOption(this)"><span class="option-check"></span><span>侧睡</span></label>
+                <label class="option"><input type="radio" name="s_posture" value="仰睡" onchange="selectOption(this)"><span class="option-check"></span><span>仰睡</span></label>
+                <label class="option"><input type="radio" name="s_posture" value="趴睡" onchange="selectOption(this)"><span class="option-check"></span><span>趴睡</span></label>
+                <label class="option"><input type="radio" name="s_posture" value="不固定" onchange="selectOption(this)"><span class="option-check"></span><span>不固定，乱动</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-night">
+            <div class="question-label">晚上起夜频繁吗？起来时需要开灯找路吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_night" value="不起夜" onchange="selectOption(this)"><span class="option-check"></span><span>不起夜</span></label>
+                <label class="option"><input type="radio" name="s_night" value="起夜摸黑" onchange="selectOption(this)"><span class="option-check"></span><span>起夜，摸黑走或开大灯刺眼</span></label>
+                <label class="option"><input type="radio" name="s_night" value="起夜有灯" onchange="selectOption(this)"><span class="option-check"></span><span>起夜，有感应小灯</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-read">
+            <div class="question-label">睡前会在床上看书/看手机吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_read" value="看书" onchange="selectOption(this)"><span class="option-check"></span><span>看书（纸质书/Kindle）</span></label>
+                <label class="option"><input type="radio" name="s_read" value="手机" onchange="selectOption(this)"><span class="option-check"></span><span>看手机/平板，刷到困</span></label>
+                <label class="option"><input type="radio" name="s_read" value="不" onchange="selectOption(this)"><span class="option-check"></span><span>不，躺下就睡</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-wake">
+            <div class="question-label">希望怎么醒来？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_wake" value="闹钟" onchange="selectOption(this)"><span class="option-check"></span><span>传统闹钟，响了就起</span></label>
+                <label class="option"><input type="radio" name="s_wake" value="自然光" onchange="selectOption(this)"><span class="option-check"></span><span>自然光渐亮唤醒</span></label>
+                <label class="option"><input type="radio" name="s_wake" value="无所谓" onchange="selectOption(this)"><span class="option-check"></span><span>无所谓</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-bed">
+            <div class="question-label">对现在的床垫/枕头满意吗？有没有腰酸背痛？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_bed" value="满意" onchange="selectOption(this)"><span class="option-check"></span><span>满意，睡得很好</span></label>
+                <label class="option"><input type="radio" name="s_bed" value="偏硬" onchange="selectOption(this)"><span class="option-check"></span><span>太硬，腰酸</span></label>
+                <label class="option"><input type="radio" name="s_bed" value="偏软" onchange="selectOption(this)"><span class="option-check"></span><span>太软，腰疼</span></label>
+                <label class="option"><input type="radio" name="s_bed" value="床垫旧" onchange="selectOption(this)"><span class="option-check"></span><span>床垫太旧，该换了</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-ac">
+            <div class="question-label">夏天开空调睡觉，会不会被冷风直吹？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_ac" value="会" onchange="selectOption(this)"><span class="option-check"></span><span>会，很冷，要盖厚被子</span></label>
+                <label class="option"><input type="radio" name="s_ac" value="不会" onchange="selectOption(this)"><span class="option-check"></span><span>不会，风向可控</span></label>
+                <label class="option"><input type="radio" name="s_ac" value="不开" onchange="selectOption(this)"><span class="option-check"></span><span>夏天不开空调睡</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('bathroom')">返回</button>
+            <button class="btn btn-primary" onclick="generateReport()">生成需求画像</button>
+        </div>
+    </div>
+
+    <!-- 结果页 -->
+    <div class="step" id="step-report">
+        <div class="report" id="reportContent">
+            <!-- 动态生成 -->
+        </div>
+        <div class="btn-group" style="margin-top: 24px;">
+            <button class="btn btn-secondary" onclick="goTo('sleep')">返回修改</button>
+            <button class="btn btn-primary" onclick="window.print()">打印/保存PDF</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const state = {
+    basic: {},
+    kitchen: {},
+    bathroom: {},
+    sleep: {}
+};
+
+const steps = ['welcome', 'basic', 'kitchen', 'bathroom', 'sleep', 'report'];
+
+function updateProgress(step) {
+    const idx = steps.indexOf(step);
+    const pct = (idx / (steps.length - 1)) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function goTo(step) {
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+    document.getElementById('step-' + step).classList.add('active');
+    updateProgress(step);
+    window.scrollTo(0, 0);
+}
+
+function selectOption(el) {
+    const name = el.name;
+    const isCheckbox = el.type === 'checkbox';
+    const parent = el.closest('.options');
+
+    if (!isCheckbox) {
+        parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+    }
+
+    el.closest('.option').classList.toggle('selected', isCheckbox ? el.checked : true);
+
+    // 保存到state
+    const module = getCurrentModule();
+    if (isCheckbox) {
+        const checked = Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value);
+        state[module][name] = checked;
+    } else {
+        state[module][name] = el.value;
+    }
+}
+
+function getCurrentModule() {
+    for (const s of steps) {
+        if (document.getElementById('step-' + s)?.classList.contains('active')) {
+            if (s === 'basic') return 'basic';
+            if (s === 'kitchen') return 'kitchen';
+            if (s === 'bathroom') return 'bathroom';
+            if (s === 'sleep') return 'sleep';
+        }
+    }
+    return 'basic';
+}
+
+function checkKitchenFlow() {
+    const freq = state.kitchen.k_freq;
+    const showCook = freq === '每天' || freq === '每周3-5次';
+    document.getElementById('kitchen-cook').classList.toggle('hidden', !showCook);
+    document.getElementById('kitchen-clean').classList.toggle('hidden', !showCook);
+}
+
+function checkBathFlow() {
+    const morning = state.bathroom.b_morning;
+    document.getElementById('bath-queue').classList.toggle('hidden', morning !== '会');
+}
+
+function generateReport() {
+    const r = analyzeData();
+    const html = `
+        <div class="report-header">
+            <h2>需求画像报告</h2>
+            <p style="color:#86868b; margin-top:8px;">生成时间：${new Date().toLocaleString('zh-CN')}</p>
+        </div>
+
+        <div class="report-section">
+            <h3>基础锚点</h3>
+            <table class="report-table">
+                <tr><td>常住人口</td><td>${r.basic.people || '-'} 人</td></tr>
+                <tr><td>人口结构</td><td>${(r.basic.structure || []).join('、') || '-'}</td></tr>
+                <tr><td>房屋面积</td><td>${r.basic.area || '-'}</td></tr>
+                <tr><td>装修类型</td><td>${r.basic.type || '-'}</td></tr>
+                <tr><td>预算区间</td><td>${r.basic.budget || '-'}</td></tr>
+            </table>
+        </div>
+
+        <div class="report-section">
+            <h3>场景分级</h3>
+            <div style="margin-bottom:12px;">
+                <span class="tag tag-red">核心场景</span>
+                <span>${r.scenes.core.join('、') || '待补充'}</span>
+            </div>
+            <div style="margin-bottom:12px;">
+                <span class="tag tag-yellow">次要场景</span>
+                <span>${r.scenes.minor.join('、') || '无'}</span>
+            </div>
+            <div>
+                <span class="tag tag-gray">暂无需求</span>
+                <span>${r.scenes.none.join('、') || '无'}</span>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h3>痛点清单</h3>
+            ${r.pains.length ? r.pains.map(p => `
+                <div class="pain-item">
+                    <div class="pain-scene">${p.scene}</div>
+                    <div class="pain-text">${p.text}</div>
+                </div>
+            `).join('') : '<p style="color:#86868b;">暂无明确痛点记录</p>'}
+        </div>
+
+        <div class="report-section">
+            <h3>设计参数</h3>
+            <table class="report-table">
+                ${r.params.length ? r.params.map(p => `
+                    <tr><td>${p.scene}</td><td>${p.item} <span class="tag ${p.level==='必须有'?'tag-red':p.level==='最好有'?'tag-yellow':'tag-gray'}">${p.level}</span></td></tr>
+                `).join('') : '<tr><td colspan="2" style="color:#86868b;">暂无明确设计参数</td></tr>'}
+            </table>
+        </div>
+
+        <div class="report-section">
+            <h3>特殊约束</h3>
+            ${r.constraints.length ? r.constraints.map(c => `
+                <div style="margin-bottom:10px; padding:12px; background:#fff3f3; border-radius:8px; border-left:3px solid #d32f2f;">
+                    <strong>${c.type}</strong>：${c.desc}
+                </div>
+            `).join('') : '<p style="color:#86868b;">暂无特殊约束</p>'}
+        </div>
+
+        <div class="report-section">
+            <h3>种草待确认</h3>
+            ${r.seeds.length ? r.seeds.map(s => `
+                <div style="margin-bottom:10px; padding:12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1976d2;">
+                    <strong>${s.item}</strong>：${s.reason}
+                </div>
+            `).join('') : '<p style="color:#86868b;">暂无推荐项</p>'}
+        </div>
+    `;
+
+    // 先显示提交中
+    document.getElementById('reportContent').innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:20px;">⏳</div>
+            <h3 style="font-size:20px;margin-bottom:12px;">正在生成需求画像并提交...</h3>
+            <p style="color:#86868b;">请稍候，报告将同步发送给设计师</p>
+        </div>
+    `;
+    goTo('report');
+
+    // 提交到后端
+    fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            basic: state.basic,
+            kitchen: state.kitchen,
+            bathroom: state.bathroom,
+            sleep: state.sleep,
+            report: r
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.code === 0) {
+            document.getElementById('reportContent').innerHTML = html + `
+                <div style="margin-top:24px;padding:16px;background:#e8f5e9;border-radius:12px;text-align:center;">
+                    <div style="font-size:24px;margin-bottom:8px;">✅</div>
+                    <div style="font-weight:600;color:#388e3c;">提交成功！报告已发送给设计师</div>
+                    <div style="font-size:13px;color:#666;margin-top:4px;">报告编号 #${data.id}</div>
+                </div>
+            `;
+        } else {
+            throw new Error(data.message);
+        }
+    })
+    .catch(err => {
+        document.getElementById('reportContent').innerHTML = html + `
+            <div style="margin-top:24px;padding:16px;background:#ffe5e5;border-radius:12px;text-align:center;">
+                <div style="font-size:24px;margin-bottom:8px;">⚠️</div>
+                <div style="font-weight:600;color:#d32f2f;">提交失败，请截图保存报告</div>
+                <div style="font-size:13px;color:#666;margin-top:4px;">${err.message || '网络错误'}</div>
+            </div>
+        `;
+    });
+}
+
+function analyzeData() {
+    const b = state.basic;
+    const k = state.kitchen;
+    const ba = state.bathroom;
+    const s = state.sleep;
+
+    const result = {
+        basic: b,
+        scenes: { core: [], minor: [], none: [] },
+        pains: [],
+        params: [],
+        constraints: [],
+        seeds: []
+    };
+
+    // 场景分级 - 餐厨
+    const kFreq = k.k_freq;
+    const kPain = (k.k_oil === '会') || (k.k_board === '是') || (k.k_crowd === '会') || (k.k_mess === '是');
+    if (kFreq === '每天' && kPain) {
+        result.scenes.core.push('餐厨茶饮');
+    } else if (kFreq === '每天' || kFreq === '每周3-5次') {
+        result.scenes.minor.push('餐厨茶饮');
+    } else if (kFreq === '从不' && k.k_guest === '不会') {
+        result.scenes.none.push('餐厨茶饮');
+    } else {
+        result.scenes.minor.push('餐厨茶饮');
+    }
+
+    // 场景分级 - 卫浴
+    const bPain = (ba.b_morning === '会') || (ba.b_wet === '会') || (ba.b_temp === '忽冷忽热') || (ba.b_smell === '有');
+    if (bPain) {
+        result.scenes.core.push('卫浴漱妆');
+    } else if (ba.b_light === '不够' || ba.b_tub === '想尝试') {
+        result.scenes.minor.push('卫浴漱妆');
+    } else {
+        result.scenes.minor.push('卫浴漱妆');
+    }
+
+    // 场景分级 - 睡眠
+    const sPain = (s.s_light === '不遮光') || (s.s_noise && s.s_noise !== '没有') || (s.s_partner === '我浅眠') || (s.s_partner === '分床');
+    if (sPain) {
+        result.scenes.core.push('健康睡眠');
+    } else {
+        result.scenes.minor.push('健康睡眠');
+    }
+
+    // 痛点 - 餐厨
+    if (k.k_oil === '会') result.pains.push({ scene: '餐厨茶饮', text: '油烟扩散至客餐厅，身上有油烟味' });
+    if (k.k_board === '是') result.pains.push({ scene: '餐厨茶饮', text: '备菜区台面不足，切菜没地方' });
+    if (k.k_crowd === '会') result.pains.push({ scene: '餐厨茶饮', text: '双人操作时动线拥挤，互相挡路' });
+    if (k.k_mess === '是') result.pains.push({ scene: '餐厨茶饮', text: '收纳空间不足，台面被杂物占满' });
+    if (k.k_faucet === '固定不够') result.pains.push({ scene: '餐厨茶饮', text: '固定龙头冲洗不方便' });
+    if (k.k_light === '不够') result.pains.push({ scene: '餐厨茶饮', text: '操作台背光，切菜有阴影' });
+
+    // 痛点 - 卫浴
+    if (ba.b_morning === '会') result.pains.push({ scene: '卫浴漱妆', text: '早高峰卫生间排队' });
+    if (ba.b_queue && ba.b_queue.includes('洗漱台')) result.pains.push({ scene: '卫浴漱妆', text: '洗漱台资源不足，刷牙洗脸要排队' });
+    if (ba.b_light === '不够') result.pains.push({ scene: '卫浴漱妆', text: '化妆护肤灯光不足，面部有阴影' });
+    if (ba.b_smell === '有') result.pains.push({ scene: '卫浴漱妆', text: '卫生间异味/通风不良' });
+    if (ba.b_temp === '忽冷忽热') result.pains.push({ scene: '卫浴漱妆', text: '淋浴水温不稳定' });
+    if (ba.b_wet === '会') result.pains.push({ scene: '卫浴漱妆', text: '干湿不分离，地面湿滑有安全隐患' });
+
+    // 痛点 - 睡眠
+    if (s.s_light === '不遮光') result.pains.push({ scene: '健康睡眠', text: '卧室遮光不足，早上被阳光刺醒' });
+    if (s.s_noise === '室外') result.pains.push({ scene: '健康睡眠', text: '室外噪音干扰睡眠' });
+    if (s.s_noise === '室内') result.pains.push({ scene: '健康睡眠', text: '室内噪音干扰（家人走动/水声）' });
+    if (s.s_noise === '伴侣') result.pains.push({ scene: '健康睡眠', text: '伴侣打呼/翻身干扰睡眠' });
+    if (s.s_partner === '我浅眠') result.pains.push({ scene: '健康睡眠', text: '浅眠，易被伴侣动作惊醒' });
+    if (s.s_night === '起夜摸黑') result.pains.push({ scene: '健康睡眠', text: '起夜无照明，摸黑行走或开大灯刺眼' });
+    if (s.s_ac === '会') result.pains.push({ scene: '健康睡眠', text: '空调冷风直吹，睡觉不舒服' });
+
+    // 设计参数 - 餐厨
+    if (k.k_style && k.k_style.includes('中式爆炒')) result.params.push({ scene: '餐厨茶饮', item: '大吸力油烟机（≥20m³/min）', level: '必须有' });
+    if (k.k_style && k.k_style.includes('烘焙西餐')) result.params.push({ scene: '餐厨茶饮', item: '嵌入式烤箱位', level: '最好有' });
+    if (k.k_breakfast === '认真做') result.params.push({ scene: '餐厨茶饮', item: '早餐操作区/小家电集中区', level: '最好有' });
+    if (k.k_dinner === '全家') result.params.push({ scene: '餐厨茶饮', item: '家庭聚餐型餐桌', level: '必须有' });
+    if (k.k_guest === '4-6人' || k.k_guest === '6人以上') result.params.push({ scene: '餐厨茶饮', item: '可延展餐桌或大餐桌', level: '必须有' });
+    if (k.k_table && k.k_table.includes('工作')) result.params.push({ scene: '餐厨茶饮', item: '餐桌旁预留插座/网络', level: '最好有' });
+    if (k.k_tea === '功夫茶') result.params.push({ scene: '餐厨茶饮', item: '茶台上下水位', level: '必须有' });
+    if (k.k_coffee === '手冲') result.params.push({ scene: '餐厨茶饮', item: '咖啡角操作台+插座', level: '必须有' });
+    if (k.k_wine === '藏酒') result.params.push({ scene: '餐厨茶饮', item: '恒温避光酒柜位', level: '最好有' });
+    if (k.k_sink && k.k_sink.includes('不够')) result.params.push({ scene: '餐厨茶饮', item: '更大尺寸水槽（≥700mm）', level: '必须有' });
+    if (k.k_faucet === '固定不够') result.params.push({ scene: '餐厨茶饮', item: '抽拉式龙头', level: '最好有' });
+    if (k.k_height === '155以下') result.params.push({ scene: '餐厨茶饮', item: '橱柜高度降低（80cm以下）', level: '必须有' });
+    if (k.k_height === '175以上') result.params.push({ scene: '餐厨茶饮', item: '橱柜高度加高（90cm以上）', level: '必须有' });
+
+    // 设计参数 - 卫浴
+    if (ba.b_count === '1' && ba.b_morning === '会') result.params.push({ scene: '卫浴漱妆', item: '双卫改造或干湿分离（优先级高）', level: '必须有' });
+    if (ba.b_skin === '卫生间') result.params.push({ scene: '卫浴漱妆', item: '镜柜防潮收纳', level: '必须有' });
+    if (ba.b_hair === '经常') result.params.push({ scene: '卫浴漱妆', item: '台盆旁防水插座', level: '最好有' });
+    if (ba.b_tub === '经常') result.params.push({ scene: '卫浴漱妆', item: '标准浴缸位（≥1200mm）', level: '必须有' });
+    if (ba.b_tub === '想尝试') result.params.push({ scene: '卫浴漱妆', item: '迷你深泡缸位（≥900mm）', level: '最好有' });
+    if (ba.b_toilet === '智能马桶') result.params.push({ scene: '卫浴漱妆', item: '智能马桶（预留电源+进水）', level: '必须有' });
+    if (ba.b_toilet === '壁挂马桶') result.params.push({ scene: '卫浴漱妆', item: '壁挂马桶（隐藏水箱）', level: '必须有' });
+    if (ba.b_shower === '20分钟以上') result.params.push({ scene: '卫浴漱妆', item: '大容量热水器/恒温燃气热水器', level: '最好有' });
+
+    // 设计参数 - 睡眠
+    if (s.s_light === '不遮光' || s.s_light === '基本遮光') result.params.push({ scene: '健康睡眠', item: '100%遮光窗帘/卷帘', level: '必须有' });
+    if (s.s_noise === '室外') result.params.push({ scene: '健康睡眠', item: '隔音窗/隔音窗帘', level: '最好有' });
+    if (s.s_partner === '我浅眠') result.params.push({ scene: '健康睡眠', item: '独立弹簧床垫/分垫设计', level: '必须有' });
+    if (s.s_night === '起夜摸黑') result.params.push({ scene: '健康睡眠', item: '起夜感应地灯', level: '必须有' });
+    if (s.s_wake === '自然光') result.params.push({ scene: '健康睡眠', item: '智能窗帘（定时渐亮）', level: '最好有' });
+    if (s.s_posture === '侧睡') result.params.push({ scene: '健康睡眠', item: '中高枕（侧睡支撑）', level: '最好有' });
+    if (s.s_posture === '仰睡') result.params.push({ scene: '健康睡眠', item: '中低枕（仰睡支撑）', level: '最好有' });
+    if (s.s_ac === '会') result.params.push({ scene: '健康睡眠', item: '空调防直吹挡风板/改变安装位置', level: '最好有' });
+
+    // 特殊约束
+    if (b.structure && b.structure.includes('0-3岁婴儿')) {
+        result.constraints.push({ type: '安全', desc: '0-3岁婴儿：家具圆角防撞、插座防误触、防夹手门' });
+    }
+    if (b.structure && b.structure.includes('老人')) {
+        result.constraints.push({ type: '安全', desc: '65岁以上老人：卫生间防滑扶手、马桶旁助力扶手' });
+    }
+    if (ba.b_old === '需要' || ba.b_old === '暂无') {
+        result.constraints.push({ type: '安全', desc: '如厕辅助：马桶旁预留扶手安装位' });
+    }
+
+    // 种草待确认
+    if (k.k_wash === '手洗' && kFreq === '每天') {
+        result.seeds.push({ item: '洗碗机', reason: '每天省30分钟，减少家庭矛盾' });
+    }
+    if (k.k_chat === '喜欢' && k.k_crowd === '会') {
+        result.seeds.push({ item: '中岛台/吧台', reason: '增加操作面，同时成为家庭交流中心' });
+    }
+    if (k.k_tea === '功夫茶' && k.k_mess === '是') {
+        result.seeds.push({ item: '茶台/茶水柜', reason: '集中收纳茶具，释放厨房台面' });
+    }
+    if (k.k_coffee === '手冲') {
+        result.seeds.push({ item: '咖啡角', reason: '专属咖啡操作区，提升日常幸福感' });
+    }
+    if ((k.k_guest === '4-6人' || k.k_guest === '6人以上') && k.k_table && k.k_table.includes('喝茶聊天')) {
+        result.seeds.push({ item: '可延展餐桌', reason: '聚餐+喝茶两用，提升空间利用率' });
+    }
+    if (k.k_mess === '是' && kFreq === '每天') {
+        result.seeds.push({ item: '餐边柜', reason: '小家电和囤货外移，释放厨房台面' });
+    }
+    if (ba.b_morning === '会' && ba.b_queue && ba.b_queue.includes('洗漱台')) {
+        result.seeds.push({ item: '双台盆', reason: '彻底解决早高峰洗漱排队' });
+    }
+    if (ba.b_light === '不够') {
+        result.seeds.push({ item: '化妆镜柜+正面灯', reason: '消除面部阴影，护肤更精准' });
+    }
+    if (ba.b_temp === '忽冷忽热') {
+        result.seeds.push({ item: '恒温花洒', reason: '锁定舒适水温，告别烫伤或冰凉' });
+    }
+    if (ba.b_wet === '会' && ba.b_count === '1') {
+        result.seeds.push({ item: '干湿分离/淋浴房', reason: '隔离水汽，地面不再湿滑' });
+    }
+    if (ba.b_tub === '想尝试') {
+        result.seeds.push({ item: '迷你深泡缸', reason: '1㎡也能实现泡澡自由' });
+    }
+    if (s.s_bed === '偏硬') {
+        result.seeds.push({ item: '乳胶/记忆棉床垫', reason: '贴合身体曲线，缓解腰部压力' });
+    }
+    if (s.s_bed === '偏软') {
+        result.seeds.push({ item: '棕垫/硬弹簧床垫', reason: '提供足够支撑，避免腰部塌陷' });
+    }
+
+    return result;
+}
+</script>
+</body>
+</html>
