@@ -7,7 +7,7 @@
 ## 一、文件结构
 
 ```
-家宝-策划案/
+xingzhizhu-survey/
 ├── main.py              # FastAPI后端（API + 管理后台 + 飞书推送）
 ├── requirements.txt     # Python依赖
 ├── static/
@@ -22,7 +22,7 @@
 ### 1. 安装依赖
 
 ```bash
-cd 家宝-策划案
+cd xingzhizhu-survey
 pip install -r requirements.txt
 ```
 
@@ -77,11 +77,11 @@ Render是免费的Python托管平台，只需要一个Git仓库。
 
 1. **把代码推送到GitHub**
 
-   当前 `家宝-策划案` 在 `AI桌面` 仓库内，直接在根目录提交并推送：
+   当前 `xingzhizhu-survey` 在 `AI桌面` 仓库内，直接在根目录提交并推送：
 
    ```bash
    # 在 AI桌面 根目录执行
-   git add 家宝-策划案/
+   git add xingzhizhu-survey/
    git commit -m "add survey system"
    git push origin main
    ```
@@ -99,8 +99,8 @@ Render是免费的Python托管平台，只需要一个Git仓库。
    |------|------|
    | Name | `xingzhizhu-survey` |
    | Runtime | `Python 3` |
-   | Build Command | `cd 家宝-策划案 && pip install -r requirements.txt` |
-   | Start Command | `cd 家宝-策划案 && python main.py` |
+   | Build Command | `cd xingzhizhu-survey && pip install -r requirements.txt` |
+   | Start Command | `cd xingzhizhu-survey && python main.py` |
    | Plan | Free |
 
 4. **添加环境变量**
