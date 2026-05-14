@@ -1,85 +1,134 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
-from typing import Dict, Any, List
-import sqlite3
-import requests
+from typing import Dict, Any
 import json
 import os
-from datetime import datetime
 
 app = FastAPI(title="幸之住需求洞察系统")
 
-# 挂载静态文件（前端HTML）
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# 飞书机器人Webhook（用户需要替换为自己的）
 FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "")
 BASE_URL = os.getenv("BASE_URL", "")
-
-# ========== 数据库 ==========
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 DB_PATH = "survey.db"
 
+
+def _pg_conn():
+    from urllib.parse import urlparse
+    from pg8000.native import Connection
+    parsed = urlparse(DATABASE_URL)
+    return Connection(
+        user=parsed.username,
+        password=parsed.password,
+        host=parsed.hostname,
+        port=parsed.port or 5432,
+        database=parsed.path[1:] if parsed.path else "",
+    )
+
+
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS surveys (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            basic TEXT,
-            kitchen TEXT,
-            bathroom TEXT,
-            sleep TEXT,
-            report TEXT
+    if DATABASE_URL:
+        conn = _pg_conn()
+        conn.run(
+            """
+            CREATE TABLE IF NOT EXISTS surveys (
+                id SERIAL PRIMARY KEY,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                basic TEXT,
+                kitchen TEXT,
+                bathroom TEXT,
+                sleep TEXT,
+                report TEXT
+            )
+            """
         )
-    ''')
-    conn.commit()
-    conn.close()
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS surveys (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                basic TEXT,
+                kitchen TEXT,
+                bathroom TEXT,
+                sleep TEXT,
+                report TEXT
+            )
+            """
+        )
+        conn.commit()
+        conn.close()
+
 
 init_db()
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
 
-# ========== 路由 ==========
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    """问卷首页"""
     with open("static/index.html", "r", encoding="utf-8") as f:
         return f.read()
 
+
 @app.post("/api/submit")
 async def submit_survey(request: Request):
-    """接收问卷提交，存库，推送飞书"""
     data = await request.json()
 
-    # 简单字段校验
     for field in ["basic", "kitchen", "bathroom", "sleep", "report"]:
         if field not in data:
-            return JSONResponse({"code": 400, "message": f"缺少字段: {field}"}, status_code=400)
+            return JSONResponse(
+                {"code": 400, "message": f"缺少字段: {field}"}, status_code=400
+            )
 
-    conn = get_db()
-    c = conn.cursor()
+    basic_json = json.dumps(data["basic"], ensure_ascii=False)
+    kitchen_json = json.dumps(data["kitchen"], ensure_ascii=False)
+    bathroom_json = json.dumps(data["bathroom"], ensure_ascii=False)
+    sleep_json = json.dumps(data["sleep"], ensure_ascii=False)
+    report_json = json.dumps(data["report"], ensure_ascii=False)
 
-    c.execute('''
-        INSERT INTO surveys (basic, kitchen, bathroom, sleep, report)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (
-        json.dumps(data["basic"], ensure_ascii=False),
-        json.dumps(data["kitchen"], ensure_ascii=False),
-        json.dumps(data["bathroom"], ensure_ascii=False),
-        json.dumps(data["sleep"], ensure_ascii=False),
-        json.dumps(data["report"], ensure_ascii=False)
-    ))
+    if DATABASE_URL:
+        conn = _pg_conn()
+        result = conn.run(
+            """
+            INSERT INTO surveys (basic, kitchen, bathroom, sleep, report)
+            VALUES (:basic, :kitchen, :bathroom, :sleep, :report)
+            RETURNING id
+            """,
+            basic=basic_json,
+            kitchen=kitchen_json,
+            bathroom=bathroom_json,
+            sleep=sleep_json,
+            report=report_json,
+        )
+        survey_id = result[0][0]
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(
+            """
+            INSERT INTO surveys (basic, kitchen, bathroom, sleep, report)
+            VALUES (:basic, :kitchen, :bathroom, :sleep, :report)
+            RETURNING id
+            """,
+            {
+                "basic": basic_json,
+                "kitchen": kitchen_json,
+                "bathroom": bathroom_json,
+                "sleep": sleep_json,
+                "report": report_json,
+            },
+        )
+        survey_id = c.fetchone()[0]
+        conn.commit()
+        conn.close()
 
-    survey_id = c.lastrowid
-    conn.commit()
-    conn.close()
-
-    # 推送飞书
     if FEISHU_WEBHOOK:
         try:
             send_feishu(survey_id, data["basic"], data["report"])
@@ -88,55 +137,83 @@ async def submit_survey(request: Request):
 
     return {"code": 0, "id": survey_id, "message": "提交成功"}
 
+
 @app.get("/api/surveys")
 async def list_surveys():
-    """管理后台：列出所有问卷"""
-    conn = get_db()
-    c = conn.cursor()
-    c.execute("SELECT id, created_at, basic, report FROM surveys ORDER BY id DESC")
-    rows = c.fetchall()
-    conn.close()
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(
+            """
+            SELECT id, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'), basic, report
+            FROM surveys ORDER BY id DESC
+            """
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(
+            "SELECT id, created_at, basic, report FROM surveys ORDER BY id DESC"
+        )
+        rows = c.fetchall()
+        conn.close()
 
     result = []
     for row in rows:
-        basic = json.loads(row["basic"] or "{}")
-        report = json.loads(row["report"] or "{}")
-        result.append({
-            "id": row["id"],
-            "created_at": row["created_at"],
-            "name": basic.get("name", "-"),
-            "people": basic.get("people", "-"),
-            "area": basic.get("area", "-"),
-            "budget": basic.get("budget", "-"),
-            "core_scenes": ", ".join(report.get("scenes", {}).get("core", []))
-        })
+        basic = json.loads(row[2] or "{}")
+        report = json.loads(row[3] or "{}")
+        result.append(
+            {
+                "id": row[0],
+                "created_at": str(row[1]),
+                "name": basic.get("name", "-"),
+                "people": basic.get("people", "-"),
+                "area": basic.get("area", "-"),
+                "budget": basic.get("budget", "-"),
+                "core_scenes": ", ".join(report.get("scenes", {}).get("core", [])),
+            }
+        )
     return result
+
 
 @app.get("/api/surveys/{survey_id}")
 async def get_survey(survey_id: int):
-    """查看单份问卷详情"""
-    conn = get_db()
-    c = conn.cursor()
-    c.execute("SELECT * FROM surveys WHERE id = ?", (survey_id,))
-    row = c.fetchone()
-    conn.close()
-
-    if not row:
-        return JSONResponse({"code": 404, "message": "未找到"}, status_code=404)
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run("SELECT * FROM surveys WHERE id = :id", id=survey_id)
+        conn.close()
+        if not rows:
+            return JSONResponse(
+                {"code": 404, "message": "未找到"}, status_code=404
+            )
+        row = rows[0]
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("SELECT * FROM surveys WHERE id = ?", (survey_id,))
+        row = c.fetchone()
+        conn.close()
+        if not row:
+            return JSONResponse(
+                {"code": 404, "message": "未找到"}, status_code=404
+            )
 
     return {
-        "id": row["id"],
-        "created_at": row["created_at"],
-        "basic": json.loads(row["basic"] or "{}"),
-        "kitchen": json.loads(row["kitchen"] or "{}"),
-        "bathroom": json.loads(row["bathroom"] or "{}"),
-        "sleep": json.loads(row["sleep"] or "{}"),
-        "report": json.loads(row["report"] or "{}")
+        "id": row[0],
+        "created_at": str(row[1]),
+        "basic": json.loads(row[2] or "{}"),
+        "kitchen": json.loads(row[3] or "{}"),
+        "bathroom": json.loads(row[4] or "{}"),
+        "sleep": json.loads(row[5] or "{}"),
+        "report": json.loads(row[6] or "{}"),
     }
+
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page():
-    """简单管理后台"""
     return """
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -205,9 +282,9 @@ async def admin_page():
     </html>
     """
 
+
 @app.get("/report/{survey_id}", response_class=HTMLResponse)
 async def report_page(survey_id: int):
-    """查看单份报告"""
     return f"""
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -327,6 +404,7 @@ async def report_page(survey_id: int):
     </html>
     """
 
+
 # ========== 飞书推送 ==========
 def send_feishu(survey_id: int, basic: Dict[str, Any], report: Dict[str, Any]):
     """推送结构化报告到飞书群/机器人"""
@@ -340,22 +418,48 @@ def send_feishu(survey_id: int, basic: Dict[str, Any], report: Dict[str, Any]):
     client_phone = basic.get("phone", "")
 
     # 构造痛点文本
-    pain_text = "\n".join([f"• {p['scene']}：{p['text']}" for p in pains[:5]]) if pains else "暂无"
+    pain_text = (
+        "\n".join([f"• {p['scene']}：{p['text']}" for p in pains[:5]])
+        if pains
+        else "暂无"
+    )
 
     # 构造设计参数文本（只取"必须有"）
     must_params = [p for p in params if p.get("level") == "必须有"]
-    param_text = "\n".join([f"• {p['scene']}：{p['item']}" for p in must_params[:5]]) if must_params else "暂无"
+    param_text = (
+        "\n".join([f"• {p['scene']}：{p['item']}" for p in must_params[:5]])
+        if must_params
+        else "暂无"
+    )
 
     content = [
         [{"tag": "text", "text": f"客户：{client_name} {client_phone}\n"}],
-        [{"tag": "text", "text": f"核心场景：{', '.join(scenes.get('core', [])) or '待补充'}\n"}],
-        [{"tag": "text", "text": f"次要场景：{', '.join(scenes.get('minor', [])) or '无'}\n"}],
+        [
+            {
+                "tag": "text",
+                "text": f"核心场景：{', '.join(scenes.get('core', [])) or '待补充'}\n",
+            }
+        ],
+        [
+            {
+                "tag": "text",
+                "text": f"次要场景：{', '.join(scenes.get('minor', [])) or '无'}\n",
+            }
+        ],
         [{"tag": "text", "text": "\n📍 痛点清单：\n" + pain_text + "\n"}],
         [{"tag": "text", "text": "\n🔧 必须有（设计参数）：\n" + param_text + "\n"}],
     ]
 
     if BASE_URL:
-        content.append([{"tag": "a", "text": "👉 查看完整报告", "href": f"{BASE_URL}/report/{survey_id}"}])
+        content.append(
+            [
+                {
+                    "tag": "a",
+                    "text": "👉 查看完整报告",
+                    "href": f"{BASE_URL}/report/{survey_id}",
+                }
+            ]
+        )
 
     payload = {
         "msg_type": "post",
@@ -363,16 +467,18 @@ def send_feishu(survey_id: int, basic: Dict[str, Any], report: Dict[str, Any]):
             "post": {
                 "zh_cn": {
                     "title": f"🎯 新客户需求画像 | {client_name} #{survey_id}",
-                    "content": content
+                    "content": content,
                 }
             }
-        }
+        },
     }
 
     resp = requests.post(FEISHU_WEBHOOK, json=payload, timeout=10)
     resp.raise_for_status()
 
+
 # ========== 启动 ==========
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
