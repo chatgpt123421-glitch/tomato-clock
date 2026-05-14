@@ -45,6 +45,13 @@ def init_db():
                 kids TEXT,
                 study TEXT,
                 balcony TEXT,
+                laundry TEXT,
+                storage TEXT,
+                learning TEXT,
+                fitness TEXT,
+                entertainment TEXT,
+                environment TEXT,
+                special TEXT,
                 report TEXT
             )
             """
@@ -229,7 +236,10 @@ async def list_surveys():
 async def get_survey(survey_id: int):
     if DATABASE_URL:
         conn = _pg_conn()
-        rows = conn.run("SELECT * FROM surveys WHERE id = :id", id=survey_id)
+        rows = conn.run(
+            "SELECT id, created_at, basic, kitchen, bathroom, sleep, living, entryway, kids, study, balcony, laundry, storage, learning, fitness, entertainment, environment, special, report FROM surveys WHERE id = :id",
+            id=survey_id
+        )
         conn.close()
         if not rows:
             return JSONResponse(
@@ -241,7 +251,7 @@ async def get_survey(survey_id: int):
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
-        c.execute("SELECT * FROM surveys WHERE id = ?", (survey_id,))
+        c.execute("SELECT id, created_at, basic, kitchen, bathroom, sleep, living, entryway, kids, study, balcony, laundry, storage, learning, fitness, entertainment, environment, special, report FROM surveys WHERE id = ?", (survey_id,))
         row = c.fetchone()
         conn.close()
         if not row:
