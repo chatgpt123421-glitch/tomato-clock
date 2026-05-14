@@ -5,6 +5,7 @@ from typing import Dict, Any
 import json
 import os
 import re
+import requests
 
 app = FastAPI(title="幸之住需求洞察系统")
 

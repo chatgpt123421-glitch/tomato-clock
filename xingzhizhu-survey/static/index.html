@@ -1344,22 +1344,23 @@ function injectSkipButtons() {
     const skippable = ['kitchen', 'bathroom', 'sleep', 'laundry', 'storage', 'learning', 'fitness', 'entertainment', 'environment', 'special'];
     skippable.forEach(step => {
         const stepEl = document.getElementById('step-' + step);
-        if (!stepEl) return;
-        const btnGroup = stepEl.querySelector('.btn-group');
-        if (!btnGroup || btnGroup.querySelector('.btn-skip')) return;
+        if (!stepEl || stepEl.querySelector('.skip-bar')) return;
+
+        const subtitle = stepEl.querySelector('.subtitle');
+        if (!subtitle) return;
+
+        const skipBar = document.createElement('div');
+        skipBar.className = 'skip-bar';
+        skipBar.style.cssText = 'display:flex;justify-content:flex-end;margin:-8px 0 16px;';
+
         const skipBtn = document.createElement('button');
         skipBtn.className = 'btn btn-secondary btn-skip';
-        skipBtn.textContent = '跳过此场景';
-        skipBtn.style.flex = '1';
-        skipBtn.style.background = '#f5f5f7';
-        skipBtn.style.color = '#666';
-        skipBtn.style.border = '2px solid #e5e5ea';
+        skipBtn.textContent = '跳过此场景 →';
+        skipBtn.style.cssText = 'padding:8px 16px;font-size:14px;background:#f5f5f7;color:#666;border:2px solid #e5e5ea;border-radius:8px;cursor:pointer;';
         skipBtn.onclick = function() { skipStep(step); };
-        if (btnGroup.children.length >= 1) {
-            btnGroup.insertBefore(skipBtn, btnGroup.children[1]);
-        } else {
-            btnGroup.appendChild(skipBtn);
-        }
+
+        skipBar.appendChild(skipBtn);
+        subtitle.parentNode.insertBefore(skipBar, subtitle.nextSibling);
     });
 }
 
