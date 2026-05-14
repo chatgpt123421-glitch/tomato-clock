@@ -40,10 +40,20 @@ def init_db():
                 kitchen TEXT,
                 bathroom TEXT,
                 sleep TEXT,
+                living TEXT,
+                entryway TEXT,
+                kids TEXT,
+                study TEXT,
+                balcony TEXT,
                 report TEXT
             )
             """
         )
+        for col in ["living", "entryway", "kids", "study", "balcony", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special"]:
+            try:
+                conn.run(f'ALTER TABLE surveys ADD COLUMN IF NOT EXISTS {col} TEXT')
+            except Exception:
+                pass
         conn.close()
     else:
         import sqlite3
@@ -58,10 +68,27 @@ def init_db():
                 kitchen TEXT,
                 bathroom TEXT,
                 sleep TEXT,
+                living TEXT,
+                entryway TEXT,
+                kids TEXT,
+                study TEXT,
+                balcony TEXT,
+                laundry TEXT,
+                storage TEXT,
+                learning TEXT,
+                fitness TEXT,
+                entertainment TEXT,
+                environment TEXT,
+                special TEXT,
                 report TEXT
             )
             """
         )
+        for col in ["living", "entryway", "kids", "study", "balcony", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special"]:
+            try:
+                c.execute(f'ALTER TABLE surveys ADD COLUMN {col} TEXT')
+            except Exception:
+                pass
         conn.commit()
         conn.close()
 
@@ -79,7 +106,7 @@ async def index():
 async def submit_survey(request: Request):
     data = await request.json()
 
-    for field in ["basic", "kitchen", "bathroom", "sleep", "report"]:
+    for field in ["basic", "kitchen", "bathroom", "sleep", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special", "report"]:
         if field not in data:
             return JSONResponse(
                 {"code": 400, "message": f"缺少字段: {field}"}, status_code=400
@@ -89,20 +116,34 @@ async def submit_survey(request: Request):
     kitchen_json = json.dumps(data["kitchen"], ensure_ascii=False)
     bathroom_json = json.dumps(data["bathroom"], ensure_ascii=False)
     sleep_json = json.dumps(data["sleep"], ensure_ascii=False)
+    laundry_json = json.dumps(data["laundry"], ensure_ascii=False)
+    storage_json = json.dumps(data["storage"], ensure_ascii=False)
+    learning_json = json.dumps(data["learning"], ensure_ascii=False)
+    fitness_json = json.dumps(data["fitness"], ensure_ascii=False)
+    entertainment_json = json.dumps(data["entertainment"], ensure_ascii=False)
+    environment_json = json.dumps(data["environment"], ensure_ascii=False)
+    special_json = json.dumps(data["special"], ensure_ascii=False)
     report_json = json.dumps(data["report"], ensure_ascii=False)
 
     if DATABASE_URL:
         conn = _pg_conn()
         result = conn.run(
             """
-            INSERT INTO surveys (basic, kitchen, bathroom, sleep, report)
-            VALUES (:basic, :kitchen, :bathroom, :sleep, :report)
+            INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report)
+            VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report)
             RETURNING id
             """,
             basic=basic_json,
             kitchen=kitchen_json,
             bathroom=bathroom_json,
             sleep=sleep_json,
+            laundry=laundry_json,
+            storage=storage_json,
+            learning=learning_json,
+            fitness=fitness_json,
+            entertainment=entertainment_json,
+            environment=environment_json,
+            special=special_json,
             report=report_json,
         )
         survey_id = result[0][0]
@@ -113,8 +154,8 @@ async def submit_survey(request: Request):
         c = conn.cursor()
         c.execute(
             """
-            INSERT INTO surveys (basic, kitchen, bathroom, sleep, report)
-            VALUES (:basic, :kitchen, :bathroom, :sleep, :report)
+            INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report)
+            VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report)
             RETURNING id
             """,
             {
@@ -122,6 +163,13 @@ async def submit_survey(request: Request):
                 "kitchen": kitchen_json,
                 "bathroom": bathroom_json,
                 "sleep": sleep_json,
+                "laundry": laundry_json,
+                "storage": storage_json,
+                "learning": learning_json,
+                "fitness": fitness_json,
+                "entertainment": entertainment_json,
+                "environment": environment_json,
+                "special": special_json,
                 "report": report_json,
             },
         )
@@ -208,7 +256,19 @@ async def get_survey(survey_id: int):
         "kitchen": json.loads(row[3] or "{}"),
         "bathroom": json.loads(row[4] or "{}"),
         "sleep": json.loads(row[5] or "{}"),
-        "report": json.loads(row[6] or "{}"),
+        "living": json.loads(row[6] or "{}"),
+        "entryway": json.loads(row[7] or "{}"),
+        "kids": json.loads(row[8] or "{}"),
+        "study": json.loads(row[9] or "{}"),
+        "balcony": json.loads(row[10] or "{}"),
+        "laundry": json.loads(row[11] or "{}"),
+        "storage": json.loads(row[12] or "{}"),
+        "learning": json.loads(row[13] or "{}"),
+        "fitness": json.loads(row[14] or "{}"),
+        "entertainment": json.loads(row[15] or "{}"),
+        "environment": json.loads(row[16] or "{}"),
+        "special": json.loads(row[17] or "{}"),
+        "report": json.loads(row[18] or "{}"),
     }
 
 

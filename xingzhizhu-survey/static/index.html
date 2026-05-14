@@ -294,22 +294,17 @@
         <div class="question">
             <div class="question-label">本次将了解以下生活场景：</div>
             <div class="options">
-                <div class="option" style="cursor: default;">
-                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
-                    <span>基础信息（人口、户型、预算）</span>
-                </div>
-                <div class="option" style="cursor: default;">
-                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
-                    <span>餐厨茶饮（烹饪、用餐、喝茶饮酒）</span>
-                </div>
-                <div class="option" style="cursor: default;">
-                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
-                    <span>卫浴漱妆（洗漱、如厕、沐浴）</span>
-                </div>
-                <div class="option" style="cursor: default;">
-                    <div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div>
-                    <span>健康睡眠（遮光、隔音、伴侣动线）</span>
-                </div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>基础信息（人口、户型、预算）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>餐厨茶饮（烹饪、用餐、茶酒）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>卫浴漱妆（洗漱、如厕、沐浴）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>健康睡眠（遮光、隔音、伴侣动线）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>衣物洗护（换洗、晾晒、衣柜收纳）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>智慧收纳（囤货、杂物、换季）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>学习成长（居家办公、亲子共学）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>家庭健身（瑜伽、器械、有氧）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>居家娱乐（观影、游戏、聚会）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>环境优化（水、空气、温湿度）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>特殊生活（孕产/养老/宠物/户外/二次元）</span></div>
             </div>
         </div>
         <div class="btn-group">
@@ -384,6 +379,19 @@
                 <label class="option"><input type="radio" name="type" value="毛坯" onchange="selectOption(this)"><span class="option-check"></span><span>毛坯新房</span></label>
                 <label class="option"><input type="radio" name="type" value="二手房翻新" onchange="selectOption(this)"><span class="option-check"></span><span>二手房整体翻新</span></label>
                 <label class="option"><input type="radio" name="type" value="局部改造" onchange="selectOption(this)"><span class="option-check"></span><span>局部改造（厨卫/墙面等）</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-tags">
+            <div class="question-label">家里是否有以下特殊情况？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="tags" value="备孕/孕期" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>备孕/孕期</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="0-3岁婴儿" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>0-3岁婴儿</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="老人" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>65岁以上老人同住</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="宠物" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>养宠物</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="户外" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>户外/露营/骑行装备多</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="二次元" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>手办/藏品/二次元</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="无" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>以上都没有</span></label>
             </div>
         </div>
 
@@ -877,6 +885,391 @@
 
         <div class="btn-group">
             <button class="btn btn-secondary" onclick="goTo('bathroom')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('laundry')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 衣物洗护 -->
+    <div class="step" id="step-laundry">
+        <h2>衣物洗护</h2>
+        <p class="subtitle">从脏衣到净衣，动线决定了家务量。</p>
+
+        <div class="question" id="q-l-dirty">
+            <div class="question-label">换下来的脏衣服一般扔在哪？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="l_dirty" value="脏衣篮" onchange="selectOption(this)"><span class="option-check"></span><span>固定脏衣篮</span></label>
+                <label class="option"><input type="radio" name="l_dirty" value="椅子沙发" onchange="selectOption(this)"><span class="option-check"></span><span>椅子/沙发/床上</span></label>
+                <label class="option"><input type="radio" name="l_dirty" value="卫生间" onchange="selectOption(this)"><span class="option-check"></span><span>直接扔卫生间</span></label>
+                <label class="option"><input type="radio" name="l_dirty" value="地上" onchange="selectOption(this)"><span class="option-check"></span><span>随手放地上</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-l-method">
+            <div class="question-label">家里怎么洗衣服？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="l_method" value="手洗" onchange="selectOption(this)"><span class="option-check"></span><span>基本手洗</span></label>
+                <label class="option"><input type="radio" name="l_method" value="洗衣机" onchange="selectOption(this)"><span class="option-check"></span><span>洗衣机</span></label>
+                <label class="option"><input type="radio" name="l_method" value="洗烘套装" onchange="selectOption(this)"><span class="option-check"></span><span>洗烘套装/一体机</span></label>
+                <label class="option"><input type="radio" name="l_method" value="送洗" onchange="selectOption(this)"><span class="option-check"></span><span>高端衣物送洗</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-l-dry">
+            <div class="question-label">洗完在哪晾晒/烘干？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="l_dry" value="阳台" onchange="selectOption(this)"><span class="option-check"></span><span>阳台晾晒</span></label>
+                <label class="option"><input type="radio" name="l_dry" value="烘干机" onchange="selectOption(this)"><span class="option-check"></span><span>烘干机烘干</span></label>
+                <label class="option"><input type="radio" name="l_dry" value="客厅" onchange="selectOption(this)"><span class="option-check"></span><span>客厅/卧室临时晾</span></label>
+                <label class="option"><input type="radio" name="l_dry" value="卫生间" onchange="selectOption(this)"><span class="option-check"></span><span>卫生间阴干</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-l-wardrobe">
+            <div class="question-label">衣柜现在最大的痛点？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="不够挂" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>挂衣区不够，衣服堆叠</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>找不到衣服，翻来翻去</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="换季麻烦" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>换季收纳麻烦</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="放不下" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>总容量不够，塞不下</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-l-ironing">
+            <div class="question-label">有熨烫/护理衣物的需求吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="l_ironing" value="每天" onchange="selectOption(this)"><span class="option-check"></span><span>每天熨，需要熨衣板</span></label>
+                <label class="option"><input type="radio" name="l_ironing" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔需要</span></label>
+                <label class="option"><input type="radio" name="l_ironing" value="挂烫" onchange="selectOption(this)"><span class="option-check"></span><span>用挂烫机</span></label>
+                <label class="option"><input type="radio" name="l_ironing" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('sleep')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('storage')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 智慧收纳 -->
+    <div class="step" id="step-storage">
+        <h2>智慧收纳</h2>
+        <p class="subtitle">80%藏，20%露，让家既好用又好看。</p>
+
+        <div class="question" id="q-s-hoard">
+            <div class="question-label">家里有囤货习惯吗？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="s_hoard" value="纸巾洗护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>纸巾、洗护用品大量囤</span></label>
+                <label class="option"><input type="checkbox" name="s_hoard" value="粮油" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>粮油、调料囤货</span></label>
+                <label class="option"><input type="checkbox" name="s_hoard" value="不囤" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>随用随买，不囤</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-misc">
+            <div class="question-label">杂物（工具、药品、文具）平时收在哪？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_misc" value="抽屉" onchange="selectOption(this)"><span class="option-check"></span><span>分门别类收抽屉</span></label>
+                <label class="option"><input type="radio" name="s_misc" value="柜子" onchange="selectOption(this)"><span class="option-check"></span><span>统一收柜子里</span></label>
+                <label class="option"><input type="radio" name="s_misc" value="找不到" onchange="selectOption(this)"><span class="option-check"></span><span>经常找不到</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-season">
+            <div class="question-label">换季物品（被子、行李箱）放哪？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_season" value="床底" onchange="selectOption(this)"><span class="option-check"></span><span>床底/沙发底</span></label>
+                <label class="option"><input type="radio" name="s_season" value="衣柜顶" onchange="selectOption(this)"><span class="option-check"></span><span>衣柜顶</span></label>
+                <label class="option"><input type="radio" name="s_season" value="阳台" onchange="selectOption(this)"><span class="option-check"></span><span>阳台/角落堆着</span></label>
+                <label class="option"><input type="radio" name="s_season" value="储藏室" onchange="selectOption(this)"><span class="option-check"></span><span>有独立储藏室</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-entry">
+            <div class="question-label">进门后的包、钥匙、口罩有固定位置吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_entry" value="有" onchange="selectOption(this)"><span class="option-check"></span><span>有固定位置，不乱</span></label>
+                <label class="option"><input type="radio" name="s_entry" value="没有" onchange="selectOption(this)"><span class="option-check"></span><span>没有，随手乱放</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-style">
+            <div class="question-label">希望家里看起来是？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="s_style" value="空无一物" onchange="selectOption(this)"><span class="option-check"></span><span>空无一物，极简</span></label>
+                <label class="option"><input type="radio" name="s_style" value="温馨" onchange="selectOption(this)"><span class="option-check"></span><span>温馨有生活气息</span></label>
+                <label class="option"><input type="radio" name="s_style" value="无所谓" onchange="selectOption(this)"><span class="option-check"></span><span>无所谓，实用就行</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('laundry')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('learning')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 学习成长 -->
+    <div class="step" id="step-learning">
+        <h2>学习成长</h2>
+        <p class="subtitle">专注环境和亲子共学，决定效率。</p>
+
+        <div class="question" id="q-w-home">
+            <div class="question-label">家里有人需要在家办公/上网课吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="w_home" value="每天" onchange="selectOption(this)"><span class="option-check"></span><span>每天长时间居家办公</span></label>
+                <label class="option"><input type="radio" name="w_home" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔居家办公/网课</span></label>
+                <label class="option"><input type="radio" name="w_home" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-w-quiet">
+            <div class="question-label">工作/学习时需要安静独立空间吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="w_quiet" value="必须" onchange="selectOption(this)"><span class="option-check"></span><span>必须关门独处</span></label>
+                <label class="option"><input type="radio" name="w_quiet" value="无所谓" onchange="selectOption(this)"><span class="option-check"></span><span>无所谓，有点声音也行</span></label>
+                <label class="option"><input type="radio" name="w_quiet" value="喜欢陪" onchange="selectOption(this)"><span class="option-check"></span><span>喜欢有人在旁边</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-w-kids">
+            <div class="question-label">家里有孩子需要写作业、阅读区吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="w_kids" value="需要" onchange="selectOption(this)"><span class="option-check"></span><span>需要独立学习区</span></label>
+                <label class="option"><input type="radio" name="w_kids" value="共学" onchange="selectOption(this)"><span class="option-check"></span><span>需要亲子共学大桌</span></label>
+                <label class="option"><input type="radio" name="w_kids" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-w-books">
+            <div class="question-label">书籍、文件多吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="w_books" value="很多" onchange="selectOption(this)"><span class="option-check"></span><span>很多，需要大书柜</span></label>
+                <label class="option"><input type="radio" name="w_books" value="一般" onchange="selectOption(this)"><span class="option-check"></span><span>一般量</span></label>
+                <label class="option"><input type="radio" name="w_books" value="少" onchange="selectOption(this)"><span class="option-check"></span><span>很少，基本电子</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('storage')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('fitness')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 家庭健身 -->
+    <div class="step" id="step-fitness">
+        <h2>家庭健身</h2>
+        <p class="subtitle">把运动融入日常，而不是专门去健身房。</p>
+
+        <div class="question" id="q-f-habit">
+            <div class="question-label">平时有在家锻炼的习惯吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="f_habit" value="每天" onchange="selectOption(this)"><span class="option-check"></span><span>每天锻炼</span></label>
+                <label class="option"><input type="radio" name="f_habit" value="每周" onchange="selectOption(this)"><span class="option-check"></span><span>每周几次</span></label>
+                <label class="option"><input type="radio" name="f_habit" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔</span></label>
+                <label class="option"><input type="radio" name="f_habit" value="没有" onchange="selectOption(this)"><span class="option-check"></span><span>没有</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-f-type">
+            <div class="question-label">主要做什么运动？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="f_type" value="瑜伽" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>瑜伽/拉伸</span></label>
+                <label class="option"><input type="checkbox" name="f_type" value="力量" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>力量训练（哑铃/器械）</span></label>
+                <label class="option"><input type="checkbox" name="f_type" value="有氧" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有氧（跳绳/跟练视频）</span></label>
+                <label class="option"><input type="checkbox" name="f_type" value="跑步" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>跑步机/划船机</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-f-mirror">
+            <div class="question-label">健身时希望有全身镜吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="f_mirror" value="需要" onchange="selectOption(this)"><span class="option-check"></span><span>需要，纠正动作</span></label>
+                <label class="option"><input type="radio" name="f_mirror" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-f-shower">
+            <div class="question-label">健身后在哪洗澡/换衣服？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="f_shower" value="就近" onchange="selectOption(this)"><span class="option-check"></span><span>就近卫生间</span></label>
+                <label class="option"><input type="radio" name="f_shower" value="回卧室" onchange="selectOption(this)"><span class="option-check"></span><span>回卧室换</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('learning')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('entertainment')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 居家娱乐 -->
+    <div class="step" id="step-entertainment">
+        <h2>居家娱乐</h2>
+        <p class="subtitle">家是电影院、电竞房，也是社交场。</p>
+
+        <div class="question" id="q-e-living">
+            <div class="question-label">客厅主要用来做什么？（多选）</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="e_living" value="看电视" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>看电视/追剧</span></label>
+                <label class="option"><input type="checkbox" name="e_living" value="会客" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>会客/聊天</span></label>
+                <label class="option"><input type="checkbox" name="e_living" value="亲子" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>亲子活动</span></label>
+                <label class="option"><input type="checkbox" name="e_living" value="闲置" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本闲置/堆放杂物</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-e-movie">
+            <div class="question-label">有家庭影院或大屏观影需求吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="e_movie" value="投影" onchange="selectOption(this)"><span class="option-check"></span><span>想要投影/激光电视</span></label>
+                <label class="option"><input type="radio" name="e_movie" value="大电视" onchange="selectOption(this)"><span class="option-check"></span><span>大电视即可</span></label>
+                <label class="option"><input type="radio" name="e_movie" value="无所谓" onchange="selectOption(this)"><span class="option-check"></span><span>无所谓</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-e-game">
+            <div class="question-label">有打游戏的需求吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="e_game" value="主机" onchange="selectOption(this)"><span class="option-check"></span><span>主机游戏（PS/Switch/Xbox）</span></label>
+                <label class="option"><input type="radio" name="e_game" value="电竞" onchange="selectOption(this)"><span class="option-check"></span><span>PC电竞</span></label>
+                <label class="option"><input type="radio" name="e_game" value="手游" onchange="selectOption(this)"><span class="option-check"></span><span>手游/休闲</span></label>
+                <label class="option"><input type="radio" name="e_game" value="不玩" onchange="selectOption(this)"><span class="option-check"></span><span>不玩游戏</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-e-guest">
+            <div class="question-label">周末朋友来家里聚会多吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="e_guest" value="多" onchange="selectOption(this)"><span class="option-check"></span><span>经常，需要大客厅</span></label>
+                <label class="option"><input type="radio" name="e_guest" value="偶尔" onchange="selectOption(this)"><span class="option-check"></span><span>偶尔</span></label>
+                <label class="option"><input type="radio" name="e_guest" value="从不" onchange="selectOption(this)"><span class="option-check"></span><span>很少在家招待</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-e-show">
+            <div class="question-label">有手办、藏品需要展示吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="e_show" value="有" onchange="selectOption(this)"><span class="option-check"></span><span>有，需要展示柜</span></label>
+                <label class="option"><input type="radio" name="e_show" value="没有" onchange="selectOption(this)"><span class="option-check"></span><span>没有</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('fitness')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('environment')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 环境优化 -->
+    <div class="step" id="step-environment">
+        <h2>环境优化</h2>
+        <p class="subtitle">水、空气、声光，决定家的底层舒适度。</p>
+
+        <div class="question" id="q-env-water">
+            <div class="question-label">对现在自来水水质满意吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="env_water" value="异味" onchange="selectOption(this)"><span class="option-check"></span><span>有异味/氯味重</span></label>
+                <label class="option"><input type="radio" name="env_water" value="水垢" onchange="selectOption(this)"><span class="option-check"></span><span>水垢严重</span></label>
+                <label class="option"><input type="radio" name="env_water" value="满意" onchange="selectOption(this)"><span class="option-check"></span><span>满意</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-env-air">
+            <div class="question-label">家里空气质量如何？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="env_air" value="雾霾" onchange="selectOption(this)"><span class="option-check"></span><span>雾霾/灰尘大</span></label>
+                <label class="option"><input type="radio" name="env_air" value="异味" onchange="selectOption(this)"><span class="option-check"></span><span>有装修味/油烟味</span></label>
+                <label class="option"><input type="radio" name="env_air" value="花粉" onchange="selectOption(this)"><span class="option-check"></span><span>花粉/过敏</span></label>
+                <label class="option"><input type="radio" name="env_air" value="满意" onchange="selectOption(this)"><span class="option-check"></span><span>满意</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-env-heat">
+            <div class="question-label">冬天怎么取暖？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="env_heat" value="地暖" onchange="selectOption(this)"><span class="option-check"></span><span>地暖</span></label>
+                <label class="option"><input type="radio" name="env_heat" value="暖气片" onchange="selectOption(this)"><span class="option-check"></span><span>暖气片</span></label>
+                <label class="option"><input type="radio" name="env_heat" value="空调" onchange="selectOption(this)"><span class="option-check"></span><span>空调</span></label>
+                <label class="option"><input type="radio" name="env_heat" value="没有" onchange="selectOption(this)"><span class="option-check"></span><span>没有集中取暖</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-env-smart">
+            <div class="question-label">希望实现全屋智能控制吗？</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="env_smart" value="必须" onchange="selectOption(this)"><span class="option-check"></span><span>必须，灯光/窗帘/空调全智能</span></label>
+                <label class="option"><input type="radio" name="env_smart" value="部分" onchange="selectOption(this)"><span class="option-check"></span><span>部分智能即可</span></label>
+                <label class="option"><input type="radio" name="env_smart" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要</span></label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('entertainment')">返回</button>
+            <button class="btn btn-primary" onclick="goTo('special')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 特殊生活 -->
+    <div class="step" id="step-special">
+        <h2>特殊生活</h2>
+        <p class="subtitle">孕产、养老、宠物、户外、二次元——这些不是刚需，却是生活的点睛之笔。</p>
+
+        <div id="special-pregnancy" class="hidden">
+            <div class="question" id="q-sp-nursery">
+                <div class="question-label">需要规划婴儿房或尿布台区域吗？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="sp_nursery" value="独立房间" onchange="selectOption(this)"><span class="option-check"></span><span>需要独立婴儿房</span></label>
+                    <label class="option"><input type="radio" name="sp_nursery" value="主卧角落" onchange="selectOption(this)"><span class="option-check"></span><span>主卧内规划角落即可</span></label>
+                    <label class="option"><input type="radio" name="sp_nursery" value="暂不需要" onchange="selectOption(this)"><span class="option-check"></span><span>暂不需要</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="special-elderly" class="hidden">
+            <div class="question" id="q-sp-old-safe">
+                <div class="question-label">老人居住最需要什么安全措施？（多选）</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="防滑" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>卫生间防滑</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="扶手" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>马桶/淋浴扶手</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="呼救" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>紧急呼救按钮</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="夜灯" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>起夜感应灯</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="special-pet" class="hidden">
+            <div class="question" id="q-sp-pet">
+                <div class="question-label">养什么宠物？需要什么设施？（多选）</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_pet" value="猫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>猫（猫爬架/猫砂盆区）</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="狗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>狗（活动空间/狗窝）</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="其他" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>其他（鱼/鸟/爬宠）</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="防护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台防护网/防逃</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="special-outdoor" class="hidden">
+            <div class="question" id="q-sp-outdoor">
+                <div class="question-label">户外装备大概有多少？需要专门收纳区吗？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="sp_outdoor" value="多" onchange="selectOption(this)"><span class="option-check"></span><span>很多（帐篷/骑行/滑雪）</span></label>
+                    <label class="option"><input type="radio" name="sp_outdoor" value="少" onchange="selectOption(this)"><span class="option-check"></span><span>少量</span></label>
+                    <label class="option"><input type="radio" name="sp_outdoor" value="不需要" onchange="selectOption(this)"><span class="option-check"></span><span>不需要专门区域</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="special-acg" class="hidden">
+            <div class="question" id="q-sp-acg">
+                <div class="question-label">二次元/藏品需要什么展示或收纳？</div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="sp_acg" value="展示柜" onchange="selectOption(this)"><span class="option-check"></span><span>防尘玻璃展示柜</span></label>
+                    <label class="option"><input type="radio" name="sp_acg" value="电竞房" onchange="selectOption(this)"><span class="option-check"></span><span>独立电竞/手办房</span></label>
+                    <label class="option"><input type="radio" name="sp_acg" value="墙面" onchange="selectOption(this)"><span class="option-check"></span><span>漫画/海报墙</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('environment')">返回</button>
             <button class="btn btn-primary" onclick="generateReport()">生成需求画像</button>
         </div>
     </div>
@@ -898,10 +1291,17 @@ const state = {
     basic: {},
     kitchen: {},
     bathroom: {},
-    sleep: {}
+    sleep: {},
+    laundry: {},
+    storage: {},
+    learning: {},
+    fitness: {},
+    entertainment: {},
+    environment: {},
+    special: {}
 };
 
-const steps = ['welcome', 'basic', 'kitchen', 'bathroom', 'sleep', 'report'];
+const steps = ['welcome', 'basic', 'kitchen', 'bathroom', 'sleep', 'laundry', 'storage', 'learning', 'fitness', 'entertainment', 'environment', 'special', 'report'];
 
 function updateProgress(step) {
     const idx = steps.indexOf(step);
@@ -914,6 +1314,7 @@ function goTo(step) {
     document.getElementById('step-' + step).classList.add('active');
     updateProgress(step);
     window.scrollTo(0, 0);
+    if (step === 'special') checkSpecialFlow();
 }
 
 function selectOption(el) {
@@ -944,9 +1345,25 @@ function getCurrentModule() {
             if (s === 'kitchen') return 'kitchen';
             if (s === 'bathroom') return 'bathroom';
             if (s === 'sleep') return 'sleep';
+            if (s === 'laundry') return 'laundry';
+            if (s === 'storage') return 'storage';
+            if (s === 'learning') return 'learning';
+            if (s === 'fitness') return 'fitness';
+            if (s === 'entertainment') return 'entertainment';
+            if (s === 'environment') return 'environment';
+            if (s === 'special') return 'special';
         }
     }
     return 'basic';
+}
+
+function checkSpecialFlow() {
+    const tags = state.basic.tags || [];
+    document.getElementById('special-pregnancy').classList.toggle('hidden', !(tags.includes('备孕/孕期') || tags.includes('0-3岁婴儿')));
+    document.getElementById('special-elderly').classList.toggle('hidden', !tags.includes('老人'));
+    document.getElementById('special-pet').classList.toggle('hidden', !tags.includes('宠物'));
+    document.getElementById('special-outdoor').classList.toggle('hidden', !tags.includes('户外'));
+    document.getElementById('special-acg').classList.toggle('hidden', !tags.includes('二次元'));
 }
 
 function checkKitchenFlow() {
@@ -1063,6 +1480,13 @@ function generateReport() {
             kitchen: state.kitchen,
             bathroom: state.bathroom,
             sleep: state.sleep,
+            laundry: state.laundry,
+            storage: state.storage,
+            learning: state.learning,
+            fitness: state.fitness,
+            entertainment: state.entertainment,
+            environment: state.environment,
+            special: state.special,
             report: r
         })
     })
@@ -1096,6 +1520,13 @@ function analyzeData() {
     const k = state.kitchen;
     const ba = state.bathroom;
     const s = state.sleep;
+    const la = state.laundry;
+    const st = state.storage;
+    const le = state.learning;
+    const f = state.fitness;
+    const e = state.entertainment;
+    const env = state.environment;
+    const sp = state.special;
 
     const result = {
         basic: b,
@@ -1137,6 +1568,67 @@ function analyzeData() {
         result.scenes.minor.push('健康睡眠');
     }
 
+    // 场景分级 - 衣物洗护
+    const lPain = (la.l_dirty === '椅子沙发' || la.l_dirty === '地上') || (la.l_wardrobe && la.l_wardrobe.length > 0) || (la.l_method === '手洗');
+    if (lPain) {
+        result.scenes.core.push('衣物洗护');
+    } else if (la.l_method === '洗烘套装' && la.l_dry === '烘干机') {
+        result.scenes.minor.push('衣物洗护');
+    } else {
+        result.scenes.minor.push('衣物洗护');
+    }
+
+    // 场景分级 - 智慧收纳
+    const sPainSt = (st.s_misc === '找不到') || (st.s_hoard && st.s_hoard.length > 0 && !st.s_hoard.includes('不囤')) || (st.s_entry === '没有');
+    if (sPainSt) {
+        result.scenes.core.push('智慧收纳');
+    } else {
+        result.scenes.minor.push('智慧收纳');
+    }
+
+    // 场景分级 - 学习成长
+    if (le.w_home === '每天' || le.w_quiet === '必须') {
+        result.scenes.core.push('学习成长');
+    } else if (le.w_home === '偶尔' || le.w_kids === '需要' || le.w_kids === '共学') {
+        result.scenes.minor.push('学习成长');
+    } else {
+        result.scenes.none.push('学习成长');
+    }
+
+    // 场景分级 - 家庭健身
+    if (f.f_habit === '每天' || f.f_habit === '每周') {
+        result.scenes.minor.push('家庭健身');
+    } else {
+        result.scenes.none.push('家庭健身');
+    }
+
+    // 场景分级 - 居家娱乐
+    if (e.e_movie === '投影' || e.e_game === '电竞' || e.e_game === '主机' || e.e_guest === '多') {
+        result.scenes.minor.push('居家娱乐');
+    } else if (e.e_living && e.e_living.includes('闲置')) {
+        result.scenes.none.push('居家娱乐');
+    } else {
+        result.scenes.minor.push('居家娱乐');
+    }
+
+    // 场景分级 - 环境优化
+    const envPain = (env.env_water === '异味' || env.env_water === '水垢') || (env.env_air !== '满意') || (env.env_heat === '没有') || (env.env_smart === '必须');
+    if (envPain) {
+        result.scenes.core.push('环境优化');
+    } else if (env.env_smart === '部分') {
+        result.scenes.minor.push('环境优化');
+    } else {
+        result.scenes.minor.push('环境优化');
+    }
+
+    // 场景分级 - 特殊生活
+    const tags = b.tags || [];
+    if (tags.length > 0 && !tags.includes('无')) {
+        result.scenes.minor.push('特殊生活');
+    } else {
+        result.scenes.none.push('特殊生活');
+    }
+
     // 痛点 - 餐厨
     if (k.k_oil === '会') result.pains.push({ scene: '餐厨茶饮', text: '油烟扩散至客餐厅，身上有油烟味' });
     if (k.k_board === '是') result.pains.push({ scene: '餐厨茶饮', text: '备菜区台面不足，切菜没地方' });
@@ -1161,6 +1653,34 @@ function analyzeData() {
     if (s.s_partner === '我浅眠') result.pains.push({ scene: '健康睡眠', text: '浅眠，易被伴侣动作惊醒' });
     if (s.s_night === '起夜摸黑') result.pains.push({ scene: '健康睡眠', text: '起夜无照明，摸黑行走或开大灯刺眼' });
     if (s.s_ac === '会') result.pains.push({ scene: '健康睡眠', text: '空调冷风直吹，睡觉不舒服' });
+
+    // 痛点 - 衣物洗护
+    if (la.l_dirty === '椅子沙发' || la.l_dirty === '地上') result.pains.push({ scene: '衣物洗护', text: '脏衣无处安放，随手乱放' });
+    if (la.l_wardrobe && la.l_wardrobe.includes('不够挂')) result.pains.push({ scene: '衣物洗护', text: '衣柜挂区不足，衣服堆叠易皱' });
+    if (la.l_wardrobe && la.l_wardrobe.includes('找不到')) result.pains.push({ scene: '衣物洗护', text: '衣物找不到，翻来翻去' });
+    if (la.l_dry === '客厅') result.pains.push({ scene: '衣物洗护', text: '客厅/卧室临时晾晒，影响美观' });
+
+    // 痛点 - 智慧收纳
+    if (st.s_misc === '找不到') result.pains.push({ scene: '智慧收纳', text: '杂物找不到，收纳混乱' });
+    if (st.s_entry === '没有') result.pains.push({ scene: '智慧收纳', text: '进门物品（包/钥匙/口罩）无处安放' });
+    if (st.s_season === '阳台') result.pains.push({ scene: '智慧收纳', text: '换季物品堆在阳台/角落，杂乱' });
+
+    // 痛点 - 学习成长
+    if (le.w_home === '每天' && le.w_quiet === '必须') result.pains.push({ scene: '学习成长', text: '居家办公需要独立安静空间，当前不满足' });
+    if (le.w_kids === '需要' || le.w_kids === '共学') result.pains.push({ scene: '学习成长', text: '孩子学习区未规划，影响专注力' });
+
+    // 痛点 - 家庭健身
+    if (f.f_habit === '每天' && (!f.f_type || f.f_type.length === 0)) result.pains.push({ scene: '家庭健身', text: '有健身习惯但无专属空间/器材收纳' });
+
+    // 痛点 - 居家娱乐
+    if (e.e_living && e.e_living.includes('闲置')) result.pains.push({ scene: '居家娱乐', text: '客厅闲置浪费，未充分利用' });
+
+    // 痛点 - 环境优化
+    if (env.env_water === '异味') result.pains.push({ scene: '环境优化', text: '自来水有异味，影响饮用和洗漱' });
+    if (env.env_water === '水垢') result.pains.push({ scene: '环境优化', text: '水垢严重，龙头/花洒易堵塞' });
+    if (env.env_air === '雾霾') result.pains.push({ scene: '环境优化', text: '室外雾霾/灰尘大，室内空气质量差' });
+    if (env.env_air === '异味') result.pains.push({ scene: '环境优化', text: '室内有装修味/油烟残留' });
+    if (env.env_heat === '没有') result.pains.push({ scene: '环境优化', text: '冬季无集中取暖，室内寒冷' });
 
     // 设计参数 - 餐厨
     if (k.k_style && k.k_style.includes('中式爆炒')) result.params.push({ scene: '餐厨茶饮', item: '大吸力油烟机（≥20m³/min）', level: '必须有' });
@@ -1197,6 +1717,64 @@ function analyzeData() {
     if (s.s_posture === '仰睡') result.params.push({ scene: '健康睡眠', item: '中低枕（仰睡支撑）', level: '最好有' });
     if (s.s_ac === '会') result.params.push({ scene: '健康睡眠', item: '空调防直吹挡风板/改变安装位置', level: '最好有' });
 
+    // 设计参数 - 衣物洗护
+    if (la.l_method === '洗烘套装') result.params.push({ scene: '衣物洗护', item: '洗烘套装位（上下叠放/并排）', level: '必须有' });
+    if (la.l_dry === '阳台') result.params.push({ scene: '衣物洗护', item: '隐藏式晾衣架/烘干晾衣两用', level: '最好有' });
+    if (la.l_ironing === '每天') result.params.push({ scene: '衣物洗护', item: '熨烫板收纳位', level: '必须有' });
+    if (la.l_wardrobe && la.l_wardrobe.includes('不够挂')) result.params.push({ scene: '衣物洗护', item: '增加挂衣杆/衣帽间', level: '必须有' });
+    if (la.l_wardrobe && la.l_wardrobe.includes('换季麻烦')) result.params.push({ scene: '衣物洗护', item: '百纳箱/真空压缩收纳区', level: '最好有' });
+
+    // 设计参数 - 智慧收纳
+    if (st.s_hoard && st.s_hoard.includes('纸巾洗护')) result.params.push({ scene: '智慧收纳', item: '囤货储物间/高柜', level: '必须有' });
+    if (st.s_misc === '找不到') result.params.push({ scene: '智慧收纳', item: '全屋标签收纳系统', level: '最好有' });
+    if (st.s_entry === '没有') result.params.push({ scene: '智慧收纳', item: '玄关钥匙/包/口罩收纳墙', level: '必须有' });
+    if (st.s_season === '床底') result.params.push({ scene: '智慧收纳', item: '液压高箱床/床底收纳盒', level: '最好有' });
+    if (st.s_style === '空无一物') result.params.push({ scene: '智慧收纳', item: '嵌入式通顶柜（80%藏）', level: '必须有' });
+
+    // 设计参数 - 学习成长
+    if (le.w_home === '每天') result.params.push({ scene: '学习成长', item: '独立书房/办公区（≥1.4m书桌）', level: '必须有' });
+    if (le.w_quiet === '必须') result.params.push({ scene: '学习成长', item: '书房隔音门/静音条', level: '最好有' });
+    if (le.w_kids === '需要') result.params.push({ scene: '学习成长', item: '儿童学习桌+护眼灯', level: '必须有' });
+    if (le.w_kids === '共学') result.params.push({ scene: '学习成长', item: '亲子共学大桌（≥1.6m）', level: '必须有' });
+    if (le.w_books === '很多') result.params.push({ scene: '学习成长', item: '整墙书柜/开放格', level: '必须有' });
+
+    // 设计参数 - 家庭健身
+    if (f.f_habit === '每天' || f.f_habit === '每周') {
+        if (f.f_type && f.f_type.includes('瑜伽')) result.params.push({ scene: '家庭健身', item: '瑜伽垫区+镜面墙', level: '必须有' });
+        if (f.f_type && f.f_type.includes('力量')) result.params.push({ scene: '家庭健身', item: '力量器械收纳角+地胶', level: '必须有' });
+        if (f.f_type && f.f_type.includes('有氧')) result.params.push({ scene: '家庭健身', item: '跳绳/跟练活动区（≥2m×1.5m）', level: '必须有' });
+        if (f.f_type && f.f_type.includes('跑步')) result.params.push({ scene: '家庭健身', item: '跑步机/划船机位+减震垫', level: '必须有' });
+    }
+    if (f.f_mirror === '需要') result.params.push({ scene: '家庭健身', item: '全身镜', level: '最好有' });
+    if (f.f_shower === '就近') result.params.push({ scene: '家庭健身', item: '健身区就近卫生间', level: '最好有' });
+
+    // 设计参数 - 居家娱乐
+    if (e.e_movie === '投影') result.params.push({ scene: '居家娱乐', item: '投影幕布位+遮光窗帘', level: '必须有' });
+    if (e.e_game === '电竞') result.params.push({ scene: '居家娱乐', item: '电竞桌+人体工学椅+RGB灯', level: '必须有' });
+    if (e.e_game === '主机') result.params.push({ scene: '居家娱乐', item: '主机游戏区+电视/显示器', level: '最好有' });
+    if (e.e_guest === '多') result.params.push({ scene: '居家娱乐', item: '可移动/组合沙发', level: '最好有' });
+    if (e.e_show === '有') result.params.push({ scene: '居家娱乐', item: '玻璃展示柜+内置灯带', level: '必须有' });
+
+    // 设计参数 - 环境优化
+    if (env.env_water === '异味' || env.env_water === '水垢') result.params.push({ scene: '环境优化', item: '全屋净水+软水机', level: '必须有' });
+    if (env.env_air !== '满意') result.params.push({ scene: '环境优化', item: '新风系统/空气净化器位', level: '最好有' });
+    if (env.env_heat === '没有') result.params.push({ scene: '环境优化', item: '地暖/暖气片改造', level: '必须有' });
+    if (env.env_smart === '必须') result.params.push({ scene: '环境优化', item: '全屋智能中枢（灯光/窗帘/空调）', level: '必须有' });
+    if (env.env_smart === '部分') result.params.push({ scene: '环境优化', item: '部分智能（智能开关/窗帘电机）', level: '最好有' });
+
+    // 设计参数 - 特殊生活
+    if (sp.sp_nursery === '独立房间') result.params.push({ scene: '特殊生活', item: '婴儿房（环保材料+监控位）', level: '必须有' });
+    if (sp.sp_nursery === '主卧角落') result.params.push({ scene: '特殊生活', item: '主卧尿布台/婴儿床区', level: '必须有' });
+    if (sp.sp_old_safe && sp.sp_old_safe.includes('防滑')) result.params.push({ scene: '特殊生活', item: '防滑地砖+淋浴防滑垫', level: '必须有' });
+    if (sp.sp_old_safe && sp.sp_old_safe.includes('扶手')) result.params.push({ scene: '特殊生活', item: '马桶/淋浴扶手', level: '必须有' });
+    if (sp.sp_old_safe && sp.sp_old_safe.includes('呼救')) result.params.push({ scene: '特殊生活', item: '紧急呼救按钮', level: '最好有' });
+    if (sp.sp_pet && sp.sp_pet.includes('猫')) result.params.push({ scene: '特殊生活', item: '猫爬架区+猫砂盆隐藏位', level: '必须有' });
+    if (sp.sp_pet && sp.sp_pet.includes('狗')) result.params.push({ scene: '特殊生活', item: '狗窝区+易清洁地面', level: '必须有' });
+    if (sp.sp_pet && sp.sp_pet.includes('防护')) result.params.push({ scene: '特殊生活', item: '阳台防护网/金刚网纱窗', level: '必须有' });
+    if (sp.sp_outdoor === '多') result.params.push({ scene: '特殊生活', item: '户外装备柜（帐篷/骑行/滑雪）', level: '必须有' });
+    if (sp.sp_acg === '展示柜') result.params.push({ scene: '特殊生活', item: '手办防尘玻璃柜', level: '必须有' });
+    if (sp.sp_acg === '电竞房') result.params.push({ scene: '特殊生活', item: '电竞房/手办房', level: '必须有' });
+
     // 特殊约束
     if (b.structure && b.structure.includes('0-3岁婴儿')) {
         result.constraints.push({ type: '安全', desc: '0-3岁婴儿：家具圆角防撞、插座防误触、防夹手门' });
@@ -1206,6 +1784,15 @@ function analyzeData() {
     }
     if (ba.b_old === '需要' || ba.b_old === '暂无') {
         result.constraints.push({ type: '安全', desc: '如厕辅助：马桶旁预留扶手安装位' });
+    }
+    if (tags.includes('备孕/孕期') || tags.includes('0-3岁婴儿')) {
+        result.constraints.push({ type: '环保', desc: '孕婴家庭：ENF级环保板材、低甲醛涂料、无尖角家具' });
+    }
+    if (tags.includes('老人')) {
+        result.constraints.push({ type: '动线', desc: '养老守护：地面无高差、通道≥900mm、紧急呼叫' });
+    }
+    if (tags.includes('宠物')) {
+        result.constraints.push({ type: '耐久', desc: '宠物家庭：耐抓地板/沙发、易清洁墙面、防逃门窗' });
     }
 
     // 种草待确认
@@ -1247,6 +1834,21 @@ function analyzeData() {
     }
     if (s.s_bed === '偏软') {
         result.seeds.push({ item: '棕垫/硬弹簧床垫', reason: '提供足够支撑，避免腰部塌陷' });
+    }
+    if (la.l_method === '手洗' || la.l_ironing === '每天') {
+        result.seeds.push({ item: '家政柜/洗衣柜', reason: '集中洗护用品和工具，提升效率' });
+    }
+    if (st.s_entry === '没有') {
+        result.seeds.push({ item: '玄关置物架+钥匙挂钩', reason: '进门物品各归其位' });
+    }
+    if (le.w_home === '每天') {
+        result.seeds.push({ item: '升降桌+工学椅', reason: '长时间办公保护颈椎腰椎' });
+    }
+    if (env.env_smart === '必须') {
+        result.seeds.push({ item: '全屋智能套装', reason: '一键控制灯光/窗帘/空调' });
+    }
+    if (env.env_water === '水垢') {
+        result.seeds.push({ item: '软水机', reason: '去除水垢，保护皮肤和龙头' });
     }
 
     return result;
