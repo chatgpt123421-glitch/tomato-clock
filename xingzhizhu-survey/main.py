@@ -113,24 +113,27 @@ async def index():
 async def submit_survey(request: Request):
     data = await request.json()
 
-    for field in ["basic", "kitchen", "bathroom", "sleep", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special", "report"]:
+    for field in ["basic", "report"]:
         if field not in data:
             return JSONResponse(
                 {"code": 400, "message": f"缺少字段: {field}"}, status_code=400
             )
 
-    basic_json = json.dumps(data["basic"], ensure_ascii=False)
-    kitchen_json = json.dumps(data["kitchen"], ensure_ascii=False)
-    bathroom_json = json.dumps(data["bathroom"], ensure_ascii=False)
-    sleep_json = json.dumps(data["sleep"], ensure_ascii=False)
-    laundry_json = json.dumps(data["laundry"], ensure_ascii=False)
-    storage_json = json.dumps(data["storage"], ensure_ascii=False)
-    learning_json = json.dumps(data["learning"], ensure_ascii=False)
-    fitness_json = json.dumps(data["fitness"], ensure_ascii=False)
-    entertainment_json = json.dumps(data["entertainment"], ensure_ascii=False)
-    environment_json = json.dumps(data["environment"], ensure_ascii=False)
-    special_json = json.dumps(data["special"], ensure_ascii=False)
-    report_json = json.dumps(data["report"], ensure_ascii=False)
+    def _d(field):
+        return json.dumps(data.get(field, {}), ensure_ascii=False)
+
+    basic_json = _d("basic")
+    kitchen_json = _d("kitchen")
+    bathroom_json = _d("bathroom")
+    sleep_json = _d("sleep")
+    laundry_json = _d("laundry")
+    storage_json = _d("storage")
+    learning_json = _d("learning")
+    fitness_json = _d("fitness")
+    entertainment_json = _d("entertainment")
+    environment_json = _d("environment")
+    special_json = _d("special")
+    report_json = _d("report")
 
     if DATABASE_URL:
         conn = _pg_conn()
@@ -184,13 +187,15 @@ async def submit_survey(request: Request):
         conn.commit()
         conn.close()
 
+    feishu_status = "未配置"
     if FEISHU_WEBHOOK:
         try:
             send_feishu(survey_id, data["basic"], data["report"])
+            feishu_status = "推送成功"
         except Exception as e:
-            print(f"飞书推送失败: {e}")
+            feishu_status = f"推送失败: {str(e)}"
 
-    return {"code": 0, "id": survey_id, "message": "提交成功"}
+    return {"code": 0, "id": survey_id, "message": "提交成功", "feishu_status": feishu_status}
 
 
 @app.get("/api/surveys")
