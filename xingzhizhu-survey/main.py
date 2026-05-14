@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from typing import Dict, Any
 import json
 import os
+import re
 
 app = FastAPI(title="幸之住需求洞察系统")
 
@@ -52,11 +53,13 @@ def init_db():
                 entertainment TEXT,
                 environment TEXT,
                 special TEXT,
-                report TEXT
+                report TEXT,
+                name TEXT,
+                phone TEXT
             )
             """
         )
-        for col in ["living", "entryway", "kids", "study", "balcony", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special"]:
+        for col in ["living", "entryway", "kids", "study", "balcony", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special", "name", "phone"]:
             try:
                 conn.run(f'ALTER TABLE surveys ADD COLUMN IF NOT EXISTS {col} TEXT')
             except Exception:
@@ -87,11 +90,13 @@ def init_db():
                 entertainment TEXT,
                 environment TEXT,
                 special TEXT,
-                report TEXT
+                report TEXT,
+                name TEXT,
+                phone TEXT
             )
             """
         )
-        for col in ["living", "entryway", "kids", "study", "balcony", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special"]:
+        for col in ["living", "entryway", "kids", "study", "balcony", "laundry", "storage", "learning", "fitness", "entertainment", "environment", "special", "name", "phone"]:
             try:
                 c.execute(f'ALTER TABLE surveys ADD COLUMN {col} TEXT')
             except Exception:
@@ -119,6 +124,15 @@ async def submit_survey(request: Request):
                 {"code": 400, "message": f"缺少字段: {field}"}, status_code=400
             )
 
+    basic_data = data.get("basic", {})
+    name = basic_data.get("name", "").strip()
+    phone = basic_data.get("phone", "").strip()
+
+    if not name:
+        return JSONResponse({"code": 400, "message": "请填写姓名"}, status_code=400)
+    if not phone or not re.match(r'^\d{11}$', phone):
+        return JSONResponse({"code": 400, "message": "请填写正确的11位手机号"}, status_code=400)
+
     def _d(field):
         return json.dumps(data.get(field, {}), ensure_ascii=False)
 
@@ -137,53 +151,120 @@ async def submit_survey(request: Request):
 
     if DATABASE_URL:
         conn = _pg_conn()
-        result = conn.run(
-            """
-            INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report)
-            VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report)
-            RETURNING id
-            """,
-            basic=basic_json,
-            kitchen=kitchen_json,
-            bathroom=bathroom_json,
-            sleep=sleep_json,
-            laundry=laundry_json,
-            storage=storage_json,
-            learning=learning_json,
-            fitness=fitness_json,
-            entertainment=entertainment_json,
-            environment=environment_json,
-            special=special_json,
-            report=report_json,
-        )
-        survey_id = result[0][0]
+        existing = conn.run("SELECT id FROM surveys WHERE phone = :phone", phone=phone)
+        if existing:
+            survey_id = existing[0][0]
+            conn.run(
+                """
+                UPDATE surveys SET
+                    basic = :basic, kitchen = :kitchen, bathroom = :bathroom,
+                    sleep = :sleep, laundry = :laundry, storage = :storage,
+                    learning = :learning, fitness = :fitness, entertainment = :entertainment,
+                    environment = :environment, special = :special, report = :report,
+                    name = :name, phone = :phone, created_at = CURRENT_TIMESTAMP
+                WHERE id = :id
+                """,
+                id=survey_id,
+                basic=basic_json,
+                kitchen=kitchen_json,
+                bathroom=bathroom_json,
+                sleep=sleep_json,
+                laundry=laundry_json,
+                storage=storage_json,
+                learning=learning_json,
+                fitness=fitness_json,
+                entertainment=entertainment_json,
+                environment=environment_json,
+                special=special_json,
+                report=report_json,
+                name=name,
+                phone=phone,
+            )
+        else:
+            result = conn.run(
+                """
+                INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report, name, phone)
+                VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report, :name, :phone)
+                RETURNING id
+                """,
+                basic=basic_json,
+                kitchen=kitchen_json,
+                bathroom=bathroom_json,
+                sleep=sleep_json,
+                laundry=laundry_json,
+                storage=storage_json,
+                learning=learning_json,
+                fitness=fitness_json,
+                entertainment=entertainment_json,
+                environment=environment_json,
+                special=special_json,
+                report=report_json,
+                name=name,
+                phone=phone,
+            )
+            survey_id = result[0][0]
         conn.close()
     else:
         import sqlite3
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute(
-            """
-            INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report)
-            VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report)
-            RETURNING id
-            """,
-            {
-                "basic": basic_json,
-                "kitchen": kitchen_json,
-                "bathroom": bathroom_json,
-                "sleep": sleep_json,
-                "laundry": laundry_json,
-                "storage": storage_json,
-                "learning": learning_json,
-                "fitness": fitness_json,
-                "entertainment": entertainment_json,
-                "environment": environment_json,
-                "special": special_json,
-                "report": report_json,
-            },
-        )
-        survey_id = c.fetchone()[0]
+        c.execute("SELECT id FROM surveys WHERE phone = ?", (phone,))
+        existing = c.fetchone()
+        if existing:
+            survey_id = existing[0]
+            c.execute(
+                """
+                UPDATE surveys SET
+                    basic = :basic, kitchen = :kitchen, bathroom = :bathroom,
+                    sleep = :sleep, laundry = :laundry, storage = :storage,
+                    learning = :learning, fitness = :fitness, entertainment = :entertainment,
+                    environment = :environment, special = :special, report = :report,
+                    name = :name, phone = :phone, created_at = CURRENT_TIMESTAMP
+                WHERE id = :id
+                """,
+                {
+                    "id": survey_id,
+                    "basic": basic_json,
+                    "kitchen": kitchen_json,
+                    "bathroom": bathroom_json,
+                    "sleep": sleep_json,
+                    "laundry": laundry_json,
+                    "storage": storage_json,
+                    "learning": learning_json,
+                    "fitness": fitness_json,
+                    "entertainment": entertainment_json,
+                    "environment": environment_json,
+                    "special": special_json,
+                    "report": report_json,
+                    "name": name,
+                    "phone": phone,
+                },
+            )
+        else:
+            c.execute(
+                """
+                INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report, name, phone)
+                VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report, :name, :phone)
+                RETURNING id
+                """,
+                {
+                    "basic": basic_json,
+                    "kitchen": kitchen_json,
+                    "bathroom": bathroom_json,
+                    "sleep": sleep_json,
+                    "laundry": laundry_json,
+                    "storage": storage_json,
+                    "learning": learning_json,
+                    "fitness": fitness_json,
+                    "entertainment": entertainment_json,
+                    "environment": environment_json,
+                    "special": special_json,
+                    "report": report_json,
+                    "name": name,
+                    "phone": phone,
+                },
+            )
+            survey_id = c.fetchone()[0]
         conn.commit()
         conn.close()
 
@@ -204,8 +285,8 @@ async def list_surveys():
         conn = _pg_conn()
         rows = conn.run(
             """
-            SELECT id, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'), basic, report
-            FROM surveys ORDER BY id DESC
+            SELECT DISTINCT ON (phone) id, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'), name, phone, basic, report
+            FROM surveys WHERE phone IS NOT NULL AND phone != '' ORDER BY phone, id DESC
             """
         )
         conn.close()
@@ -214,24 +295,33 @@ async def list_surveys():
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute(
-            "SELECT id, created_at, basic, report FROM surveys ORDER BY id DESC"
+            """
+            SELECT s.id, s.created_at, s.name, s.phone, s.basic, s.report
+            FROM surveys s
+            INNER JOIN (SELECT MAX(id) as max_id FROM surveys WHERE phone IS NOT NULL AND phone != '' GROUP BY phone) latest ON s.id = latest.max_id
+            ORDER BY s.id DESC
+            """
         )
         rows = c.fetchall()
         conn.close()
 
     result = []
     for row in rows:
-        basic = json.loads(row[2] or "{}")
-        report = json.loads(row[3] or "{}")
+        basic = json.loads(row[4] or "{}")
+        report = json.loads(row[5] or "{}")
+        scenes = report.get("scenes", {})
+        completeness = f"{len(scenes.get('core', [])) + len(scenes.get('minor', []))}/9"
         result.append(
             {
                 "id": row[0],
                 "created_at": str(row[1]),
-                "name": basic.get("name", "-"),
+                "name": row[2] or basic.get("name", "-"),
+                "phone": row[3] or basic.get("phone", "-"),
                 "people": basic.get("people", "-"),
                 "area": basic.get("area", "-"),
                 "budget": basic.get("budget", "-"),
-                "core_scenes": ", ".join(report.get("scenes", {}).get("core", [])),
+                "core_scenes": ", ".join(scenes.get("core", [])),
+                "completeness": completeness,
             }
         )
     return result
@@ -287,6 +377,55 @@ async def get_survey(survey_id: int):
     }
 
 
+@app.get("/api/survey_by_phone")
+async def get_survey_by_phone(phone: str):
+    if not phone or not re.match(r'^\d{11}$', phone):
+        return JSONResponse({"code": 400, "message": "手机号格式错误"}, status_code=400)
+
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(
+            "SELECT id, created_at, basic, kitchen, bathroom, sleep, living, entryway, kids, study, balcony, laundry, storage, learning, fitness, entertainment, environment, special, report FROM surveys WHERE phone = :phone ORDER BY id DESC LIMIT 1",
+            phone=phone
+        )
+        conn.close()
+        if not rows:
+            return JSONResponse({"code": 404, "message": "未找到"}, status_code=404)
+        row = rows[0]
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("SELECT id, created_at, basic, kitchen, bathroom, sleep, living, entryway, kids, study, balcony, laundry, storage, learning, fitness, entertainment, environment, special, report FROM surveys WHERE phone = ? ORDER BY id DESC LIMIT 1", (phone,))
+        row = c.fetchone()
+        conn.close()
+        if not row:
+            return JSONResponse({"code": 404, "message": "未找到"}, status_code=404)
+
+    return {
+        "id": row[0],
+        "created_at": str(row[1]),
+        "basic": json.loads(row[2] or "{}"),
+        "kitchen": json.loads(row[3] or "{}"),
+        "bathroom": json.loads(row[4] or "{}"),
+        "sleep": json.loads(row[5] or "{}"),
+        "living": json.loads(row[6] or "{}"),
+        "entryway": json.loads(row[7] or "{}"),
+        "kids": json.loads(row[8] or "{}"),
+        "study": json.loads(row[9] or "{}"),
+        "balcony": json.loads(row[10] or "{}"),
+        "laundry": json.loads(row[11] or "{}"),
+        "storage": json.loads(row[12] or "{}"),
+        "learning": json.loads(row[13] or "{}"),
+        "fitness": json.loads(row[14] or "{}"),
+        "entertainment": json.loads(row[15] or "{}"),
+        "environment": json.loads(row[16] or "{}"),
+        "special": json.loads(row[17] or "{}"),
+        "report": json.loads(row[18] or "{}"),
+    }
+
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page():
     return """
@@ -317,17 +456,19 @@ async def admin_page():
     </head>
     <body>
         <div class="container">
-            <h1>问卷列表</h1>
+            <h1>客户档案列表</h1>
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>提交时间</th>
+                        <th>更新时间</th>
                         <th>客户姓名</th>
+                        <th>手机号</th>
                         <th>人口</th>
                         <th>面积</th>
                         <th>预算</th>
                         <th>核心场景</th>
+                        <th>完整度</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -344,11 +485,13 @@ async def admin_page():
                             <td>#${item.id}</td>
                             <td>${item.created_at}</td>
                             <td>${item.name}</td>
+                            <td>${item.phone}</td>
                             <td>${item.people}人</td>
                             <td>${item.area}</td>
                             <td>${item.budget}</td>
                             <td>${item.core_scenes ? '<span class="tag">' + item.core_scenes + '</span>' : '-'}</td>
-                            <td><a href="/report/${item.id}" target="_blank">查看报告</a></td>
+                            <td>${item.completeness}</td>
+                            <td><a href="/report/${item.id}" target="_blank">查看档案</a></td>
                         </tr>
                     `).join('');
                 });

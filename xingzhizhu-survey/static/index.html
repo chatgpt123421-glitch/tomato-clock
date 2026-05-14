@@ -323,8 +323,8 @@
         </div>
 
         <div class="question" id="q-phone">
-            <div class="question-label">您的手机号？（选填）</div>
-            <input type="text" class="text-input" name="phone" placeholder="方便设计师联系您" oninput="state.basic.phone=this.value">
+            <div class="question-label">您的手机号？（必填，作为档案唯一标识）</div>
+            <input type="text" class="text-input" name="phone" placeholder="请输入11位手机号，后续凭此号修改档案" oninput="state.basic.phone=this.value">
         </div>
 
         <div class="question" id="q-people">
@@ -1363,7 +1363,81 @@ function injectSkipButtons() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', injectSkipButtons);
+function restoreState() {
+    // 恢复文本输入
+    const nameInput = document.querySelector('input[name="name"]');
+    const phoneInput = document.querySelector('input[name="phone"]');
+    if (nameInput && state.basic.name) nameInput.value = state.basic.name;
+    if (phoneInput && state.basic.phone) phoneInput.value = state.basic.phone;
+
+    // 恢复各模块选项选中状态
+    for (const module of ['basic', 'kitchen', 'bathroom', 'sleep', 'laundry', 'storage', 'learning', 'fitness', 'entertainment', 'environment', 'special']) {
+        const modState = state[module];
+        if (!modState) continue;
+        for (const [name, value] of Object.entries(modState)) {
+            if (name === 'name' || name === 'phone') continue;
+            const inputs = document.querySelectorAll(`input[name="${name}"]`);
+            if (!inputs.length) continue;
+            if (Array.isArray(value)) {
+                inputs.forEach(input => {
+                    input.checked = value.includes(input.value);
+                    input.closest('.option').classList.toggle('selected', input.checked);
+                });
+            } else {
+                inputs.forEach(input => {
+                    input.checked = input.value === value;
+                    if (input.checked) input.closest('.option').classList.add('selected');
+                });
+            }
+        }
+    }
+
+    checkKitchenFlow();
+    checkBathFlow();
+    checkSpecialFlow();
+}
+
+function loadExistingSurvey() {
+    const params = new URLSearchParams(window.location.search);
+    const phone = params.get('phone');
+    if (!phone) return;
+
+    fetch('/api/survey_by_phone?phone=' + encodeURIComponent(phone))
+        .then(r => r.json())
+        .then(data => {
+            if (data.id) {
+                Object.assign(state.basic, data.basic || {});
+                Object.assign(state.kitchen, data.kitchen || {});
+                Object.assign(state.bathroom, data.bathroom || {});
+                Object.assign(state.sleep, data.sleep || {});
+                Object.assign(state.laundry, data.laundry || {});
+                Object.assign(state.storage, data.storage || {});
+                Object.assign(state.learning, data.learning || {});
+                Object.assign(state.fitness, data.fitness || {});
+                Object.assign(state.entertainment, data.entertainment || {});
+                Object.assign(state.environment, data.environment || {});
+                Object.assign(state.special, data.special || {});
+
+                restoreState();
+
+                const welcomeEl = document.getElementById('step-welcome');
+                if (welcomeEl && !welcomeEl.querySelector('.archive-hint')) {
+                    const hint = document.createElement('div');
+                    hint.className = 'archive-hint';
+                    hint.style.cssText = 'margin:16px 0;padding:12px 16px;background:#e3f2fd;border-radius:10px;color:#1976d2;font-size:14px;';
+                    hint.innerHTML = `👋 欢迎回来，<strong>${state.basic.name || ''}</strong>！已为您载入上次填写的档案，可直接修改。`;
+                    const btnGroup = welcomeEl.querySelector('.btn-group');
+                    if (btnGroup) welcomeEl.insertBefore(hint, btnGroup);
+                }
+            }
+        })
+        .catch(() => {});
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    injectSkipButtons();
+    loadExistingSurvey();
+});
 
 function getCurrentModule() {
     for (const s of steps) {
@@ -1418,6 +1492,11 @@ function validateBasic() {
         alert('请填写您的姓名');
         return false;
     }
+    const phone = state.basic.phone || '';
+    if (!/^\d{11}$/.test(phone)) {
+        alert('请填写正确的11位手机号');
+        return false;
+    }
     return true;
 }
 
@@ -1425,7 +1504,7 @@ function generateReport() {
     const r = analyzeData();
     const html = `
         <div class="report-header">
-            <h2>需求画像报告</h2>
+            <h2>${state.basic.name || '需求画像'} 的专属需求档案</h2>
             <p style="color:#86868b; margin-top:8px;">生成时间：${new Date().toLocaleString('zh-CN')}</p>
         </div>
 
@@ -1531,12 +1610,19 @@ function generateReport() {
             const fsStatus = data.feishu_status || '未配置';
             const fsOk = fsStatus.includes('成功');
             const fsHtml = `<div style="font-size:13px;color:${fsOk?'#388e3c':'#d32f2f'};margin-top:8px;">飞书状态：${fsStatus} ${fsOk?'✅':'❌'}</div>`;
+            const archiveUrl = window.location.origin + window.location.pathname + '?phone=' + encodeURIComponent(state.basic.phone);
+            const archiveHtml = `<div style="margin-top:12px;padding:12px;background:#e3f2fd;border-radius:8px;font-size:13px;color:#1976d2;text-align:left;">
+                <div style="font-weight:600;margin-bottom:4px;">您的专属档案链接</div>
+                <div style="word-break:break-all;">${archiveUrl}</div>
+                <div style="margin-top:4px;color:#666;font-size:12px;">请保存此链接，可随时回来修改需求</div>
+            </div>`;
             document.getElementById('reportContent').innerHTML = html + `
                 <div style="margin-top:24px;padding:16px;background:#e8f5e9;border-radius:12px;text-align:center;">
                     <div style="font-size:24px;margin-bottom:8px;">✅</div>
-                    <div style="font-weight:600;color:#388e3c;">提交成功！报告已发送给设计师</div>
-                    <div style="font-size:13px;color:#666;margin-top:4px;">报告编号 #${data.id}</div>
+                    <div style="font-weight:600;color:#388e3c;">档案已保存</div>
+                    <div style="font-size:13px;color:#666;margin-top:4px;">档案编号 #${data.id}</div>
                     ${fsHtml}
+                    ${archiveHtml}
                 </div>
             `;
         } else {
