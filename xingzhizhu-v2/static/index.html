@@ -576,36 +576,35 @@
     <div class="progress-bar">
         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
     </div>
+    <div id="progressText" style="text-align:center;font-size:12px;color:#86868b;margin-bottom:16px;margin-top:-28px;"></div>
 
     <!-- 欢迎页 -->
     <div class="step active" id="step-welcome">
-        <h1>幸之住 · 家居需求洞察</h1>
-        <p class="subtitle">约10分钟，帮你看清未来家的样子。<br>所有问题都从真实生活出发，没有专业术语。</p>
+        <h1>3 分钟，测出你的居住人格</h1>
+        <p class="subtitle">不是装修问卷，是一次关于「你和你家」的轻测试。<br>你会得到：居住人格类型 · 灵魂城市与节气 · 理想家关键词 · 一张可晒的人格卡片</p>
+        <div style="display:flex;gap:12px;margin:24px 0;flex-wrap:wrap;">
+            <span style="display:inline-block;background:#f0f0f0;padding:6px 14px;border-radius:20px;font-size:13px;color:#666;">⏱️ 约 3-5 分钟</span>
+            <span style="display:inline-block;background:#f0f0f0;padding:6px 14px;border-radius:20px;font-size:13px;color:#666;">📝 11 个生活场景</span>
+            <span style="display:inline-block;background:#f0f0f0;padding:6px 14px;border-radius:20px;font-size:13px;color:#666;">🎯 可跳过不相关的</span>
+        </div>
         <div class="question">
-            <div class="question-label">本次将了解以下生活场景：</div>
+            <div class="question-label">我们会从你的真实生活出发，聊聊这些日常：</div>
             <div class="options">
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>基础信息（人口、户型、预算）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>餐厨茶饮（烹饪、用餐、茶酒）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>卫浴漱妆（洗漱、如厕、沐浴）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>健康睡眠（遮光、隔音、伴侣动线）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>衣物洗护（换洗、晾晒、衣柜收纳）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>智慧收纳（囤货、杂物、换季）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>学习成长（居家办公、亲子共学）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>家庭健身（瑜伽、器械、有氧）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>居家娱乐（观影、游戏、聚会）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>环境优化（水、空气、温湿度）</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>特殊生活（孕产/养老/宠物/户外/二次元）</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>谁住在这个家里？做饭多吗？睡觉轻吗？</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>早上会不会抢卫生间？洗完澡是不是湿一片？</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>东西总找不到？换季像打仗？</span></div>
+                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>周末想宅家还是约朋友？空气不好你第一个知道？</span></div>
             </div>
         </div>
         <div class="btn-group">
-            <button class="btn btn-primary" onclick="goTo('basic')">开始</button>
+            <button class="btn btn-primary" onclick="goTo('basic')">开始测试</button>
         </div>
     </div>
 
     <!-- 基础信息 -->
     <div class="step" id="step-basic">
-        <h2>基础信息</h2>
-        <p class="subtitle">这些问题帮助设计师判断项目规模。</p>
+        <h2>先认识你和你家</h2>
+        <p class="subtitle">就像朋友聊天，随便填，没有标准答案。</p>
 
         <div class="question" id="q-name">
             <div class="question-label">您的姓名？</div>
@@ -693,8 +692,8 @@
 
     <!-- 餐厨茶饮 -->
     <div class="step" id="step-kitchen">
-        <h2>餐厨茶饮</h2>
-        <p class="subtitle">了解你的烹饪、用餐、喝茶饮酒习惯。</p>
+        <h2>🍳 你在厨房里是什么角色？</h2>
+        <p class="subtitle">是烟火气的主理人，还是外卖软件的忠实用户？</p>
 
         <div class="question" id="q-k-freq">
             <div class="question-label">家里平时开火做饭的频率是？</div>
@@ -919,8 +918,8 @@
 
     <!-- 卫浴漱妆 -->
     <div class="step" id="step-bathroom">
-        <h2>卫浴漱妆</h2>
-        <p class="subtitle">聚焦早晨的时间冲突和身体感受。</p>
+        <h2>🚿 早晨的卫生间，是战场还是SPA？</h2>
+        <p class="subtitle">从抢厕所到吹头发，聊聊你真实的洗漱体验。</p>
 
         <div class="question" id="q-b-count">
             <div class="question-label">家里现在有几个卫生间？</div>
@@ -1006,11 +1005,11 @@
         </div>
 
         <div class="question" id="q-b-shower-type">
-            <div class="question-label">现在的淋浴区是什么形式？</div>
+            <div class="question-label">洗完澡后，卫生间会不会湿一大片？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="b_shower_type" value="玻璃隔断" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>玻璃淋浴房/隔断</span></label>
-                <label class="option"><input type="checkbox" name="b_shower_type" value="浴帘" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>浴帘</span></label>
-                <label class="option"><input type="checkbox" name="b_shower_type" value="开放式" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>开放式（无隔断）</span></label>
+                <label class="option"><input type="checkbox" name="b_shower_type" value="玻璃隔断" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不会，有玻璃隔断挡住水花</span></label>
+                <label class="option"><input type="checkbox" name="b_shower_type" value="浴帘" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有点，浴帘挡不住，地上总有水</span></label>
+                <label class="option"><input type="checkbox" name="b_shower_type" value="开放式" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>会，开放式，整个卫生间像刚下过雨</span></label>
             </div>
         </div>
 
@@ -1023,12 +1022,12 @@
         </div>
 
         <div class="question" id="q-b-toilet">
-            <div class="question-label">对马桶有什么偏好？</div>
+            <div class="question-label">你理想中的马桶体验是什么样的？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="b_toilet" value="智能马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>智能马桶（自动翻盖、座圈加热、冲洗）</span></label>
-                <label class="option"><input type="checkbox" name="b_toilet" value="壁挂马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>壁挂马桶（易清洁、颜值高）</span></label>
-                <label class="option"><input type="checkbox" name="b_toilet" value="普通马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>普通马桶，能用就行</span></label>
-                <label class="option"><input type="checkbox" name="b_toilet" value="没要求" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没特别要求</span></label>
+                <label class="option"><input type="checkbox" name="b_toilet" value="智能马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>冬天屁股不凉、还能自动冲洗的智能款</span></label>
+                <label class="option"><input type="checkbox" name="b_toilet" value="壁挂马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>悬空好打扫、看起来高级的壁挂款</span></label>
+                <label class="option"><input type="checkbox" name="b_toilet" value="普通马桶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>普通款就行，能冲干净就够了</span></label>
+                <label class="option"><input type="checkbox" name="b_toilet" value="没要求" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>对这个没什么执念</span></label>
             </div>
         </div>
 
@@ -1084,8 +1083,8 @@
 
     <!-- 健康睡眠 -->
     <div class="step" id="step-sleep">
-        <h2>健康睡眠</h2>
-        <p class="subtitle">睡眠不是闭眼睛，是环境、动线和伴侣关系的总和。</p>
+        <h2>🌙 你的卧室，能让你秒睡吗？</h2>
+        <p class="subtitle">光线、声音、温度……是什么在偷走你的睡眠？</p>
 
         <div class="question" id="q-s-light">
             <div class="question-label">卧室现在的遮光情况怎么样？</div>
@@ -1181,56 +1180,66 @@
 
     <!-- 衣物洗护 -->
     <div class="step" id="step-laundry">
-        <h2>衣物洗护</h2>
-        <p class="subtitle">从脏衣到净衣，动线决定了家务量。</p>
+        <h2>👕 洗衣服这件事，让你烦吗？</h2>
+        <p class="subtitle">从脏衣篮到晾衣架，哪里最让你想罢工？</p>
 
         <div class="question" id="q-l-dirty">
-            <div class="question-label">换下来的脏衣服一般扔在哪？</div>
+            <div class="question-label">换下来的脏衣服，最后都出现在什么地方？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_dirty" value="脏衣篮" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>固定脏衣篮</span></label>
-                <label class="option"><input type="checkbox" name="l_dirty" value="椅子沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>椅子/沙发/床上</span></label>
-                <label class="option"><input type="checkbox" name="l_dirty" value="卫生间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>直接扔卫生间</span></label>
-                <label class="option"><input type="checkbox" name="l_dirty" value="地上" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>随手放地上</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="脏衣篮" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>乖乖待在脏衣篮里</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="椅子沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>椅子、沙发、床尾——长衣服了</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="卫生间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>直接扔在卫生间地上</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="地上" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>哪脱的哪扔，遍地开花</span></label>
             </div>
         </div>
 
         <div class="question" id="q-l-method">
-            <div class="question-label">家里怎么洗衣服？</div>
+            <div class="question-label">洗衣服这件事，你家是怎么分工的？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_method" value="手洗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本手洗</span></label>
-                <label class="option"><input type="checkbox" name="l_method" value="洗衣机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>洗衣机</span></label>
-                <label class="option"><input type="checkbox" name="l_method" value="洗烘套装" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>洗烘套装/一体机</span></label>
-                <label class="option"><input type="checkbox" name="l_method" value="送洗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>高端衣物送洗</span></label>
+                <label class="option"><input type="checkbox" name="l_method" value="手洗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本手洗，洗衣机只是个摆设</span></label>
+                <label class="option"><input type="checkbox" name="l_method" value="洗衣机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>洗衣机洗，但经常忘了晾</span></label>
+                <label class="option"><input type="checkbox" name="l_method" value="洗烘套装" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>洗烘套装，洗完直接穿</span></label>
+                <label class="option"><input type="checkbox" name="l_method" value="送洗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>高端衣物/羽绒服送洗衣店</span></label>
             </div>
         </div>
 
         <div class="question" id="q-l-dry">
-            <div class="question-label">洗完在哪晾晒/烘干？</div>
+            <div class="question-label">晾衣服这件事，你家现在怎么解决的？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_dry" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台晾晒</span></label>
-                <label class="option"><input type="checkbox" name="l_dry" value="烘干机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>烘干机烘干</span></label>
-                <label class="option"><input type="checkbox" name="l_dry" value="客厅" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>客厅/卧室临时晾</span></label>
-                <label class="option"><input type="checkbox" name="l_dry" value="卫生间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>卫生间阴干</span></label>
+                <label class="option"><input type="checkbox" name="l_dry" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台晾晒，但常挂满一周不收</span></label>
+                <label class="option"><input type="checkbox" name="l_dry" value="烘干机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>烘干机，梅雨天的救星</span></label>
+                <label class="option"><input type="checkbox" name="l_dry" value="客厅" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>客厅/卧室临时支个架子晾</span></label>
+                <label class="option"><input type="checkbox" name="l_dry" value="卫生间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>卫生间阴干，总有股潮味</span></label>
             </div>
         </div>
 
         <div class="question" id="q-l-wardrobe">
-            <div class="question-label">衣柜现在最大的痛点？（多选）</div>
+            <div class="question-label">每天早上找衣服，是不是像在开盲盒？（多选）</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_wardrobe" value="不够挂" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>挂衣区不够，衣服堆叠</span></label>
-                <label class="option"><input type="checkbox" name="l_wardrobe" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>找不到衣服，翻来翻去</span></label>
-                <label class="option"><input type="checkbox" name="l_wardrobe" value="换季麻烦" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>换季收纳麻烦</span></label>
-                <label class="option"><input type="checkbox" name="l_wardrobe" value="放不下" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>总容量不够，塞不下</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="不够挂" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>挂衣区不够，衣服只能堆叠</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>翻来翻去找不到那件想穿的</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="换季麻烦" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>换季像搬家，床底柜顶全是被子</span></label>
+                <label class="option"><input type="checkbox" name="l_wardrobe" value="放不下" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>柜子早就塞爆了，新买的没地儿去</span></label>
             </div>
         </div>
 
         <div class="question" id="q-l-ironing">
-            <div class="question-label">有熨烫/护理衣物的需求吗？</div>
+            <div class="question-label">出门前，衣服需不需要「抢救」一下？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_ironing" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>每天熨，需要熨衣板</span></label>
-                <label class="option"><input type="checkbox" name="l_ironing" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔需要</span></label>
-                <label class="option"><input type="checkbox" name="l_ironing" value="挂烫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>用挂烫机</span></label>
-                <label class="option"><input type="checkbox" name="l_ironing" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不需要</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>衬衫控，每天必须熨得笔挺</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔需要，但家里没地方熨</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="挂烫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>挂烫机凑合用，但得找个插座</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>从不熨，皱就皱吧</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-l-shoes">
+            <div class="question-label">门口是不是被鞋子占领了？</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="l_shoes" value="鞋柜够" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>鞋柜够用，门口整洁</span></label>
+                <label class="option"><input type="checkbox" name="l_shoes" value="鞋柜不够" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>鞋柜太小，门口一堆鞋</span></label>
+                <label class="option"><input type="checkbox" name="l_shoes" value="常换" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>鞋子多，当季和换季要分开</span></label>
+                <label class="option"><input type="checkbox" name="l_shoes" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不care，能穿就行</span></label>
             </div>
         </div>
 
@@ -1242,51 +1251,60 @@
 
     <!-- 智慧收纳 -->
     <div class="step" id="step-storage">
-        <h2>智慧收纳</h2>
-        <p class="subtitle">80%藏，20%露，让家既好用又好看。</p>
+        <h2>📦 你家东西，是不是总在捉迷藏？</h2>
+        <p class="subtitle">找钥匙、翻换季、理杂物——哪个是你的日常？</p>
 
         <div class="question" id="q-s-hoard">
-            <div class="question-label">家里有囤货习惯吗？（多选）</div>
+            <div class="question-label">618、双11之后，家里是不是会突然多出很多「储备粮」？（多选）</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_hoard" value="纸巾洗护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>纸巾、洗护用品大量囤</span></label>
-                <label class="option"><input type="checkbox" name="s_hoard" value="粮油" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>粮油、调料囤货</span></label>
-                <label class="option"><input type="checkbox" name="s_hoard" value="不囤" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>随用随买，不囤</span></label>
+                <label class="option"><input type="checkbox" name="s_hoard" value="纸巾洗护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>纸巾、洗衣液按箱买，得有地方囤</span></label>
+                <label class="option"><input type="checkbox" name="s_hoard" value="粮油" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>粮油调料也喜欢批量采购</span></label>
+                <label class="option"><input type="checkbox" name="s_hoard" value="不囤" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>随用随买，家里不存货</span></label>
             </div>
         </div>
 
         <div class="question" id="q-s-misc">
-            <div class="question-label">杂物（工具、药品、文具）平时收在哪？</div>
+            <div class="question-label">找创可贴、螺丝刀、胶带这些「小东西」时，你一般花多久？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_misc" value="抽屉" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>分门别类收抽屉</span></label>
-                <label class="option"><input type="checkbox" name="s_misc" value="柜子" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>统一收柜子里</span></label>
-                <label class="option"><input type="checkbox" name="s_misc" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常找不到</span></label>
+                <label class="option"><input type="checkbox" name="s_misc" value="抽屉" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>秒找到，每个抽屉都有标签</span></label>
+                <label class="option"><input type="checkbox" name="s_misc" value="柜子" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>知道在某个柜子里，但得翻一会儿</span></label>
+                <label class="option"><input type="checkbox" name="s_misc" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常翻箱倒柜也找不到，最后放弃</span></label>
             </div>
         </div>
 
         <div class="question" id="q-s-season">
-            <div class="question-label">换季物品（被子、行李箱）放哪？</div>
+            <div class="question-label">换季的时候，厚被子和羽绒服往哪塞？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_season" value="床底" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>床底/沙发底</span></label>
-                <label class="option"><input type="checkbox" name="s_season" value="衣柜顶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>衣柜顶</span></label>
-                <label class="option"><input type="checkbox" name="s_season" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台/角落堆着</span></label>
-                <label class="option"><input type="checkbox" name="s_season" value="储藏室" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有独立储藏室</span></label>
+                <label class="option"><input type="checkbox" name="s_season" value="床底" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>床底/沙发底，眼不见为净</span></label>
+                <label class="option"><input type="checkbox" name="s_season" value="衣柜顶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>衣柜顶，每次拿都要搬梯子</span></label>
+                <label class="option"><input type="checkbox" name="s_season" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台/角落，堆成一座小山</span></label>
+                <label class="option"><input type="checkbox" name="s_season" value="储藏室" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有独立储藏间，井井有条</span></label>
             </div>
         </div>
 
         <div class="question" id="q-s-entry">
-            <div class="question-label">进门后的包、钥匙、口罩有固定位置吗？</div>
+            <div class="question-label">下班进门，包、钥匙、口罩有「归宿」吗？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_entry" value="有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有固定位置，不乱</span></label>
-                <label class="option"><input type="checkbox" name="s_entry" value="没有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没有，随手乱放</span></label>
+                <label class="option"><input type="checkbox" name="s_entry" value="有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有固定位置，进门就归位</span></label>
+                <label class="option"><input type="checkbox" name="s_entry" value="没有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没有，沙发、餐桌、鞋柜上到处长</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-s-mess">
+            <div class="question-label">家里的台面（餐桌、茶几、书桌），平时是什么状态？</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="s_mess" value="空无一物" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本空着，东西都有地方去</span></label>
+                <label class="option"><input type="checkbox" name="s_mess" value="偶尔堆" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔堆几天，周末会收拾</span></label>
+                <label class="option"><input type="checkbox" name="s_mess" value="长期堆" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>长期被杂物占领，吃饭都要挪地方</span></label>
             </div>
         </div>
 
         <div class="question" id="q-s-style">
-            <div class="question-label">希望家里看起来是？</div>
+            <div class="question-label">如果让你的家拍一张证件照，你希望它看起来是？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_style" value="空无一物" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>空无一物，极简</span></label>
-                <label class="option"><input type="checkbox" name="s_style" value="温馨" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>温馨有生活气息</span></label>
-                <label class="option"><input type="checkbox" name="s_style" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，实用就行</span></label>
+                <label class="option"><input type="checkbox" name="s_style" value="空无一物" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>空无一物，像杂志封面</span></label>
+                <label class="option"><input type="checkbox" name="s_style" value="温馨" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>满满当当，但很有生活气息</span></label>
+                <label class="option"><input type="checkbox" name="s_style" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，顺手比好看重要</span></label>
             </div>
         </div>
 
@@ -1298,42 +1316,52 @@
 
     <!-- 学习成长 -->
     <div class="step" id="step-learning">
-        <h2>学习成长</h2>
-        <p class="subtitle">专注环境和亲子共学，决定效率。</p>
+        <h2>📚 在家学习/办公，你能专注多久？</h2>
+        <p class="subtitle">孩子的作业角、你的工作台，现在顺手吗？</p>
 
         <div class="question" id="q-w-home">
-            <div class="question-label">家里有人需要在家办公/上网课吗？</div>
+            <div class="question-label">周末或晚上，家里有人需要「闭关」办公或上网课吗？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="w_home" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>每天长时间居家办公</span></label>
-                <label class="option"><input type="checkbox" name="w_home" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔居家办公/网课</span></label>
-                <label class="option"><input type="checkbox" name="w_home" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不需要</span></label>
+                <label class="option"><input type="checkbox" name="w_home" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常，家里得有个不被打扰的角落</span></label>
+                <label class="option"><input type="checkbox" name="w_home" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔，餐桌凑合用也行</span></label>
+                <label class="option"><input type="checkbox" name="w_home" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不需要，下班就是下班</span></label>
             </div>
         </div>
 
         <div class="question" id="q-w-quiet">
-            <div class="question-label">工作/学习时需要安静独立空间吗？</div>
+            <div class="question-label">当你需要专注时，家里的环境配合吗？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="w_quiet" value="必须" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>必须关门独处</span></label>
-                <label class="option"><input type="checkbox" name="w_quiet" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，有点声音也行</span></label>
-                <label class="option"><input type="checkbox" name="w_quiet" value="喜欢陪" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>喜欢有人在旁边</span></label>
+                <label class="option"><input type="checkbox" name="w_quiet" value="必须" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>必须关门独处，一点声音都不行</span></label>
+                <label class="option"><input type="checkbox" name="w_quiet" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，咖啡厅那么吵我也能写</span></label>
+                <label class="option"><input type="checkbox" name="w_quiet" value="喜欢陪" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>喜欢有人在旁边，各忙各的也安心</span></label>
             </div>
         </div>
 
         <div class="question" id="q-w-kids">
-            <div class="question-label">家里有孩子需要写作业、阅读区吗？</div>
+            <div class="question-label">家里有孩子写作业吗？他们现在一般在哪写？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="w_kids" value="需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>需要独立学习区</span></label>
-                <label class="option"><input type="checkbox" name="w_kids" value="共学" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>需要亲子共学大桌</span></label>
-                <label class="option"><input type="checkbox" name="w_kids" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不需要</span></label>
+                <label class="option"><input type="checkbox" name="w_kids" value="需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>需要独立儿童房/书桌，现在没有</span></label>
+                <label class="option"><input type="checkbox" name="w_kids" value="共学" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>想陪孩子一起学，缺张大桌子</span></label>
+                <label class="option"><input type="checkbox" name="w_kids" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没有孩子/已经工作了</span></label>
             </div>
         </div>
 
         <div class="question" id="q-w-books">
-            <div class="question-label">书籍、文件多吗？</div>
+            <div class="question-label">家里的书和文件，是 pride 还是 burden？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="w_books" value="很多" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>很多，需要大书柜</span></label>
-                <label class="option"><input type="checkbox" name="w_books" value="一般" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>一般量</span></label>
-                <label class="option"><input type="checkbox" name="w_books" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>很少，基本电子</span></label>
+                <label class="option"><input type="checkbox" name="w_books" value="很多" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>满墙书，搬家最重的行李</span></label>
+                <label class="option"><input type="checkbox" name="w_books" value="一般" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有一些，希望有个好看的书柜展示</span></label>
+                <label class="option"><input type="checkbox" name="w_books" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>Kindle/电脑搞定一切，书占地方</span></label>
+            </div>
+        </div>
+
+        <div class="question" id="q-w-desk">
+            <div class="question-label">你现在的「工作台」，最缺什么？</div>
+            <div class="options">
+                <label class="option"><input type="checkbox" name="w_desk" value="插座" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>插座永远不够，插线板拖了一地</span></label>
+                <label class="option"><input type="checkbox" name="w_desk" value="光线" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>光线不好，下午就开始眼酸</span></label>
+                <label class="option"><input type="checkbox" name="w_desk" value="空间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>桌子太小，手臂展不开</span></label>
+                <label class="option"><input type="checkbox" name="w_desk" value="都够" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>都挺好，不挑剔</span></label>
             </div>
         </div>
 
@@ -1345,8 +1373,8 @@
 
     <!-- 家庭健身 -->
     <div class="step" id="step-fitness">
-        <h2>家庭健身</h2>
-        <p class="subtitle">把运动融入日常，而不是专门去健身房。</p>
+        <h2>💪 在家运动，你有专属角落吗？</h2>
+        <p class="subtitle">瑜伽垫往哪铺？跑步机最后是不是变成了衣架？</p>
 
         <div class="question" id="q-f-habit">
             <div class="question-label">平时有在家锻炼的习惯吗？</div>
@@ -1392,8 +1420,8 @@
 
     <!-- 居家娱乐 -->
     <div class="step" id="step-entertainment">
-        <h2>居家娱乐</h2>
-        <p class="subtitle">家是电影院、电竞房，也是社交场。</p>
+        <h2>🎮 不上班的时候，你宅家怎么玩？</h2>
+        <p class="subtitle">追剧、打游戏、约朋友——客厅是谁的主场？</p>
 
         <div class="question" id="q-e-living">
             <div class="question-label">客厅主要用来做什么？（多选）</div>
@@ -1449,8 +1477,8 @@
 
     <!-- 环境优化 -->
     <div class="step" id="step-environment">
-        <h2>环境优化</h2>
-        <p class="subtitle">水、空气、声光，决定家的底层舒适度。</p>
+        <h2>🌬️ 你对家里的空气敏感吗？</h2>
+        <p class="subtitle">雾霾天、花粉季、回南天——你的身体比天气预报准。</p>
 
         <div class="question" id="q-env-water">
             <div class="question-label">对现在自来水水质满意吗？</div>
@@ -1498,62 +1526,102 @@
 
     <!-- 特殊生活 -->
     <div class="step" id="step-special">
-        <h2>特殊生活</h2>
-        <p class="subtitle">孕产、养老、宠物、户外、二次元——这些不是刚需，却是生活的点睛之笔。</p>
+        <h2>🐾 家里有「特殊成员」吗？</h2>
+        <p class="subtitle">毛孩子、小宝贝、长辈、手办墙——谁需要特别照顾？</p>
 
         <div id="special-pregnancy" class="hidden">
             <div class="question" id="q-sp-nursery">
-                <div class="question-label">需要规划婴儿房或尿布台区域吗？</div>
+                <div class="question-label">小宝宝的东西（奶粉、尿布、衣物），现在家里是怎么收纳的？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_nursery" value="独立房间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>需要独立婴儿房</span></label>
-                    <label class="option"><input type="checkbox" name="sp_nursery" value="主卧角落" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>主卧内规划角落即可</span></label>
-                    <label class="option"><input type="checkbox" name="sp_nursery" value="暂不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>暂不需要</span></label>
+                    <label class="option"><input type="checkbox" name="sp_nursery" value="独立房间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>准备独立婴儿房，一步到位</span></label>
+                    <label class="option"><input type="checkbox" name="sp_nursery" value="主卧角落" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>主卧里挤一挤，晚上照顾方便</span></label>
+                    <label class="option"><input type="checkbox" name="sp_nursery" value="暂不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>还没想好，走一步看一步</span></label>
+                </div>
+            </div>
+            <div class="question" id="q-sp-baby-safe">
+                <div class="question-label">等宝宝会爬会走之后，你最担心家里的哪个区域？</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_baby_safe" value="尖角" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>家具尖角、柜子防倾倒</span></label>
+                    <label class="option"><input type="checkbox" name="sp_baby_safe" value="插座" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>插座太低，好奇宝宝会抠</span></label>
+                    <label class="option"><input type="checkbox" name="sp_baby_safe" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台/窗户防护</span></label>
+                    <label class="option"><input type="checkbox" name="sp_baby_safe" value="地板" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>地板太硬/凉，想铺爬行垫</span></label>
                 </div>
             </div>
         </div>
 
         <div id="special-elderly" class="hidden">
             <div class="question" id="q-sp-old-safe">
-                <div class="question-label">老人居住最需要什么安全措施？（多选）</div>
+                <div class="question-label">家里长辈最让你担心的瞬间是什么？（多选）</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_old_safe" value="防滑" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>卫生间防滑</span></label>
-                    <label class="option"><input type="checkbox" name="sp_old_safe" value="扶手" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>马桶/淋浴扶手</span></label>
-                    <label class="option"><input type="checkbox" name="sp_old_safe" value="呼救" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>紧急呼救按钮</span></label>
-                    <label class="option"><input type="checkbox" name="sp_old_safe" value="夜灯" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>起夜感应灯</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="防滑" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>洗澡出来滑倒——卫生间必须防滑</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="扶手" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>蹲下站起费劲——马桶边想装扶手</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="呼救" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>独居时万一摔倒，没人知道</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_safe" value="夜灯" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>半夜起来摸黑开灯，磕到过脚趾</span></label>
+                </div>
+            </div>
+            <div class="question" id="q-sp-old-room">
+                <div class="question-label">长辈的房间，现在采光和通风怎么样？</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_old_room" value="朝南" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>朝南，阳光充足</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_room" value="朝北" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>朝北/暗间，希望改善</span></label>
+                    <label class="option"><input type="checkbox" name="sp_old_room" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没特别想过</span></label>
                 </div>
             </div>
         </div>
 
         <div id="special-pet" class="hidden">
             <div class="question" id="q-sp-pet">
-                <div class="question-label">养什么宠物？需要什么设施？（多选）</div>
+                <div class="question-label">毛孩子是家里的「霸道总裁」还是「贴心小棉袄」？（多选）</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_pet" value="猫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>猫（猫爬架/猫砂盆区）</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet" value="狗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>狗（活动空间/狗窝）</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet" value="其他" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>其他（鱼/鸟/爬宠）</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet" value="防护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台防护网/防逃</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="猫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>猫主子——需要猫爬架、猫砂盆专属区</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="狗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>汪星人——需要活动空间和狗窝</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="其他" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>其他萌宠（鱼/鸟/爬宠/仓鼠）</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="防护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>担心阳台/窗户，想装防护网</span></label>
+                </div>
+            </div>
+            <div class="question" id="q-sp-pet-hair">
+                <div class="question-label">宠物掉毛季，家里哪个地方最惨烈？</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>沙发和床，永远无法干净</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="地毯" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>地毯/地垫，吸尘器都救不了</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>已经放弃，毛是家的装饰</span></label>
                 </div>
             </div>
         </div>
 
         <div id="special-outdoor" class="hidden">
             <div class="question" id="q-sp-outdoor">
-                <div class="question-label">户外装备大概有多少？需要专门收纳区吗？</div>
+                <div class="question-label">你的户外装备，现在占用了家里多少「领土」？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_outdoor" value="多" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>很多（帐篷/骑行/滑雪）</span></label>
-                    <label class="option"><input type="checkbox" name="sp_outdoor" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>少量</span></label>
-                    <label class="option"><input type="checkbox" name="sp_outdoor" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不需要专门区域</span></label>
+                    <label class="option"><input type="checkbox" name="sp_outdoor" value="多" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>半个储藏室——帐篷、滑雪板、骑行装备全齐</span></label>
+                    <label class="option"><input type="checkbox" name="sp_outdoor" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>就几个包，但总得找个地方挂</span></label>
+                    <label class="option"><input type="checkbox" name="sp_outdoor" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>暂时堆阳台，还没想好</span></label>
+                </div>
+            </div>
+            <div class="question" id="q-sp-outdoor-clean">
+                <div class="question-label">户外回来后，脏鞋脏衣服有地方处理吗？</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_outdoor_clean" value="入户" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>想在入户区直接换洗，不带进客厅</span></label>
+                    <label class="option"><input type="checkbox" name="sp_outdoor_clean" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，先扔地上再说</span></label>
                 </div>
             </div>
         </div>
 
         <div id="special-acg" class="hidden">
             <div class="question" id="q-sp-acg">
-                <div class="question-label">二次元/藏品需要什么展示或收纳？</div>
+                <div class="question-label">你的「宝藏」，现在是藏起来还是秀出来？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_acg" value="展示柜" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>防尘玻璃展示柜</span></label>
-                    <label class="option"><input type="checkbox" name="sp_acg" value="电竞房" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>独立电竞/手办房</span></label>
-                    <label class="option"><input type="checkbox" name="sp_acg" value="墙面" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>漫画/海报墙</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg" value="展示柜" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>必须 glass case，防尘还要带灯</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg" value="电竞房" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>想要独立电竞房/手办房，我的圣地</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg" value="墙面" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>海报/漫画上墙，每天抬头就能充电</span></label>
+                </div>
+            </div>
+            <div class="question" id="q-sp-acg-gadget">
+                <div class="question-label">你的电子设备（主机、手办、周边），最缺什么？</div>
+                <div class="options">
+                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="散热" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>散热——夏天打游戏像蒸桑拿</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="插座" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>插座——充电头永远不够</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="收纳" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>收纳——盒子堆成山，但舍不得扔</span></label>
                 </div>
             </div>
         </div>
@@ -1597,6 +1665,16 @@ function updateProgress(step) {
     const idx = steps.indexOf(step);
     const pct = (idx / (steps.length - 1)) * 100;
     document.getElementById('progressFill').style.width = pct + '%';
+    const textEl = document.getElementById('progressText');
+    if (textEl) {
+        if (step === 'welcome') {
+            textEl.textContent = '';
+        } else if (step === 'report') {
+            textEl.textContent = '生成报告中...';
+        } else {
+            textEl.textContent = `步骤 ${idx} / ${steps.length - 2}`;
+        }
+    }
 }
 
 function goTo(step) {
@@ -1604,6 +1682,7 @@ function goTo(step) {
     document.getElementById('step-' + step).classList.add('active');
     updateProgress(step);
     window.scrollTo(0, 0);
+    saveState();
     if (step === 'kitchen') checkKitchenFlow();
     if (step === 'bathroom') checkBathFlow();
     if (step === 'special') checkSpecialFlow();
@@ -1628,6 +1707,41 @@ function selectOption(el) {
     } else {
         state[module][name] = el.value;
     }
+    saveState();
+}
+
+function saveState() {
+    try {
+        localStorage.setItem('xingzhizhu_state', JSON.stringify(state));
+    } catch (e) {}
+}
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem('xingzhizhu_state');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            Object.assign(state.basic, parsed.basic || {});
+            Object.assign(state.kitchen, parsed.kitchen || {});
+            Object.assign(state.bathroom, parsed.bathroom || {});
+            Object.assign(state.sleep, parsed.sleep || {});
+            Object.assign(state.laundry, parsed.laundry || {});
+            Object.assign(state.storage, parsed.storage || {});
+            Object.assign(state.learning, parsed.learning || {});
+            Object.assign(state.fitness, parsed.fitness || {});
+            Object.assign(state.entertainment, parsed.entertainment || {});
+            Object.assign(state.environment, parsed.environment || {});
+            Object.assign(state.special, parsed.special || {});
+            return true;
+        }
+    } catch (e) {}
+    return false;
+}
+
+function clearSavedState() {
+    try {
+        localStorage.removeItem('xingzhizhu_state');
+    } catch (e) {}
 }
 
 function injectSkipButtons() {
@@ -1655,6 +1769,9 @@ function injectSkipButtons() {
 }
 
 function restoreState() {
+    // 先从 localStorage 恢复
+    const hasSaved = loadState();
+
     // 恢复文本输入
     const nameInput = document.querySelector('input[name="name"]');
     const phoneInput = document.querySelector('input[name="phone"]');
@@ -1686,6 +1803,8 @@ function restoreState() {
     checkKitchenFlow();
     checkBathFlow();
     checkSpecialFlow();
+
+    return hasSaved;
 }
 
 function loadExistingSurvey() {
@@ -1728,6 +1847,24 @@ function loadExistingSurvey() {
 document.addEventListener('DOMContentLoaded', function() {
     injectSkipButtons();
     loadExistingSurvey();
+
+    // 检查是否有本地保存的进度
+    const hasSaved = restoreState();
+    if (hasSaved) {
+        const welcomeEl = document.getElementById('step-welcome');
+        const btnGroup = welcomeEl.querySelector('.btn-group');
+        if (btnGroup && !welcomeEl.querySelector('.resume-hint')) {
+            const hint = document.createElement('div');
+            hint.className = 'resume-hint';
+            hint.style.cssText = 'margin-bottom:16px;';
+            hint.innerHTML = `
+                <div style="display:inline-block;padding:10px 16px;background:#e3f2fd;border-radius:10px;font-size:14px;color:#1976d2;">
+                    💡 检测到你上次有未完成的测试，点击「开始测试」会自动恢复进度
+                </div>
+            `;
+            btnGroup.parentNode.insertBefore(hint, btnGroup);
+        }
+    }
 });
 
 function getCurrentModule() {
@@ -1904,6 +2041,7 @@ function generateReport() {
     .then(res => res.json())
     .then(data => {
         if (data.code === 0) {
+            clearSavedState();
             const archiveUrl = window.location.origin + window.location.pathname + '?phone=' + encodeURIComponent(state.basic.phone);
             const statusHtml = `
                 <div style="margin-top:24px;text-align:center;">
