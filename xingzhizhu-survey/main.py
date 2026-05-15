@@ -504,37 +504,37 @@ async def admin_page():
 
 @app.get("/report/{survey_id}", response_class=HTMLResponse)
 async def report_page(survey_id: int):
-    return f"""
+    return """
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>需求画像报告 #{survey_id}</title>
+        <title>需求画像报告 #%s</title>
         <style>
-            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-            body {{ font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f7; padding: 40px 20px; }}
-            .container {{ max-width: 720px; margin: 0 auto; }}
-            .report {{ background: #fff; border-radius: 16px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }}
-            .report-header {{ text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #f5f5f7; }}
-            .report-header h2 {{ font-size: 28px; margin-bottom: 8px; }}
-            .report-section {{ margin-bottom: 32px; }}
-            .report-section h3 {{ font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }}
-            .report-section h3::before {{ content: ""; display: inline-block; width: 4px; height: 20px; background: #0071e3; border-radius: 2px; }}
-            .report-table {{ width: 100%; border-collapse: collapse; }}
-            .report-table td {{ padding: 12px 0; border-bottom: 1px solid #f5f5f7; }}
-            .report-table td:first-child {{ width: 30%; color: #86868b; font-weight: 500; }}
-            .tag {{ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-right: 6px; margin-bottom: 6px; }}
-            .tag-red {{ background: #ffe5e5; color: #d32f2f; }}
-            .tag-yellow {{ background: #fff8e1; color: #f9a825; }}
-            .tag-gray {{ background: #f5f5f5; color: #757575; }}
-            .tag-blue {{ background: #e3f2fd; color: #1976d2; }}
-            .pain-item {{ background: #fff8f0; border-left: 3px solid #ff9800; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }}
-            .pain-scene {{ font-weight: 700; font-size: 14px; color: #e65100; margin-bottom: 4px; }}
-            .pain-text {{ font-size: 15px; color: #424242; }}
-            .btn {{ display: inline-block; padding: 12px 24px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; margin-top: 20px; }}
-            @media print {{ body {{ background: #fff; }} .container {{ padding: 0; }} .btn {{ display: none; }} }}
-            @media (max-width: 640px) {{ .container {{ padding: 0; }} .report {{ padding: 24px; }} }}
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f7; padding: 40px 20px; }
+            .container { max-width: 720px; margin: 0 auto; }
+            .report { background: #fff; border-radius: 16px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+            .report-header { text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #f5f5f7; }
+            .report-header h2 { font-size: 28px; margin-bottom: 8px; }
+            .report-section { margin-bottom: 32px; }
+            .report-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+            .report-section h3::before { content: ""; display: inline-block; width: 4px; height: 20px; background: #0071e3; border-radius: 2px; }
+            .report-table { width: 100%; border-collapse: collapse; }
+            .report-table td { padding: 12px 0; border-bottom: 1px solid #f5f5f7; }
+            .report-table td:first-child { width: 30%; color: #86868b; font-weight: 500; }
+            .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-right: 6px; margin-bottom: 6px; }
+            .tag-red { background: #ffe5e5; color: #d32f2f; }
+            .tag-yellow { background: #fff8e1; color: #f9a825; }
+            .tag-gray { background: #f5f5f5; color: #757575; }
+            .tag-blue { background: #e3f2fd; color: #1976d2; }
+            .pain-item { background: #fff8f0; border-left: 3px solid #ff9800; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
+            .pain-scene { font-weight: 700; font-size: 14px; color: #e65100; margin-bottom: 4px; }
+            .pain-text { font-size: 15px; color: #424242; }
+            .btn { display: inline-block; padding: 12px 24px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; margin-top: 20px; }
+            @media print { body { background: #fff; } .container { padding: 0; } .btn { display: none; } }
+            @media (max-width: 640px) { .container { padding: 0; } .report { padding: 24px; } }
         </style>
     </head>
     <body>
@@ -549,7 +549,7 @@ async def report_page(survey_id: int):
             const container = document.getElementById('reportContent');
             container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#86868b;">加载中...</div>';
 
-            fetch('/api/surveys/{survey_id}')
+            fetch('/api/surveys/%s')
                 .then(res => {
                     if (!res.ok) throw new Error('请求失败: ' + res.status);
                     return res.json();
@@ -585,7 +585,7 @@ async def report_page(survey_id: int):
                     container.innerHTML = `
                         <div class="report-header">
                             <h2>需求画像报告</h2>
-                            <p style="color:#86868b; margin-top:8px;">编号 #${d.id || survey_id} · ${d.created_at || '-'}</p>
+                            <p style="color:#86868b; margin-top:8px;">编号 #${d.id || %s} · ${d.created_at || '-'}</p>
                         </div>
                         ${personaHtml}
                         <div class="report-section">
@@ -657,7 +657,7 @@ async def report_page(survey_id: int):
         </script>
     </body>
     </html>
-    """
+    """ % (survey_id, survey_id, survey_id)
 
 
 # ========== 飞书推送 ==========
