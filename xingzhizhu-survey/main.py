@@ -551,11 +551,22 @@ async def report_page(survey_id: int):
                 .then(d => {{
                     const r = d.report;
                     const b = d.basic;
+                    const persona = r.persona;
+                    const personaHtml = persona ? `
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 32px; color: #fff; text-align: center; margin-bottom: 32px;">
+                            <div style="font-size: 12px; opacity: 0.8; margin-bottom: 8px; letter-spacing: 2px;">SBTI 居住人格</div>
+                            <div style="font-size: 36px; font-weight: 800; letter-spacing: 4px; margin-bottom: 4px;">${{persona.code}}</div>
+                            <div style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">${{persona.name}}</div>
+                            <div style="font-size: 14px; opacity: 0.95; line-height: 1.6; max-width: 400px; margin: 0 auto;">${{persona.desc}}</div>
+                            <div style="margin-top: 12px;">${{(persona.tags || []).map(t => `<span style="display:inline-block;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:12px;font-size:12px;margin:4px;">${{t}}</span>`).join('')}}</div>
+                        </div>
+                    ` : '';
                     document.getElementById('reportContent').innerHTML = `
                         <div class="report-header">
                             <h2>需求画像报告</h2>
                             <p style="color:#86868b; margin-top:8px;">编号 #${{d.id}} · ${{d.created_at}}</p>
                         </div>
+                        ${{personaHtml}}
                         <div class="report-section">
                             <h3>基础锚点</h3>
                             <table class="report-table">

@@ -279,7 +279,297 @@
             .question { padding: 20px; }
             .report { padding: 24px; }
         }
+
+        /* --- Persona Book v2 --- */
+        .persona-book {
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            min-height: 560px;
+            transition: all 0.5s ease;
+            color: #fff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .persona-book::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .persona-page {
+            display: none;
+            padding: 40px 28px;
+            text-align: center;
+            min-height: 560px;
+            position: relative;
+        }
+        .persona-page.active {
+            display: block;
+            animation: pageIn 0.5s ease;
+        }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .persona-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .dot.active {
+            background: #fff;
+            width: 24px;
+            border-radius: 4px;
+        }
+        .persona-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .persona-nav .btn {
+            padding: 10px 24px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .persona-nav .btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .persona-nav .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* P1 Cover */
+        .p1-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            opacity: 0.9;
+        }
+        .p1-code {
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: 8px;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .p1-name {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .p1-desc {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.92;
+            max-width: 420px;
+            margin: 0 auto 24px;
+            min-height: 48px;
+        }
+        .p1-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .p1-tag {
+            background: rgba(255,255,255,0.12);
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .p1-radar {
+            background: rgba(0,0,0,0.08);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .p1-radar-title {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        .radar-row { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; }
+        .radar-label { width: 48px; text-align: right; margin-right: 10px; opacity: 0.85; }
+        .radar-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
+        .radar-bar-fill { height: 100%; background: rgba(255,255,255,0.9); border-radius: 3px; transition: width 1.2s ease 0.3s; width: 0; }
+        .radar-value { width: 30px; text-align: left; margin-left: 8px; font-weight: 700; font-size: 11px; }
+        .p1-footer {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* P2 Insights */
+        .p2-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .insight-item {
+            background: rgba(0,0,0,0.06);
+            border-radius: 16px;
+            padding: 20px 22px;
+            margin-bottom: 14px;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .insight-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 3px 0 0 3px;
+        }
+        .insight-number {
+            font-size: 20px;
+            font-weight: 800;
+            opacity: 0.25;
+            margin-bottom: 6px;
+        }
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        /* P3 Fun Facts */
+        .p3-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .fun-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .fun-card {
+            background: rgba(0,0,0,0.06);
+            border-radius: 16px;
+            padding: 18px 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .fun-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .fun-label {
+            font-size: 11px;
+            opacity: 0.65;
+            margin-bottom: 4px;
+        }
+        .fun-value {
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .fun-summary {
+            background: rgba(0,0,0,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.08);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .fun-summary strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        /* Share / Legacy */
+        .persona-share-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .persona-share-btns .btn {
+            flex: none;
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+        .btn-share {
+            background: #fff;
+            color: #333;
+        }
+        .btn-share:hover { background: #f0f0f0; }
+        .persona-legacy {
+            margin-top: 32px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            color: #1d1d1f;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .persona-legacy h3 {
+            font-size: 15px;
+            margin-bottom: 14px;
+            color: #667eea;
+        }
+        .flip-card-btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .flip-card-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .persona-page { padding: 32px 20px; min-height: 480px; }
+            .p1-code { font-size: 40px; letter-spacing: 4px; }
+            .p1-name { font-size: 22px; }
+            .fun-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+            .fun-card { padding: 14px 8px; }
+        }
     </style>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -1503,85 +1793,91 @@ function validateBasic() {
 
 function generateReport() {
     const r = analyzeData();
-    const html = `
-        <div class="report-header">
-            <h2>${state.basic.name || '需求画像'} 的专属需求档案</h2>
-            <p style="color:#86868b; margin-top:8px;">生成时间：${new Date().toLocaleString('zh-CN')}</p>
-        </div>
+    const p = r.persona;
+    const personaHtml = renderPersonaCard(p);
 
-        <div class="report-section">
-            <h3>基础锚点</h3>
-            <table class="report-table">
-                <tr><td>客户姓名</td><td>${r.basic.name || '-'}</td></tr>
-                <tr><td>手机号</td><td>${r.basic.phone || '-'}</td></tr>
-                <tr><td>常住人口</td><td>${r.basic.people || '-'} 人</td></tr>
-                <tr><td>人口结构</td><td>${(r.basic.structure || []).join('、') || '-'}</td></tr>
-                <tr><td>房屋面积</td><td>${r.basic.area || '-'}</td></tr>
-                <tr><td>装修类型</td><td>${r.basic.type || '-'}</td></tr>
-                <tr><td>预算区间</td><td>${r.basic.budget || '-'}</td></tr>
-            </table>
-        </div>
-
-        <div class="report-section">
-            <h3>场景分级</h3>
-            <div style="margin-bottom:12px;">
-                <span class="tag tag-red">核心场景</span>
-                <span>${r.scenes.core.join('、') || '待补充'}</span>
+    const legacyHtml = `
+        <div class="persona-legacy" id="legacyReport" style="display:none;">
+            <h3>📋 设计师专业档案（折叠）</h3>
+            <div class="report-section">
+                <h3>基础锚点</h3>
+                <table class="report-table">
+                    <tr><td>客户姓名</td><td>${r.basic.name || '-'}</td></tr>
+                    <tr><td>手机号</td><td>${r.basic.phone || '-'}</td></tr>
+                    <tr><td>常住人口</td><td>${r.basic.people || '-'} 人</td></tr>
+                    <tr><td>人口结构</td><td>${(Array.isArray(r.basic.structure) ? r.basic.structure : (r.basic.structure ? [r.basic.structure] : [])).join('、') || '-'}</td></tr>
+                    <tr><td>房屋面积</td><td>${r.basic.area || '-'}</td></tr>
+                    <tr><td>装修类型</td><td>${r.basic.type || '-'}</td></tr>
+                    <tr><td>预算区间</td><td>${r.basic.budget || '-'}</td></tr>
+                </table>
             </div>
-            <div style="margin-bottom:12px;">
-                <span class="tag tag-yellow">次要场景</span>
-                <span>${r.scenes.minor.join('、') || '无'}</span>
+            <div class="report-section">
+                <h3>场景分级</h3>
+                <div style="margin-bottom:12px;">
+                    <span class="tag tag-red">核心场景</span>
+                    <span>${(Array.isArray(r.scenes.core) ? r.scenes.core : (r.scenes.core ? [r.scenes.core] : [])).join('、') || '待补充'}</span>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <span class="tag tag-yellow">次要场景</span>
+                    <span>${(Array.isArray(r.scenes.minor) ? r.scenes.minor : (r.scenes.minor ? [r.scenes.minor] : [])).join('、') || '无'}</span>
+                </div>
+                <div>
+                    <span class="tag tag-gray">暂无需求</span>
+                    <span>${(Array.isArray(r.scenes.none) ? r.scenes.none : (r.scenes.none ? [r.scenes.none] : [])).join('、') || '无'}</span>
+                </div>
             </div>
-            <div>
-                <span class="tag tag-gray">暂无需求</span>
-                <span>${r.scenes.none.join('、') || '无'}</span>
+            <div class="report-section">
+                <h3>痛点清单</h3>
+                ${r.pains.length ? r.pains.map(pain => `
+                    <div class="pain-item">
+                        <div class="pain-scene">${pain.scene}</div>
+                        <div class="pain-text">${pain.text}</div>
+                    </div>
+                `).join('') : '<p style="color:#86868b;">暂无明确痛点记录</p>'}
             </div>
-        </div>
-
-        <div class="report-section">
-            <h3>痛点清单</h3>
-            ${r.pains.length ? r.pains.map(p => `
-                <div class="pain-item">
-                    <div class="pain-scene">${p.scene}</div>
-                    <div class="pain-text">${p.text}</div>
-                </div>
-            `).join('') : '<p style="color:#86868b;">暂无明确痛点记录</p>'}
-        </div>
-
-        <div class="report-section">
-            <h3>设计参数</h3>
-            <table class="report-table">
-                ${r.params.length ? r.params.map(p => `
-                    <tr><td>${p.scene}</td><td>${p.item} <span class="tag ${p.level==='必须有'?'tag-red':p.level==='最好有'?'tag-yellow':'tag-gray'}">${p.level}</span></td></tr>
-                `).join('') : '<tr><td colspan="2" style="color:#86868b;">暂无明确设计参数</td></tr>'}
-            </table>
-        </div>
-
-        <div class="report-section">
-            <h3>特殊约束</h3>
-            ${r.constraints.length ? r.constraints.map(c => `
-                <div style="margin-bottom:10px; padding:12px; background:#fff3f3; border-radius:8px; border-left:3px solid #d32f2f;">
-                    <strong>${c.type}</strong>：${c.desc}
-                </div>
-            `).join('') : '<p style="color:#86868b;">暂无特殊约束</p>'}
-        </div>
-
-        <div class="report-section">
-            <h3>种草待确认</h3>
-            ${r.seeds.length ? r.seeds.map(s => `
-                <div style="margin-bottom:10px; padding:12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1976d2;">
-                    <strong>${s.item}</strong>：${s.reason}
-                </div>
-            `).join('') : '<p style="color:#86868b;">暂无推荐项</p>'}
+            <div class="report-section">
+                <h3>设计参数</h3>
+                <table class="report-table">
+                    ${r.params.length ? r.params.map(param => `
+                        <tr><td>${param.scene}</td><td>${param.item} <span class="tag ${param.level==='必须有'?'tag-red':param.level==='最好有'?'tag-yellow':'tag-gray'}">${param.level}</span></td></tr>
+                    `).join('') : '<tr><td colspan="2" style="color:#86868b;">暂无明确设计参数</td></tr>'}
+                </table>
+            </div>
+            <div class="report-section">
+                <h3>特殊约束</h3>
+                ${r.constraints.length ? r.constraints.map(c => `
+                    <div style="margin-bottom:10px; padding:12px; background:#fff3f3; border-radius:8px; border-left:3px solid #d32f2f;">
+                        <strong>${c.type}</strong>：${c.desc}
+                    </div>
+                `).join('') : '<p style="color:#86868b;">暂无特殊约束</p>'}
+            </div>
+            <div class="report-section">
+                <h3>种草待确认</h3>
+                ${r.seeds.length ? r.seeds.map(s => `
+                    <div style="margin-bottom:10px; padding:12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1976d2;">
+                        <strong>${s.item}</strong>：${s.reason}
+                    </div>
+                `).join('') : '<p style="color:#86868b;">暂无推荐项</p>'}
+            </div>
         </div>
     `;
+
+    const fullHtml = personaHtml + `
+        <div class="persona-share-btns">
+            <button class="btn btn-share" onclick="downloadShareCard()">📸 保存人格卡片</button>
+            <button class="btn btn-secondary" onclick="window.print()">🖨 打印专业报告</button>
+        </div>
+        <div style="text-align:center;margin-top:16px;">
+            <button class="flip-card-btn" onclick="document.getElementById('legacyReport').style.display=document.getElementById('legacyReport').style.display==='none'?'block':'none'">🔽 查看设计师专业档案</button>
+        </div>
+    ` + legacyHtml;
 
     // 先显示提交中
     document.getElementById('reportContent').innerHTML = `
         <div style="text-align:center;padding:60px 20px;">
             <div style="font-size:48px;margin-bottom:20px;">⏳</div>
-            <h3 style="font-size:20px;margin-bottom:12px;">正在生成需求画像并提交...</h3>
-            <p style="color:#86868b;">请稍候，报告将同步发送给设计师</p>
+            <h3 style="font-size:20px;margin-bottom:12px;">正在生成你的居住人格...</h3>
+            <p style="color:#86868b;">请稍候，正在分析你的生活 DNA</p>
         </div>
     `;
     goTo('report');
@@ -1608,36 +1904,45 @@ function generateReport() {
     .then(res => res.json())
     .then(data => {
         if (data.code === 0) {
-            const fsStatus = data.feishu_status || '未配置';
-            const fsOk = fsStatus.includes('成功');
-            const fsHtml = `<div style="font-size:13px;color:${fsOk?'#388e3c':'#d32f2f'};margin-top:8px;">飞书状态：${fsStatus} ${fsOk?'✅':'❌'}</div>`;
             const archiveUrl = window.location.origin + window.location.pathname + '?phone=' + encodeURIComponent(state.basic.phone);
-            const archiveHtml = `<div style="margin-top:12px;padding:12px;background:#e3f2fd;border-radius:8px;font-size:13px;color:#1976d2;text-align:left;">
-                <div style="font-weight:600;margin-bottom:4px;">您的专属档案链接</div>
-                <div style="word-break:break-all;">${archiveUrl}</div>
-                <div style="margin-top:4px;color:#666;font-size:12px;">请保存此链接，可随时回来修改需求</div>
-            </div>`;
-            document.getElementById('reportContent').innerHTML = html + `
-                <div style="margin-top:24px;padding:16px;background:#e8f5e9;border-radius:12px;text-align:center;">
-                    <div style="font-size:24px;margin-bottom:8px;">✅</div>
-                    <div style="font-weight:600;color:#388e3c;">档案已保存</div>
-                    <div style="font-size:13px;color:#666;margin-top:4px;">档案编号 #${data.id}</div>
-                    ${fsHtml}
-                    ${archiveHtml}
+            const statusHtml = `
+                <div style="margin-top:24px;text-align:center;">
+                    <div style="display:inline-block;padding:16px 24px;background:#e8f5e9;border-radius:12px;">
+                        <div style="font-size:20px;margin-bottom:4px;">✅</div>
+                        <div style="font-weight:600;color:#388e3c;">档案已保存 · 编号 #${data.id}</div>
+                    </div>
+                    <div style="margin-top:12px;padding:12px;background:#f5f5f7;border-radius:8px;font-size:13px;color:#666;text-align:left;word-break:break-all;">
+                        修改链接：${archiveUrl}
+                    </div>
                 </div>
             `;
+            document.getElementById('reportContent').innerHTML = fullHtml + statusHtml;
+            window._currentPersona = p;
+            setTimeout(() => {
+                animateRadarBars();
+                const descEl = document.getElementById('p1Desc');
+                if (descEl) typeWriterEffect(descEl, p.desc, 28);
+            }, 200);
         } else {
             throw new Error(data.message);
         }
     })
     .catch(err => {
-        document.getElementById('reportContent').innerHTML = html + `
-            <div style="margin-top:24px;padding:16px;background:#ffe5e5;border-radius:12px;text-align:center;">
-                <div style="font-size:24px;margin-bottom:8px;">⚠️</div>
-                <div style="font-weight:600;color:#d32f2f;">提交失败，请截图保存报告</div>
-                <div style="font-size:13px;color:#666;margin-top:4px;">${err.message || '网络错误'}</div>
+        document.getElementById('reportContent').innerHTML = fullHtml + `
+            <div style="margin-top:24px;text-align:center;">
+                <div style="display:inline-block;padding:16px 24px;background:#ffe5e5;border-radius:12px;">
+                    <div style="font-size:20px;margin-bottom:4px;">⚠️</div>
+                    <div style="font-weight:600;color:#d32f2f;">提交失败，请截图保存人格卡片</div>
+                    <div style="font-size:13px;color:#666;margin-top:4px;">${err.message || '网络错误'}</div>
+                </div>
             </div>
         `;
+        window._currentPersona = p;
+        setTimeout(() => {
+            animateRadarBars();
+            const descEl = document.getElementById('p1Desc');
+            if (descEl) typeWriterEffect(descEl, p.desc, 28);
+        }, 200);
     });
 }
 
@@ -1977,7 +2282,802 @@ function analyzeData() {
         result.seeds.push({ item: '软水机', reason: '去除水垢，保护皮肤和龙头' });
     }
 
+    // --- v2: SBTI 居住人格计算 ---
+    result.persona = buildPersona(result);
+
     return result;
+}
+
+function buildPersona(result) {
+    const b = state.basic;
+    const k = state.kitchen;
+    const st = state.storage;
+    const e = state.entertainment;
+    const env = state.environment;
+    const sp = state.special;
+    const painCount = result.pains.length;
+    const hasConstraints = result.constraints.length > 0;
+    const tags = b.tags || [];
+    const hasSpecialTags = tags.length > 0 && !tags.includes('无');
+
+    // 维度1: S (Space/空间敏感) vs E (Experience/体验驱动)
+    let d1 = 'E';
+    const envActive = env.env_water && env.env_water !== '满意' && env.env_water !== '无问题';
+    const envAir = env.env_air && env.env_air !== '满意';
+    const envHeat = env.env_heat && env.env_heat === '没有';
+    const envSmart = env.env_smart && env.env_smart === '必须';
+    if (envActive || envAir || envHeat || envSmart || painCount >= 4) d1 = 'S';
+    else if (k.k_freq && (k.k_freq.includes('每天') || k.k_freq.includes('每周3-5次'))) d1 = 'E';
+
+    // 维度2: O (Order/秩序) vs F (Free/自由)
+    let d2 = 'F';
+    if (st.s_mess === '是' || st.s_misc === '找不到' || k.k_mess === '是' || st.s_style === '空无一物' || st.s_entry === '没有') d2 = 'O';
+
+    // 维度3: I (Introvert/独处) vs H (Hub/社交)
+    let d3 = 'I';
+    if ((k.k_guest && (k.k_guest.includes('经常') || k.k_guest.includes('频繁'))) ||
+        (e.e_freq && e.e_freq.includes('每天')) ||
+        (e.e_type && e.e_type.includes('聚会'))) d3 = 'H';
+
+    // 维度4: P (Precise/精致敏感) vs A (Adaptable/随性)
+    let d4 = 'A';
+    const spActive = sp && Object.keys(sp).length > 0 &&
+        !Object.values(sp).every(v => !v || v === '' || (Array.isArray(v) && v.length === 0));
+    if (hasConstraints || hasSpecialTags || spActive || painCount >= 5) d4 = 'P';
+
+    // 维度5: R (Rooted/扎根) vs W (Wandering/漫游)
+    let d5 = 'R';
+    const budgetHigh = b.budget && (b.budget.includes('30万') || b.budget.includes('20-30万'));
+    const areaLarge = b.area && (b.area.includes('150') || b.area.includes('120-150'));
+    const hasPet = tags.includes('宠物');
+    const hasOutdoor = tags.includes('户外');
+    const hasAnime = tags.includes('二次元');
+    const dailyCook = k.k_freq && k.k_freq.includes('每天');
+    const dailyEnt = e.e_freq && e.e_freq.includes('每天');
+    const frequentGuest = k.k_guest && (k.k_guest.includes('频繁') || k.k_guest.includes('经常'));
+    if (budgetHigh || areaLarge || hasPet || hasOutdoor || hasAnime || dailyEnt || frequentGuest) d5 = 'W';
+    else if ((b.budget && b.budget.includes('10万以下')) || (b.area && b.area.includes('60以下')) || (b.type && b.type.includes('局部')) || (!dailyCook && !dailyEnt)) {
+        // 保持 R，低预算小面积或局部改造或低活跃度偏向扎根
+    }
+
+    const baseCode = d1 + d2 + d3 + d4;
+    const code = baseCode + '-' + d5;
+
+    const names = {
+        'SOIP-R': '秩序重建者', 'SOIP-W': '秩序重构者',
+        'SOIA-R': '极简隐士', 'SOIA-W': '数字游民',
+        'SOHP-R': '完美东道主', 'SOHP-W': '派对策展人',
+        'SOHA-R': '干净社交家', 'SOHA-W': '氛围组组长',
+        'SFIP-R': '敏感独行者', 'SFIP-W': '旷野观察者',
+        'SFIA-R': '佛系宅家党', 'SFIA-W': '游牧生活家',
+        'SFHP-R': '自由派对家', 'SFHP-W': '即兴艺术家',
+        'SFHA-R': '快乐社交家', 'SFHA-W': '跨界连接者',
+        'EOIP-R': '烟火气守护者', 'EOIP-W': '味觉探险家',
+        'EOIA-R': '精致独食客', 'EOIA-W': '一人食博主',
+        'EOHP-R': '社交厨神', 'EOHP-W': '私宴主理人',
+        'EOHA-R': '热闹生活家', 'EOHA-W': '生活导演',
+        'EFIP-R': '创意独行者', 'EFIP-W': '深夜创作者',
+        'EFIA-R': '随性体验家', 'EFIA-W': '流动生活家',
+        'EFHP-R': '派对料理人', 'EFHP-W': '快闪发起人',
+        'EFHA-R': '全能生活家', 'EFHA-W': '多面体验官'
+    };
+
+    const dimDesc = {
+        S: '你对居住环境的细节有着近乎直觉的感知，空气、水质、温湿度的微妙变化都会牵动你的神经。',
+        E: '家对你来说不是静态的空间，而是上演生活剧场的舞台。烹饪、娱乐、社交，每一处都该有烟火气。',
+        O: '混乱是你的敌人，秩序是你的氧气。每一件物品都该有归属，每一个角落都该有逻辑。',
+        F: '你不愿被规则束缚，家应该是自由生长的有机体，东西多不代表乱，那叫生活的痕迹。',
+        I: '家是你的避风港，不需要太多人打扰。一本书、一部电影、一顿安静的饭，就是你最好的充电方式。',
+        H: '你的家天生就该热闹，朋友围坐、笑声不断，才是这个空间存在的意义。',
+        P: '你对生活的要求从不将就，每一个场景背后都有不能妥协的理由。',
+        A: '你对环境有着惊人的适应力，不挑剔、不焦虑，能随遇而安也是一种天赋。',
+        R: '你倾向于稳定、经典的生活方式，家是你的根系，越沉淀越舒服。',
+        W: '你渴望新鲜、变化和探索，家不该是一成不变的布景，而是你不断迭代的试验场。'
+    };
+
+    const themes = {
+        'SOIP-R': { bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', shadow: 'rgba(79,172,254,0.35)' },
+        'SOIP-W': { bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.35)' },
+        'SOIA-R': { bg: 'linear-gradient(135deg, #485563 0%, #29323c 100%)', shadow: 'rgba(72,85,99,0.35)' },
+        'SOIA-W': { bg: 'linear-gradient(135deg, #232526 0%, #414345 100%)', shadow: 'rgba(35,37,38,0.35)' },
+        'SOHP-R': { bg: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)', shadow: 'rgba(245,175,25,0.35)' },
+        'SOHP-W': { bg: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)', shadow: 'rgba(255,94,98,0.35)' },
+        'SOHA-R': { bg: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.35)' },
+        'SOHA-W': { bg: 'linear-gradient(135deg, #00b09b 0%, #96c93d 100%)', shadow: 'rgba(0,176,155,0.35)' },
+        'SFIP-R': { bg: 'linear-gradient(135deg, #b993d6 0%, #8ca6db 100%)', shadow: 'rgba(185,147,214,0.35)' },
+        'SFIP-W': { bg: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', shadow: 'rgba(224,195,252,0.35)' },
+        'SFIA-R': { bg: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)', shadow: 'rgba(19,78,94,0.35)' },
+        'SFIA-W': { bg: 'linear-gradient(135deg, #3a6073 0%, #3a7bd5 100%)', shadow: 'rgba(58,96,115,0.35)' },
+        'SFHP-R': { bg: 'linear-gradient(135deg, #ff512f 0%, #f09819 100%)', shadow: 'rgba(255,81,47,0.35)' },
+        'SFHP-W': { bg: 'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)', shadow: 'rgba(248,87,166,0.35)' },
+        'SFHA-R': { bg: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)', shadow: 'rgba(246,211,101,0.35)' },
+        'SFHA-W': { bg: 'linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)', shadow: 'rgba(252,203,144,0.35)' },
+        'EOIP-R': { bg: 'linear-gradient(135deg, #ff512f 0%, #dd2476 100%)', shadow: 'rgba(255,81,47,0.35)' },
+        'EOIP-W': { bg: 'linear-gradient(135deg, #ff6a00 0%, #ee0979 100%)', shadow: 'rgba(255,106,0,0.35)' },
+        'EOIA-R': { bg: 'linear-gradient(135deg, #ec008c 0%, #fc6767 100%)', shadow: 'rgba(236,0,140,0.35)' },
+        'EOIA-W': { bg: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', shadow: 'rgba(255,154,158,0.35)' },
+        'EOHP-R': { bg: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)', shadow: 'rgba(255,94,98,0.35)' },
+        'EOHP-W': { bg: 'linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)', shadow: 'rgba(255,126,95,0.35)' },
+        'EOHA-R': { bg: 'linear-gradient(135deg, #f12711 0%, #f5af19 100%)', shadow: 'rgba(241,39,17,0.35)' },
+        'EOHA-W': { bg: 'linear-gradient(135deg, #fce38a 0%, #f38181 100%)', shadow: 'rgba(252,227,138,0.35)' },
+        'EFIP-R': { bg: 'linear-gradient(135deg, #5f2c82 0%, #49a09d 100%)', shadow: 'rgba(95,44,130,0.35)' },
+        'EFIP-W': { bg: 'linear-gradient(135deg, #8360c3 0%, #2ebf91 100%)', shadow: 'rgba(131,96,195,0.35)' },
+        'EFIA-R': { bg: 'linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%)', shadow: 'rgba(33,147,176,0.35)' },
+        'EFIA-W': { bg: 'linear-gradient(135deg, #1fa2ff 0%, #a6ffcb 100%)', shadow: 'rgba(31,162,255,0.35)' },
+        'EFHP-R': { bg: 'linear-gradient(135deg, #ff00cc 0%, #333399 100%)', shadow: 'rgba(255,0,204,0.35)' },
+        'EFHP-W': { bg: 'linear-gradient(135deg, #cc2b5e 0%, #753a88 100%)', shadow: 'rgba(204,43,94,0.35)' },
+        'EFHA-R': { bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.35)' },
+        'EFHA-W': { bg: 'linear-gradient(135deg, #4776e6 0%, #8e54e9 100%)', shadow: 'rgba(71,118,230,0.35)' }
+    };
+
+    const radar = {
+        餐厨: result.scenes.core.includes('餐厨茶饮') ? 92 : result.scenes.minor.includes('餐厨茶饮') ? 65 : 25,
+        卫浴: result.scenes.core.includes('卫浴漱妆') ? 92 : result.scenes.minor.includes('卫浴漱妆') ? 65 : 25,
+        睡眠: result.scenes.core.includes('健康睡眠') ? 92 : result.scenes.minor.includes('健康睡眠') ? 65 : 25,
+        收纳: result.scenes.core.includes('智慧收纳') ? 92 : result.scenes.minor.includes('智慧收纳') ? 65 : 25,
+        娱乐: result.scenes.core.includes('居家娱乐') ? 92 : result.scenes.minor.includes('居家娱乐') ? 65 : 25,
+        环境: result.scenes.core.includes('环境优化') ? 92 : result.scenes.minor.includes('环境优化') ? 65 : 25
+    };
+
+    const tagsList = [
+        d1 === 'S' ? '空间敏感' : '体验驱动',
+        d2 === 'O' ? '秩序控' : '自由生长',
+        d3 === 'I' ? '独处充电' : '社交枢纽',
+        d4 === 'P' ? '精致敏感' : '随性适应',
+        d5 === 'R' ? '经典沉淀' : '先锋探索'
+    ];
+
+    const insights = generateInsights(result, code);
+    const funFacts = calculateFunFacts(result, code);
+
+    return {
+        code,
+        name: names[code] || '独特居住者',
+        desc: dimDesc[d1] + ' ' + dimDesc[d2] + ' ' + dimDesc[d3] + ' ' + dimDesc[d4] + ' ' + dimDesc[d5],
+        tags: tagsList,
+        radar,
+        theme: themes[code] || themes['EFHA'],
+        insights,
+        funFacts,
+        stats: {
+            painCount,
+            painRank: Math.min(95, 20 + painCount * 12),
+            topScene: result.scenes.core[0] || result.scenes.minor[0] || '暂无',
+            sceneCount: result.scenes.core.length + result.scenes.minor.length
+        }
+    };
+}
+
+function generateInsights(result, code) {
+    const insights = [];
+    const k = state.kitchen;
+    const s = state.sleep;
+    const st = state.storage;
+    const e = state.entertainment;
+    const env = state.environment;
+    const b = state.basic;
+    const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // 洞察1：生活方式诊断（8个分支，各3条随机抽）
+    if (k.k_freq && k.k_freq.includes('每天')) {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '你一年有超过 300 天在自家厨房度过。对你来说，厨房不只是功能区，它是家的灵魂所在，是烟火气升起的地方。',
+                '你的冰箱永远有新鲜食材，灶台几乎没凉过。家对你来说，味道比颜值更重要。',
+                '别人回家是休息，你回家是换了个战场继续烹饪。厨房是你的主舞台，其他房间都是观众席。'
+            ])
+        });
+    } else if (s.s_partner === '我浅眠' || (s.s_noise && s.s_noise !== '无')) {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '睡眠是你生活的重启键。一个能彻底隔绝噪音和光线的卧室，比任何装饰品都更能治愈你。',
+                '你对声音和光线的敏感，让你比大多数人更需要一个"黑匣子"般的卧室。窗帘、隔音、遮光，缺一不可。',
+                '别人的卧室用来睡觉，你的卧室用来"重启系统"。每一次深度睡眠，都是第二天能量的来源。'
+            ])
+        });
+    } else if (st.s_mess === '是' || st.s_misc === '找不到') {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '你的家正在和你玩捉迷藏——钥匙、遥控器、数据线，每天都在变着花样消失。你需要一个"万物有归处"的秩序系统。',
+                '打开抽屉像开盲盒，找东西全凭运气。不是你不爱整理，是收纳系统根本没有跟上你的生活节奏。',
+                '你家的台面是战场，沙发是仓库，椅子是衣架。东西不是没有，只是都长在了不该在的位置。'
+            ])
+        });
+    } else if (e.e_freq && e.e_freq.includes('每天')) {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '客厅是你下班后的充电站。瘫在沙发上追剧、打游戏，是你最珍视的独处仪式。',
+                '你的客厅使用率可能比卧室还高。它是影院、游戏厅、咖啡馆，唯独不是传统的"会客室"。',
+                '别人问"今天去哪儿玩"，你的答案是"回家"。因为你的客厅已经装下了所有你想玩的。'
+            ])
+        });
+    } else if (env.env_air && env.env_air !== '满意') {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '你对呼吸的质量比大多数人更敏感。打开窗就能感受到空气的好坏，这种敏锐值得被好好照顾。',
+                '雾霾天你第一个知道，花粉季你第一个打喷嚏。你的身体就是家里的空气质量检测仪。',
+                '清新的空气对你不是奢侈品，是必需品。一个能精密调控空气质量的家，是你健康的第一道防线。'
+            ])
+        });
+    } else if (b.budget && (b.budget.includes('30万') || b.budget.includes('20-30万')) && b.area && (b.area.includes('150') || b.area.includes('120-150'))) {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '你有足够的预算和空间来实现理想家。问题不是"能不能"，而是"怎么选"——选择太多，反而需要更清晰的优先级。',
+                '大房子+充足预算，听起来是完美开局。但更大的空间意味着更复杂的动线，设计难度反而更高。',
+                '你站在装修食物链的顶端。别让"什么都想要"变成"什么都不出彩"，精准投放预算才是高手。'
+            ])
+        });
+    } else if (b.budget && b.budget.includes('10万以下') && b.area && b.area.includes('60以下')) {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '小空间+有限预算，反而能逼出最精巧的设计。每一寸都要算账，每一分钱都要花在刀刃上。',
+                '你的家不大，但野心不小。在小空间里做大生活，需要的不是钱，是巧思。',
+                '麻雀虽小五脏俱全——这句话就是为你写的。用设计弥补面积，用巧思替代预算。'
+            ])
+        });
+    } else {
+        insights.push({
+            title: '生活方式',
+            text: pickOne([
+                '你对家的期待很朴素：舒服、顺手、不添堵。但把"简单"做到极致，本身就是一门学问。',
+                '你没有特别极端的居住偏好，这恰恰说明你是一个"均衡型"选手。好设计不是补短板，是让长处更舒服。',
+                '家对你来说，是_background_不是_highlight_。它不需要惊艳所有人，只需要在每天的使用中让你会心一笑。'
+            ])
+        });
+    }
+
+    // 洞察2：痛点共鸣（9个场景各3条 + 兜底3条，随机抽）
+    const topPain = result.pains[0];
+    if (topPain) {
+        const painMap = {
+            '餐厨茶饮': [
+                `「${topPain.text}」——这句话里藏着你对新厨房最核心的诉求。改造不是推翻重来，是让这句话不再被提起。`,
+                `每次进厨房都在心里叹气，因为「${topPain.text}」。这个问题解决后，做饭会变成享受。`,
+                `「${topPain.text}」不是挑剔，是你的身体在诚实投票。一个好的厨房，应该让你想进去，而不是想逃离。`
+            ],
+            '卫浴漱妆': [
+                `每天从「${topPain.text}」开始，难怪你急着改造。一个顺畅的早晨，值得被设计。`,
+                `「${topPain.text}」——这个问题已经影响你每天的出门心情了。卫浴不顺，全天不爽。`,
+                `如果早晨的第一件事是「${topPain.text}」，那这一天开局就输了。卫浴改造是性价比最高的幸福感投资。`
+            ],
+            '健康睡眠': [
+                `「${topPain.text}」正在悄悄吃掉你的精力。睡眠不是小事，是生活的地基。`,
+                `你以为是白天太累，其实是「${topPain.text}」。修好睡眠环境，比喝十杯咖啡都管用。`,
+                `「${topPain.text}」这个问题不解决，再贵的床垫也救不了你。卧室设计，先从痛点开刀。`
+            ],
+            '智慧收纳': [
+                `「${topPain.text}」——你不是东西多，是缺少一套懂你习惯的收纳逻辑。`,
+                `东西越买越多，空间越来越小，因为「${topPain.text}」。好的收纳不是藏东西，是让东西各得其所。`,
+                `「${topPain.text}」的本质是"找东西的时间成本"太高了。一个聪明的收纳系统，每天能帮你省半小时。`
+            ],
+            '衣物洗护': [
+                `「${topPain.text}」——洗护动线不顺，每天重复消耗你的耐心。`,
+                `洗衣服不该是马拉松，但因为「${topPain.text}」，它变成了耐力赛。`,
+                `「${topPain.text}」说明你的洗护区缺少"闭环设计"。从脱到洗到晾到收，应该一气呵成。`
+            ],
+            '环境优化': [
+                `「${topPain.text}」——你对环境的敏感不是挑剔，是身体在诚实投票。`,
+                `别人觉得"差不多就行"，但「${topPain.text}」让你知道差很多。环境优化是隐形的生活品质。`,
+                `「${topPain.text}」这个问题，住得越久越难受。与其忍耐，不如一次解决。`
+            ],
+            '家庭健身': [
+                `「${topPain.text}」——健身习惯已经有了，缺的是一块专属领地。`,
+                `办卡无数次，不如在家建一个小型健身角。「${topPain.text}」就是缺了这块地盘。`,
+                `「${topPain.text}」不是你的毅力问题，是空间问题。把健身区设计得顺手，坚持率能翻倍。`
+            ],
+            '居家娱乐': [
+                `「${topPain.text}」——娱乐不该将就，家是最好的私人影院/游戏厅。`,
+                `周末想好好放松，却被「${topPain.text}」打断。娱乐区的设计，决定了你充电的效率。`,
+                `「${topPain.text}」说明你的客厅还在用"会客模式"，而该切换到"自嗨模式"了。`
+            ],
+            '学习成长': [
+                `「${topPain.text}」——学习区不只是桌子，是专注力的容器。`,
+                `想学习却被「${topPain.text}」打断。专注力稀缺的时代，一个不被打扰的角落就是竞争力。`,
+                `「${topPain.text}」的本质是"环境不支持专注"。好的学习区，应该让你一坐进去就想读书。`
+            ]
+        };
+        insights.push({
+            title: '痛点共鸣',
+            text: pickOne(painMap[topPain.scene] || [`「${topPain.text}」——我们听到了，而且会把它写进方案的第一行。`])
+        });
+    } else {
+        insights.push({
+            title: '痛点共鸣',
+            text: pickOne([
+                '你目前的居住状态整体尚可，但"没有痛点"有时候意味着"没有被满足的需求"。我们帮你把模糊的不满意，变成清晰的设计参数。',
+                '表面看一切都好，但"还行"和"真好"之间有一道鸿沟。我们帮你找到那些被忽略的细节。',
+                '没有明显痛点，不代表没有优化空间。好设计有时候不是解决问题，是创造惊喜。'
+            ])
+        });
+    }
+
+    // 洞察3：理想家预言（组合逻辑各3条 + 单场景各3条 + 兜底3条，随机抽）
+    const coreScenes = result.scenes.core;
+    if (coreScenes.includes('餐厨茶饮') && coreScenes.includes('智慧收纳')) {
+        insights.push({
+            title: '理想家预言',
+            text: pickOne([
+                '你的理想家，是一个"乱中有序"的烟火空间——台面上永远有正在进行的料理，但每一样工具和食材都知道自己该在哪。',
+                '对你来说，完美的厨房不是空无一物，而是"热闹但可控"。锅在煮，菜在切，但台面不堆杂物。',
+                '你的收纳哲学是：东西可以多用，但不能乱放。厨房是你最该投资收纳系统的地方。'
+            ])
+        });
+    } else if (coreScenes.includes('健康睡眠') && coreScenes.includes('环境优化')) {
+        insights.push({
+            title: '理想家预言',
+            text: pickOne([
+                '你的理想家，是一个无论外面多吵、空气多差，关上门就能沉入深睡的茧。安静和清新，是你对家最高的褒奖。',
+                '卧室是你的避难所，不是展示厅。遮光、隔音、空气净化——这些看不见的投入，回报是无价的睡眠。',
+                '你不需要华丽的卧室，你需要一个"关机键"。躺下、关灯、世界静音——这就是你的理想家。'
+            ])
+        });
+    } else if (coreScenes.includes('餐厨茶饮') && code[2] === 'H') {
+        insights.push({
+            title: '理想家预言',
+            text: pickOne([
+                '你的理想家，是一个能让烟火气不散、又能随时变身 Party 现场的空间。厨房和客厅之间，不该有墙。',
+                '开放式厨房是为你发明的。你在灶台边忙碌，朋友在岛台边聊天——这才是你想要的生活画面。',
+                '你的厨房是家的中央舞台。做饭不是幕后工作，是社交的一部分。'
+            ])
+        });
+    } else if (coreScenes.includes('智慧收纳') && code[1] === 'O') {
+        insights.push({
+            title: '理想家预言',
+            text: pickOne([
+                '你的理想家，是一个所有物品都知道自己该在哪、从不会跟你捉迷藏的秩序空间。空无一物的台面，是你每天回家的第一眼舒适。',
+                '对你来说，收纳不是藏拙，是展示。每一个柜子打开，都应该是一目了然的满足。',
+                '你家的物品应该有"编制"。每一样东西都有名有姓、有固定工位，这样你才安心。'
+            ])
+        });
+    } else if (coreScenes.length === 0) {
+        insights.push({
+            title: '理想家预言',
+            text: pickOne([
+                '你的理想家还在酝酿中。不过没关系，完成这份问卷本身就是一次梳理——你已经开始知道，自己不要什么。',
+                '没有明确偏好，意味着你有最大的自由度。我们可以从一张白纸开始，画出任何你想要的形状。',
+                '"不确定"是设计的起点，不是终点。接下来我们会帮你把模糊的感觉，变成清晰的画面。'
+            ])
+        });
+    } else {
+        const sceneMap = {
+            '餐厨茶饮': [
+                '能让烟火气不散、又能随时变身的厨房',
+                '一个让你想走进去、而不是硬着头皮进去的烹饪空间',
+                '厨房是家的灵魂，你的灵魂需要更好的栖息地'
+            ],
+            '卫浴漱妆': [
+                '早晨不再排队、晚上能泡个澡的卫浴空间',
+                '一个让你每天愿意多待十分钟的私人SPA区',
+                '卫浴不该是战场，应该是你一天中最放松的过渡带'
+            ],
+            '健康睡眠': [
+                '无论外面多吵、关上门就能沉入深睡的茧',
+                '一个能彻底"断网"的卧室，连焦虑都进不来',
+                '你的卧室不需要多好看，只需要让你一沾枕头就睡着'
+            ],
+            '智慧收纳': [
+                '所有物品都知道自己该在哪的秩序空间',
+                '一个东西不会突然消失的魔法空间',
+                '打开任何抽屉都不会让你心跳加速的安心之家'
+            ],
+            '衣物洗护': [
+                '换洗晾晒收纳一气呵成的家务动线',
+                '一个让洗衣服不再拖延的顺手空间',
+                '从脏衣到净衣，最短路径就是你的理想动线'
+            ],
+            '居家娱乐': [
+                '下班就能瘫进去、完全属于自己的充电站',
+                '一个让你周末不想出门的客厅',
+                '你的客厅是私人影院+游戏厅+咖啡馆的三合一'
+            ],
+            '学习成长': [
+                '能让人一坐就是三小时的专注角落',
+                '一个进去就想读书、出来就变强的空间',
+                '你的学习区不只是桌子，是注意力的护城河'
+            ],
+            '家庭健身': [
+                '不用出门、随时能练的私人健身房',
+                '一个让你没有借口不运动的空间',
+                '健身区离你卧室越近，你去健身的概率越高'
+            ],
+            '环境优化': [
+                '空气、水质、温湿度都被精密调控的宜居舱',
+                '一个让你忘了外面是什么天气的家',
+                '你的身体比大脑更知道什么是好环境——让它满意就行'
+            ]
+        };
+        const firstScene = coreScenes[0];
+        insights.push({
+            title: '理想家预言',
+            text: pickOne([
+                `你的理想家，核心只有一个诉求：${pickOne(sceneMap[firstScene] || ['一个真正懂你的空间'])}。其他的，都可以围绕它来展开。`,
+                `如果把预算集中到一点，那应该是${pickOne(sceneMap[firstScene] || ['一个真正懂你的空间'])}。这是你最该花钱的地方。`,
+                `你不需要面面俱到的改造，先把${pickOne(sceneMap[firstScene] || ['核心空间'])}做到极致，其他的以后再说。`
+            ])
+        });
+    }
+
+    return insights;
+}
+
+function calculateFunFacts(result, code) {
+    const k = state.kitchen;
+    const e = state.entertainment;
+    const env = state.environment;
+    const baseCode = code.split('-')[0];
+    const d5 = code.split('-')[1] || 'R';
+
+    // 灵魂季节（16种，一型一节气的独特映射）
+    const seasonMap = {
+        'SOIP': { name: '霜降', emoji: '❄️', desc: '精密如仪器，万物各归其位' },
+        'SOIA': { name: '小雪', emoji: '🌨️', desc: '寂静、留白、不多一分' },
+        'SOHP': { name: '小满', emoji: '🌾', desc: '将满未满，正是招待好友的好时节' },
+        'SOHA': { name: '春分', emoji: '🌸', desc: '昼夜均分，社交与独处平衡得刚好' },
+        'SFIP': { name: '寒露', emoji: '🍂', desc: '敏感于温度变化，第一时间感知季节' },
+        'SFIA': { name: '立冬', emoji: '☃️', desc: '万物收藏，宅家是最舒服的事' },
+        'SFHP': { name: '夏至', emoji: '☀️', desc: '白昼最长，派对永不落幕' },
+        'SFHA': { name: '立夏', emoji: '🌿', desc: '万物生长，热闹从清晨到深夜' },
+        'EOIP': { name: '秋分', emoji: '🍁', desc: '收获的季节，厨房里满是成熟的气息' },
+        'EOIA': { name: '雨水', emoji: '🌧️', desc: '润物无声，一个人的餐桌也有诗意' },
+        'EOHP': { name: '芒种', emoji: '🌾', desc: '忙种忙收，厨房是永不歇业的剧场' },
+        'EOHA': { name: '大暑', emoji: '🔥', desc: '热浪滚滚，家里是最热闹的避暑地' },
+        'EFIP': { name: '冬至', emoji: '🌙', desc: '夜最长，灵感在黑暗中发光' },
+        'EFIA': { name: '惊蛰', emoji: '⚡', desc: '春雷乍动，随性中藏着突然的灵感' },
+        'EFHP': { name: '谷雨', emoji: '🌦️', desc: '雨生百谷，派对是播种快乐的方式' },
+        'EFHA': { name: '立春', emoji: '🌱', desc: '万物复苏，家的每一个角落都充满可能' }
+    };
+    const season = seasonMap[baseCode] || { name: '春分', emoji: '🌸', desc: '万物生长，家也在酝酿变化' };
+
+    // 灵魂动物（16种 + R/W 动态描述变体）
+    const animalDescMap = {
+        'SOIP': { R: '勤劳筑巢，每一格都有精确用途', W: '不断重构空间，家是你永远的Beta版' },
+        'SOIA': { R: '优雅独处，不沾染一丝多余', W: '云端游牧，极简装备走哪都能安家' },
+        'SOHP': { R: '把家打理得井井有条，还爱招待朋友', W: '每场聚会都是策展，主题从不重复' },
+        'SOHA': { R: '既爱整洁，也爱热闹的聚会', W: '氛围制造机，家里的灯光音乐永远在线' },
+        'SFIP': { R: '敏感纤细，对环境变化极度警觉', W: '旷野中也能嗅到风的形状' },
+        'SFIA': { R: '慢慢来，家是放松的栖息地', W: '拖家带口也能随时出发' },
+        'SFHP': { R: '热情好客，家里永远欢迎朋友', W: '派对永动机，今晚的DJ就是你' },
+        'SFHA': { R: '活泼外向，家里从不缺笑声', W: '社交变色龙，任何圈子都能融入' },
+        'EOIP': { R: '精明地守护着生活的烟火气', W: '味觉猎手，总在寻找新的风味边疆' },
+        'EOIA': { R: '精致、挑剔、享受一个人的盛宴', W: '一人食博主，孤独也能吃出仪式感' },
+        'EOHP': { R: '厨房是领地，聚餐是仪式', W: '私宴主理人，菜单从不受限' },
+        'EOHA': { R: '热爱展示，家就是生活舞台', W: '生活导演，每一幕都精心设计' },
+        'EFIP': { R: '深夜创作，在黑暗中灵感最盛', W: '凌晨三点的灵感比白天更锋利' },
+        'EFIA': { R: '随性而游，家跟着心情变', W: '流动生活家，风景变家也变' },
+        'EFHP': { R: '精力旺盛，家里永远有新节目', W: '快闪发起人，本周的主题下周再定' },
+        'EFHA': { R: '全能选手，家的每一个角落都被充分利用', W: '多面体验官，家是不停转场的剧场' }
+    };
+    const animalMap = {
+        'SOIP': { name: '建筑师蜜蜂', emoji: '🐝' },
+        'SOIA': { name: '白鹤', emoji: '🕊️' },
+        'SOHP': { name: '管家企鹅', emoji: '🐧' },
+        'SOHA': { name: '园丁鸟', emoji: '🐦' },
+        'SFIP': { name: '雾中鹿', emoji: '🦌' },
+        'SFIA': { name: '树懒', emoji: '🦥' },
+        'SFHP': { name: '金毛犬', emoji: '🐕' },
+        'SFHA': { name: '鹦鹉', emoji: '🦜' },
+        'EOIP': { name: '篝火旁的狐狸', emoji: '🦊' },
+        'EOIA': { name: '独行的猫', emoji: '🐈' },
+        'EOHP': { name: '领头的狼', emoji: '🐺' },
+        'EOHA': { name: '孔雀', emoji: '🦚' },
+        'EFIP': { name: '夜枭', emoji: '🦉' },
+        'EFIA': { name: '海豚', emoji: '🐬' },
+        'EFHP': { name: '蜂鸟', emoji: '🐦' },
+        'EFHA': { name: '鹰', emoji: '🦅' }
+    };
+    const animalBase = animalMap[baseCode] || { name: '独角兽', emoji: '🦄' };
+    const animalDesc = (animalDescMap[baseCode] || { R: '独一无二，无法归类', W: '独一无二，无法归类' })[d5];
+
+    // 理想城市 + 灵魂街区（16城 + R/W 动态描述）
+    const cityDescMap = {
+        'SOIP': { R: '秩序、效率与精致的代名词', W: '在秩序中寻找下一个突破点' },
+        'SOIA': { R: '园林之间，极简即雅致', W: '数字游民的江南据点' },
+        'SOHP': { R: '会吃会招待，烟火气里见人情', W: '私房菜馆的下一个选址地' },
+        'SOHA': { R: '干净文艺，社交友好型海滨', W: '周末popup的绝佳场地' },
+        'SFIP': { R: '山水之间，敏感而细腻', W: '在西湖边发现没人注意过的角落' },
+        'SFIA': { R: '佛系慢节奏，宅家也舒服', W: '带宠物去玉林路散步' },
+        'SFHP': { R: '自由热闹，火锅里煮着江湖', W: '凌晨两点的防空洞火锅' },
+        'SFHA': { R: '快乐社交，茶颜里藏着热情', W: '解放西的下一场livehouse' },
+        'EOIP': { R: '烟火气最浓，小吃即生活', W: '在巷子里发现还没人排队的粿条' },
+        'EOIA': { R: '精致早茶，独处也是美学', W: '一人食早茶的隐藏菜单' },
+        'EOHP': { R: '厨神之城，聚餐是最高仪式', W: '今晚的食材从鱼档直接到餐桌' },
+        'EOHA': { R: '热闹厚重，生活就是历史剧', W: '在城墙根办一场复古派对' },
+        'EFIP': { R: '创意陶瓷，独行者的灵感地', W: '在凌晨的窑口等一炉意外' },
+        'EFIA': { R: '随性自由，跟着心情过日子', W: '今天的风向决定明天的住处' },
+        'EFHP': { R: '热情派对，冰雪也能沸腾', W: '冰雕酒吧的即兴afterparty' },
+        'EFHA': { R: '全能高效，现代生活的样板间', W: '在前海试验区租一个未来空间' }
+    };
+    const cityMap = {
+        'SOIP': { name: '上海', emoji: '🌃' },
+        'SOIA': { name: '苏州', emoji: '🏯' },
+        'SOHP': { name: '广州', emoji: '🥟' },
+        'SOHA': { name: '厦门', emoji: '🌊' },
+        'SFIP': { name: '杭州', emoji: '🏞️' },
+        'SFIA': { name: '成都', emoji: '🐼' },
+        'SFHP': { name: '重庆', emoji: '🌶️' },
+        'SFHA': { name: '长沙', emoji: '🥤' },
+        'EOIP': { name: '潮州', emoji: '🍲' },
+        'EOIA': { name: '扬州', emoji: '🍜' },
+        'EOHP': { name: '顺德', emoji: '🦐' },
+        'EOHA': { name: '西安', emoji: '🏮' },
+        'EFIP': { name: '景德镇', emoji: '🏺' },
+        'EFIA': { name: '大理', emoji: '☁️' },
+        'EFHP': { name: '哈尔滨', emoji: '❄️' },
+        'EFHA': { name: '深圳', emoji: '🚀' }
+    };
+    const cityBase = cityMap[baseCode] || { name: '杭州', emoji: '🏞️' };
+    const cityDesc = (cityDescMap[baseCode] || { R: '山水之间，不紧不慢', W: '山水之间，不紧不慢' })[d5];
+
+    // 灵魂街区（第二城市）
+    const districtMap = {
+        'SOIP': { name: '法租界', emoji: '🏛️', desc: '梧桐区里的老洋房，历史与秩序共存' },
+        'SOIA': { name: '平江路', emoji: '🛶', desc: '沿河慢行，只留必要的风景' },
+        'SOHP': { name: '东山口', emoji: '🍵', desc: '骑楼下的茶餐厅，街坊邻居都熟' },
+        'SOHA': { name: '沙坡尾', emoji: '⛵', desc: '渔村变艺术区，新旧交融刚刚好' },
+        'SFIP': { name: '满觉陇', emoji: '🍃', desc: '桂花深处的隐世小院' },
+        'SFIA': { name: '宽窄巷子', emoji: '🏮', desc: '茶馆里一下午，时光慢下来' },
+        'SFHP': { name: '鹅岭二厂', emoji: '🏭', desc: '废弃工厂里的天台派对' },
+        'SFHA': { name: '潮宗街', emoji: '🎸', desc: '老街里的新酒吧，越夜越热闹' },
+        'EOIP': { name: '牌坊街', emoji: '🥮', desc: '一条巷子吃遍潮汕三百年' },
+        'EOIA': { name: '皮市街', emoji: '📚', desc: '独立书店与早茶馆为邻' },
+        'EOHP': { name: '华盖路', emoji: '🦪', desc: '从双皮奶到鱼生，味蕾不重样' },
+        'EOHA': { name: '回民街', emoji: '🥙', desc: '烟火气与历史感同时拉满' },
+        'EFIP': { name: '三宝村', emoji: '🎨', desc: '陶艺家的隐居山谷' },
+        'EFIA': { name: '龙龛码头', emoji: '🌅', desc: '洱海边的日出，今天看明天不一定' },
+        'EFHP': { name: '中央大街', emoji: '🍻', desc: '马迭尔冰棍与精酿啤酒的碰撞' },
+        'EFHA': { name: '华侨城创意园', emoji: '🎭', desc: '旧厂房里的新生活方式实验室' }
+    };
+
+    // 灵魂色彩
+    const colorMap = {
+        'SOIP': { name: '普鲁士蓝', emoji: '🔵', hex: '#003153' },
+        'SOIA': { name: '墨灰', emoji: '⚫', hex: '#4a4a4a' },
+        'SOHP': { name: '琥珀金', emoji: '🟡', hex: '#ffbf00' },
+        'SOHA': { name: '薄荷绿', emoji: '🟢', hex: '#98ff98' },
+        'SFIP': { name: '雾紫', emoji: '🟣', hex: '#a4a0c5' },
+        'SFIA': { name: '苔藓绿', emoji: '🌿', hex: '#8a9a5b' },
+        'SFHP': { name: '珊瑚橙', emoji: '🟠', hex: '#ff7f50' },
+        'SFHA': { name: '柠檬黄', emoji: '🍋', hex: '#fff44f' },
+        'EOIP': { name: '砖红', emoji: '🧱', hex: '#cb4154' },
+        'EOIA': { name: '樱花粉', emoji: '🌸', hex: '#ffb7c5' },
+        'EOHP': { name: '焦糖棕', emoji: '🟤', hex: '#c68e17' },
+        'EOHA': { name: '朱砂红', emoji: '🔴', hex: '#e34234' },
+        'EFIP': { name: '靛青', emoji: '🔷', hex: '#4b0082' },
+        'EFIA': { name: '天青', emoji: '🩵', hex: '#87ceeb' },
+        'EFHP': { name: '电光紫', emoji: '💜', hex: '#bf00ff' },
+        'EFHA': { name: '钛白', emoji: '⚪', hex: '#f0f0f0' }
+    };
+
+    // 灵魂香气
+    const scentMap = {
+        'SOIP': { name: '雪松', emoji: '🌲', desc: '沉稳、干净、有边界感' },
+        'SOIA': { name: '白茶', emoji: '🍵', desc: '清淡、回甘、不抢戏' },
+        'SOHP': { name: '柑橘', emoji: '🍊', desc: '明亮、热情、让人想深呼吸' },
+        'SOHA': { name: '海洋', emoji: '🌊', desc: '清爽、开阔、像刚开窗的海风' },
+        'SFIP': { name: '薰衣草', emoji: '💐', desc: '安抚神经，睡前最温柔的陪伴' },
+        'SFIA': { name: '檀香', emoji: '🪵', desc: '沉静、温暖、宅家时的安全感' },
+        'SFHP': { name: '柚子', emoji: '🍋', desc: '酸甜跳跃，和派对一样有活力' },
+        'SFHA': { name: '茉莉', emoji: '🌼', desc: '甜美、外向、让人想靠近' },
+        'EOIP': { name: '肉桂', emoji: '🥧', desc: '烘焙的温暖，厨房里的拥抱' },
+        'EOIA': { name: '玫瑰', emoji: '🌹', desc: '精致、浪漫、一个人也要仪式感' },
+        'EOHP': { name: '香草', emoji: '🍦', desc: '甜美、亲切、聚餐后的余韵' },
+        'EOHA': { name: '广藿香', emoji: '🍂', desc: '浓郁、厚重、有故事感的味道' },
+        'EFIP': { name: '烟草', emoji: '🚬', desc: '深邃、神秘、深夜创作的氛围' },
+        'EFIA': { name: '薄荷', emoji: '🌱', desc: '清醒、自由、随时出发的气息' },
+        'EFHP': { name: '柠檬草', emoji: '🍋', desc: '清新、刺激、永远保持新鲜感' },
+        'EFHA': { name: '橡木苔', emoji: '🌳', desc: '复合、包容、像家一样包罗万象' }
+    };
+
+    // 灵魂植物
+    const plantMap = {
+        'SOIP': { name: '多肉植物', emoji: '🌵', desc: '精致小巧，每一株都有自己的位置' },
+        'SOIA': { name: '文竹', emoji: '🎋', desc: '纤细优雅，不需要太多照顾' },
+        'SOHP': { name: '龟背竹', emoji: '🌿', desc: '大气好养，客厅的焦点' },
+        'SOHA': { name: '绿萝', emoji: '☘️', desc: '生命力顽强，给点阳光就灿烂' },
+        'SFIP': { name: '铃兰', emoji: '🌷', desc: ' delicate 而芬芳，需要细心呵护' },
+        'SFIA': { name: '吊兰', emoji: '🍃', desc: '垂落生长，随遇而安' },
+        'SFHP': { name: '向日葵', emoji: '🌻', desc: '追着光转，永远充满活力' },
+        'SFHA': { name: '三角梅', emoji: '🌺', desc: '热烈奔放，阳台上的瀑布' },
+        'EOIP': { name: '桂花', emoji: '🌼', desc: '香满整个秋天，厨房外的惊喜' },
+        'EOIA': { name: '山茶花', emoji: '🌸', desc: '独自绽放，不与群芳争艳' },
+        'EOHP': { name: '迷迭香', emoji: '🌿', desc: '煎牛排时随手摘一把' },
+        'EOHA': { name: '牡丹', emoji: '🏵️', desc: '花开富贵，宴客时的体面' },
+        'EFIP': { name: '蓝雪花', emoji: '❄️', desc: ' unusual 的颜色，灵感触发器' },
+        'EFIA': { name: '蒲公英', emoji: '🌬️', desc: '随风而行，落在哪都是家' },
+        'EFHP': { name: '郁金香', emoji: '🌷', desc: '季节限定，每次都不同色' },
+        'EFHA': { name: '琴叶榕', emoji: '🌳', desc: '百变造型，每个空间都能驾驭' }
+    };
+
+    return {
+        season,
+        animal: { ...animalBase, desc: animalDesc },
+        city: { ...cityBase, desc: cityDesc },
+        district: districtMap[baseCode] || { name: '西湖', emoji: '🏞️', desc: '山水之间，不紧不慢' },
+        color: colorMap[baseCode] || { name: '天青', emoji: '🔵', hex: '#87ceeb' },
+        scent: scentMap[baseCode] || { name: '白茶', emoji: '🍵', desc: '清淡、回甘' },
+        plant: plantMap[baseCode] || { name: '绿萝', emoji: '🌿', desc: '生命力顽强' }
+    };
+}
+
+function renderPersonaCard(p) {
+    const radarHtml = Object.entries(p.radar).map(([label, val]) => `
+        <div class="radar-row">
+            <div class="radar-label">${label}</div>
+            <div class="radar-bar-bg"><div class="radar-bar-fill" data-width="${val}"></div></div>
+            <div class="radar-value">${val}</div>
+        </div>
+    `).join('');
+
+    const tagsHtml = p.tags.map(t => `<span class="p1-tag">${t}</span>`).join('');
+
+    const insightsHtml = p.insights.map((ins, idx) => `
+        <div class="insight-item">
+            <div class="insight-number">0${idx + 1}</div>
+            <div class="insight-text">${ins.text}</div>
+        </div>
+    `).join('');
+
+    return `
+        <div class="persona-book" id="personaBook" style="background: ${p.theme.bg}; box-shadow: 0 20px 60px ${p.theme.shadow};">
+            <div class="persona-page active" data-page="0">
+                <div class="p1-badge">SBTI 居住人格</div>
+                <div class="p1-code">${p.code}</div>
+                <div class="p1-name">${p.name}</div>
+                <div class="p1-desc" id="p1Desc"></div>
+                <div class="p1-tags">${tagsHtml}</div>
+                <div class="p1-radar">
+                    <div class="p1-radar-title">生活场景关注度</div>
+                    ${radarHtml}
+                </div>
+                <div style="display:flex;justify-content:center;gap:20px;font-size:12px;opacity:0.85;">
+                    <div><strong>${p.stats.painCount}</strong> 个痛点</div>
+                    <div><strong>${p.stats.sceneCount}</strong> 个关注场景</div>
+                    <div>超越 <strong>${p.stats.painRank}%</strong> 用户</div>
+                </div>
+                <div class="p1-footer">幸之住 · 家居需求洞察</div>
+            </div>
+            <div class="persona-page" data-page="1">
+                <div class="p2-title">🔍 你的生活洞察</div>
+                ${insightsHtml}
+            </div>
+            <div class="persona-page" data-page="2">
+                <div class="p3-title">🎭 你的居住指纹</div>
+                <div class="fun-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.season.emoji}</div>
+                        <div class="fun-label">灵魂季节</div>
+                        <div class="fun-value">${p.funFacts.season.name}</div>
+                    </div>
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.animal.emoji}</div>
+                        <div class="fun-label">灵魂动物</div>
+                        <div class="fun-value">${p.funFacts.animal.name}</div>
+                    </div>
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.city.emoji}</div>
+                        <div class="fun-label">理想城市</div>
+                        <div class="fun-value">${p.funFacts.city.name}</div>
+                    </div>
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.district.emoji}</div>
+                        <div class="fun-label">灵魂街区</div>
+                        <div class="fun-value">${p.funFacts.district.name}</div>
+                    </div>
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.color.emoji}</div>
+                        <div class="fun-label">灵魂色彩</div>
+                        <div class="fun-value">${p.funFacts.color.name}</div>
+                    </div>
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.scent.emoji}</div>
+                        <div class="fun-label">灵魂香气</div>
+                        <div class="fun-value">${p.funFacts.scent.name}</div>
+                    </div>
+                    <div class="fun-card">
+                        <div class="fun-icon">${p.funFacts.plant.emoji}</div>
+                        <div class="fun-label">灵魂植物</div>
+                        <div class="fun-value">${p.funFacts.plant.name}</div>
+                    </div>
+                </div>
+                <div class="fun-summary">
+                    <strong>你的居住指纹</strong>
+                    你是${p.funFacts.season.emoji} ${p.funFacts.season.name}型的人——${p.funFacts.season.desc}。
+                    如果把你的家搬到一座城市，那会是${p.funFacts.city.emoji} ${p.funFacts.city.name}，${p.funFacts.city.desc}。
+                    具体到街区，${p.funFacts.district.emoji} ${p.funFacts.district.name}最对你的胃口——${p.funFacts.district.desc}。
+                    你的灵魂动物${p.funFacts.animal.emoji} ${p.funFacts.animal.name}，${p.funFacts.animal.desc}。
+                    如果家是颜色，你是${p.funFacts.color.name}；如果家是气味，那是${p.funFacts.scent.name}的${p.funFacts.scent.desc}；
+                    角落里还应该有一盆${p.funFacts.plant.emoji} ${p.funFacts.plant.name}，${p.funFacts.plant.desc}。
+                </div>
+            </div>
+        </div>
+        <div class="persona-dots" id="personaDots">
+            <span class="dot active" onclick="goToPage(0)"></span>
+            <span class="dot" onclick="goToPage(1)"></span>
+            <span class="dot" onclick="goToPage(2)"></span>
+        </div>
+        <div class="persona-nav">
+            <button class="btn" id="prevBtn" onclick="prevPage()" disabled>← 上一页</button>
+            <button class="btn" id="nextBtn" onclick="nextPage()">下一页 →</button>
+        </div>
+    `;
+}
+
+function goToPage(idx) {
+    const pages = document.querySelectorAll('.persona-page');
+    const dots = document.querySelectorAll('#personaDots .dot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    pages.forEach((p, i) => p.classList.toggle('active', i === idx));
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx === pages.length - 1;
+
+    if (idx === 0) {
+        setTimeout(() => {
+            animateRadarBars();
+            const descEl = document.getElementById('p1Desc');
+            const p = window._currentPersona;
+            if (descEl && p) typeWriterEffect(descEl, p.desc, 28);
+        }, 100);
+    }
+}
+
+function nextPage() {
+    const pages = document.querySelectorAll('.persona-page');
+    let current = 0;
+    pages.forEach((p, i) => { if (p.classList.contains('active')) current = i; });
+    if (current < pages.length - 1) goToPage(current + 1);
+}
+
+function prevPage() {
+    const pages = document.querySelectorAll('.persona-page');
+    let current = 0;
+    pages.forEach((p, i) => { if (p.classList.contains('active')) current = i; });
+    if (current > 0) goToPage(current - 1);
+}
+
+function animateRadarBars() {
+    document.querySelectorAll('.radar-bar-fill').forEach(bar => {
+        const w = bar.getAttribute('data-width');
+        bar.style.width = '0';
+        setTimeout(() => { bar.style.width = w + '%'; }, 60);
+    });
+}
+
+function typeWriterEffect(element, text, speed) {
+    element.textContent = '';
+    let i = 0;
+    const timer = setInterval(() => {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+        } else {
+            clearInterval(timer);
+        }
+    }, speed);
+}
+
+function downloadShareCard() {
+    const book = document.getElementById('personaBook');
+    if (!book || typeof html2canvas === 'undefined') {
+        alert('截图功能加载中，请稍后重试');
+        return;
+    }
+    html2canvas(book, { scale: 2, backgroundColor: null }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = '幸之住_我的居住人格_' + state.basic.name + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }).catch(() => alert('截图失败，请手动截屏保存'));
 }
 </script>
 </body>
