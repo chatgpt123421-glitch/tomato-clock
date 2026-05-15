@@ -504,7 +504,7 @@ async def admin_page():
 
 @app.get("/report/{survey_id}", response_class=HTMLResponse)
 async def report_page(survey_id: int):
-    return """
+    html = """
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
@@ -657,7 +657,8 @@ async def report_page(survey_id: int):
         </script>
     </body>
     </html>
-    """ % (survey_id, survey_id, survey_id)
+    """
+    return html.replace('%s', str(survey_id), 1).replace('%s', str(survey_id), 1).replace('%s', str(survey_id), 1)
 
 
 # ========== 飞书推送 ==========
