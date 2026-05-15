@@ -546,89 +546,114 @@ async def report_page(survey_id: int):
             </div>
         </div>
         <script>
+            const container = document.getElementById('reportContent');
+            container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#86868b;">加载中...</div>';
+
             fetch('/api/surveys/{survey_id}')
-                .then(r => r.json())
-                .then(d => {{
-                    const r = d.report;
-                    const b = d.basic;
-                    const persona = r.persona;
+                .then(res => {
+                    if (!res.ok) throw new Error('请求失败: ' + res.status);
+                    return res.json();
+                })
+                .then(d => {
+                    if (!d || d.code === 404) {
+                        container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#d32f2f;">未找到该报告</div>';
+                        return;
+                    }
+                    const r = d.report || {};
+                    const b = d.basic || {};
+                    const persona = r.persona || null;
+
+                    const safeArray = (v) => Array.isArray(v) ? v : [];
+                    const safeJoin = (v, sep) => safeArray(v).join(sep) || '无';
+
+                    const scenes = r.scenes || {};
+                    const pains = safeArray(r.pains);
+                    const params = safeArray(r.params);
+                    const constraints = safeArray(r.constraints);
+                    const seeds = safeArray(r.seeds);
+
                     const personaHtml = persona ? `
                         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 32px; color: #fff; text-align: center; margin-bottom: 32px;">
                             <div style="font-size: 12px; opacity: 0.8; margin-bottom: 8px; letter-spacing: 2px;">SBTI 居住人格</div>
-                            <div style="font-size: 36px; font-weight: 800; letter-spacing: 4px; margin-bottom: 4px;">${{persona.code}}</div>
-                            <div style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">${{persona.name}}</div>
-                            <div style="font-size: 14px; opacity: 0.95; line-height: 1.6; max-width: 400px; margin: 0 auto;">${{persona.desc}}</div>
-                            <div style="margin-top: 12px;">${{(persona.tags || []).map(t => `<span style="display:inline-block;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:12px;font-size:12px;margin:4px;">${{t}}</span>`).join('')}}</div>
+                            <div style="font-size: 36px; font-weight: 800; letter-spacing: 4px; margin-bottom: 4px;">${persona.code || ''}</div>
+                            <div style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">${persona.name || ''}</div>
+                            <div style="font-size: 14px; opacity: 0.95; line-height: 1.6; max-width: 400px; margin: 0 auto;">${persona.desc || ''}</div>
+                            <div style="margin-top: 12px;">${safeArray(persona.tags).map(t => `<span style="display:inline-block;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:12px;font-size:12px;margin:4px;">${t}</span>`).join('')}</div>
                         </div>
                     ` : '';
-                    document.getElementById('reportContent').innerHTML = `
+
+                    container.innerHTML = `
                         <div class="report-header">
                             <h2>需求画像报告</h2>
-                            <p style="color:#86868b; margin-top:8px;">编号 #${{d.id}} · ${{d.created_at}}</p>
+                            <p style="color:#86868b; margin-top:8px;">编号 #${d.id || survey_id} · ${d.created_at || '-'}</p>
                         </div>
-                        ${{personaHtml}}
+                        ${personaHtml}
                         <div class="report-section">
                             <h3>基础锚点</h3>
                             <table class="report-table">
-                                <tr><td>客户姓名</td><td>${{b.name || '-'}}</td></tr>
-                                <tr><td>手机号</td><td>${{b.phone || '-'}}</td></tr>
-                                <tr><td>常住人口</td><td>${{b.people || '-'}} 人</td></tr>
-                                <tr><td>人口结构</td><td>${{(b.structure || []).join('、') || '-'}}</td></tr>
-                                <tr><td>房屋面积</td><td>${{b.area || '-'}}</td></tr>
-                                <tr><td>装修类型</td><td>${{b.type || '-'}}</td></tr>
-                                <tr><td>预算区间</td><td>${{b.budget || '-'}}</td></tr>
+                                <tr><td>客户姓名</td><td>${b.name || '-'}</td></tr>
+                                <tr><td>手机号</td><td>${b.phone || '-'}</td></tr>
+                                <tr><td>常住人口</td><td>${b.people || '-'} 人</td></tr>
+                                <tr><td>人口结构</td><td>${safeJoin(b.structure, '、')}</td></tr>
+                                <tr><td>房屋面积</td><td>${b.area || '-'}</td></tr>
+                                <tr><td>装修类型</td><td>${b.type || '-'}</td></tr>
+                                <tr><td>预算区间</td><td>${b.budget || '-'}</td></tr>
                             </table>
                         </div>
                         <div class="report-section">
                             <h3>场景分级</h3>
                             <div style="margin-bottom:12px;">
                                 <span class="tag tag-red">核心场景</span>
-                                <span>${{r.scenes.core.join('、') || '无'}}</span>
+                                <span>${safeJoin(scenes.core, '、')}</span>
                             </div>
                             <div style="margin-bottom:12px;">
                                 <span class="tag tag-yellow">次要场景</span>
-                                <span>${{r.scenes.minor.join('、') || '无'}}</span>
+                                <span>${safeJoin(scenes.minor, '、')}</span>
                             </div>
                             <div>
                                 <span class="tag tag-gray">暂无需求</span>
-                                <span>${{r.scenes.none.join('、') || '无'}}</span>
+                                <span>${safeJoin(scenes.none, '、')}</span>
                             </div>
                         </div>
                         <div class="report-section">
                             <h3>痛点清单</h3>
-                            ${{r.pains.length ? r.pains.map(p => `
+                            ${pains.length ? pains.map(p => `
                                 <div class="pain-item">
-                                    <div class="pain-scene">${{p.scene}}</div>
-                                    <div class="pain-text">${{p.text}}</div>
+                                    <div class="pain-scene">${p.scene || ''}</div>
+                                    <div class="pain-text">${p.text || ''}</div>
                                 </div>
-                            `).join('') : '<p style="color:#86868b;">暂无明确痛点</p>'}}
+                            `).join('') : '<p style="color:#86868b;">暂无明确痛点</p>'}
                         </div>
                         <div class="report-section">
                             <h3>设计参数</h3>
                             <table class="report-table">
-                                ${{r.params.length ? r.params.map(p => `
-                                    <tr><td>${{p.scene}}</td><td>${{p.item}} <span class="tag ${{p.level==='必须有'?'tag-red':p.level==='最好有'?'tag-yellow':'tag-gray'}}">${{p.level}}</span></td></tr>
-                                `).join('') : '<tr><td colspan="2" style="color:#86868b;">暂无</td></tr>'}}
+                                ${params.length ? params.map(p => `
+                                    <tr><td>${p.scene || ''}</td><td>${p.item || ''} <span class="tag ${p.level==='必须有'?'tag-red':p.level==='最好有'?'tag-yellow':'tag-gray'}">${p.level || ''}</span></td></tr>
+                                `).join('') : '<tr><td colspan="2" style="color:#86868b;">暂无</td></tr>'}
                             </table>
                         </div>
                         <div class="report-section">
                             <h3>特殊约束</h3>
-                            ${{r.constraints.length ? r.constraints.map(c => `
+                            ${constraints.length ? constraints.map(c => `
                                 <div style="margin-bottom:10px; padding:12px; background:#fff3f3; border-radius:8px; border-left:3px solid #d32f2f;">
-                                    <strong>${{c.type}}</strong>：${{c.desc}}
+                                    <strong>${c.type || ''}</strong>：${c.desc || ''}
                                 </div>
-                            `).join('') : '<p style="color:#86868b;">暂无</p>'}}
+                            `).join('') : '<p style="color:#86868b;">暂无</p>'}
                         </div>
                         <div class="report-section">
                             <h3>种草待确认</h3>
-                            ${{r.seeds.length ? r.seeds.map(s => `
+                            ${seeds.length ? seeds.map(s => `
                                 <div style="margin-bottom:10px; padding:12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1976d2;">
-                                    <strong>${{s.item}}</strong>：${{s.reason}}
+                                    <strong>${s.item || ''}</strong>：${s.reason || ''}
                                 </div>
-                            `).join('') : '<p style="color:#86868b;">暂无</p>'}}
+                            `).join('') : '<p style="color:#86868b;">暂无</p>'}
                         </div>
                     `;
-                }});
+                })
+                .catch(err => {
+                    console.error(err);
+                    container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#d32f2f;">加载报告失败，请刷新重试<br><span style="font-size:13px;color:#86868b;">' + (err.message || '网络错误') + '</span></div>';
+                });
         </script>
     </body>
     </html>
