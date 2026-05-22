@@ -14,7 +14,7 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 720px;
+            max-width: 760px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -44,7 +44,7 @@
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            letter-spacing: 0;
         }
         h2 {
             font-size: 24px;
@@ -58,8 +58,8 @@
         }
         .question {
             background: #fff;
-            border-radius: 16px;
-            padding: 28px;
+            border-radius: 14px;
+            padding: 26px;
             margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
@@ -85,9 +85,9 @@
         .option {
             display: flex;
             align-items: center;
-            padding: 16px;
+            padding: 15px 16px;
             border: 2px solid #e5e5ea;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 16px;
@@ -172,10 +172,19 @@
 
         /* 结果页样式 */
         .report {
-            background: #fff;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            background: rgba(255,255,255,0.88);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 18px 60px rgba(35,28,20,0.12);
+            backdrop-filter: blur(14px);
+        }
+        #step-report {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.68), rgba(255,255,255,0.92)),
+                url('/static/report-bg.png') center/cover no-repeat;
+            border-radius: 28px;
+            padding: 24px;
+            margin: -8px -8px 0;
         }
         .report-header {
             text-align: center;
@@ -273,37 +282,274 @@
         .text-input::placeholder {
             color: #c7c7cc;
         }
+        .hero-cover {
+            position: relative;
+            min-height: 440px;
+            border-radius: 22px;
+            overflow: hidden;
+            background: #1d1d1f url('/static/hero-home.png') center/cover no-repeat;
+            margin: 0 0 24px;
+            box-shadow: 0 24px 70px rgba(28,22,16,0.18);
+        }
+        .hero-cover::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(20,24,22,0.78) 0%, rgba(20,24,22,0.48) 48%, rgba(20,24,22,0.18) 100%);
+        }
+        .hero-copy {
+            position: absolute;
+            left: 34px;
+            right: 34px;
+            bottom: 34px;
+            z-index: 1;
+            color: #fff;
+            max-width: 470px;
+        }
+        .hero-copy h1 {
+            font-size: 38px;
+            line-height: 1.18;
+            margin-bottom: 14px;
+            letter-spacing: 0;
+        }
+        .hero-copy p {
+            color: rgba(255,255,255,0.86);
+            font-size: 16px;
+            line-height: 1.75;
+        }
+        .hero-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 18px 0 0;
+        }
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.16);
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+            backdrop-filter: blur(8px);
+        }
+        .contact-note {
+            background: #f5f9ff;
+            color: #185a9d;
+            border: 1px solid #d8eaff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .flow-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: -4px 0 14px;
+        }
+        .flow-badge.core {
+            background: #eef6ff;
+            color: #185a9d;
+            border: 1px solid #d8eaff;
+        }
+        .flow-badge.optional {
+            background: #f6f3ee;
+            color: #7a5a34;
+            border: 1px solid #eadfce;
+        }
+        .priority-card {
+            margin-top: 22px;
+            padding: 22px;
+            border-radius: 18px;
+            background: #fff;
+            border: 1px solid #eceef2;
+            color: #1d1d1f;
+            text-align: left;
+            box-shadow: 0 8px 28px rgba(35,28,20,0.06);
+        }
+        .priority-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .priority-card p {
+            color: #6b6f76;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+        .priority-list {
+            display: grid;
+            gap: 10px;
+            counter-reset: priority;
+        }
+        .priority-item {
+            counter-increment: priority;
+            display: grid;
+            grid-template-columns: 34px 1fr;
+            gap: 12px;
+            align-items: start;
+            padding: 14px;
+            border-radius: 14px;
+            background: #f7f8fa;
+            border: 1px solid #eceef2;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .priority-item::before {
+            content: counter(priority);
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #1d1d1f;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .conversion-card {
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #1f2a24 0%, #475a4e 100%);
+            color: #fff;
+            text-align: left;
+        }
+        .conversion-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .conversion-card p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.82);
+            margin-bottom: 14px;
+        }
+        .conversion-card .btn {
+            flex: none;
+            background: #fff;
+            color: #1d1d1f;
+            padding: 11px 18px;
+            font-size: 14px;
+        }
+        .profile-summary-card {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 18px 0 20px;
+        }
+        .profile-summary-item {
+            background: #f7f8fa;
+            border: 1px solid #eceef2;
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+        }
+        .profile-summary-item strong {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #1d1d1f;
+        }
+        .profile-summary-item span {
+            font-size: 12px;
+            color: #86868b;
+        }
+        .profile-entry-card {
+            margin-top: 22px;
+            padding: 22px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #fbfbf8 0%, #f5f1ea 100%);
+            border: 1px solid #ebe4d8;
+            color: #1d1d1f;
+            text-align: left;
+        }
+        .profile-entry-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #2d2a25;
+        }
+        .profile-entry-card p {
+            font-size: 14px;
+            color: #6f675b;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+        .archive-box {
+            margin-top: 18px;
+            padding: 18px;
+            background: #f5f7fa;
+            border-radius: 14px;
+            text-align: left;
+        }
+        .archive-box a {
+            display: block;
+            margin: 8px 0 12px;
+            color: #0071e3;
+            word-break: break-all;
+            text-decoration: none;
+        }
+        .archive-box a:hover {
+            text-decoration: underline;
+        }
+        .copy-hint {
+            display: inline-block;
+            margin-left: 10px;
+            color: #188038;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .copy-hint.show {
+            opacity: 1;
+        }
         @media (max-width: 640px) {
             .container { padding: 20px 16px; }
             h1 { font-size: 26px; }
             .question { padding: 20px; }
             .report { padding: 24px; }
+            .hero-cover { min-height: 520px; border-radius: 20px; background-position: 58% center; }
+            .hero-cover::after { background: linear-gradient(180deg, rgba(20,24,22,0.2) 0%, rgba(20,24,22,0.78) 100%); }
+            .hero-copy { left: 22px; right: 22px; bottom: 24px; }
+            .hero-copy h1 { font-size: 30px; }
+            .profile-summary-card { grid-template-columns: repeat(2, 1fr); }
+            .priority-item { grid-template-columns: 30px 1fr; }
         }
 
         /* --- Persona Book v2 --- */
         .persona-book {
-            border-radius: 24px;
+            border-radius: 22px;
             overflow: hidden;
             position: relative;
-            min-height: 560px;
+            min-height: 420px;
             transition: all 0.5s ease;
             color: #fff;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            background-size: cover !important;
+            background-position: center !important;
         }
         .persona-book::before {
             content: '';
             position: absolute;
-            top: -50%; right: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            inset: 0;
+            background: linear-gradient(90deg, rgba(18,16,14,0.78) 0%, rgba(18,16,14,0.48) 46%, rgba(18,16,14,0.08) 100%);
             pointer-events: none;
         }
         .persona-page {
             display: none;
-            padding: 40px 28px;
-            text-align: center;
-            min-height: 560px;
+            padding: 34px;
+            text-align: left;
+            min-height: 420px;
             position: relative;
+            z-index: 1;
         }
         .persona-page.active {
             display: block;
@@ -370,9 +616,9 @@
             opacity: 0.9;
         }
         .p1-code {
-            font-size: 52px;
+            font-size: 42px;
             font-weight: 800;
-            letter-spacing: 8px;
+            letter-spacing: 4px;
             margin-bottom: 8px;
             text-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
@@ -382,19 +628,19 @@
             margin-bottom: 16px;
         }
         .p1-desc {
-            font-size: 14px;
-            line-height: 1.7;
+            font-size: 15px;
+            line-height: 1.65;
             opacity: 0.92;
-            max-width: 420px;
-            margin: 0 auto 24px;
-            min-height: 48px;
+            max-width: 520px;
+            margin: 0 0 18px;
+            min-height: 0;
         }
         .p1-tags {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 8px;
-            margin-bottom: 28px;
+            margin-bottom: 0;
         }
         .p1-tag {
             background: rgba(255,255,255,0.12);
@@ -408,8 +654,9 @@
             background: rgba(0,0,0,0.08);
             border-radius: 16px;
             padding: 18px;
-            margin-bottom: 20px;
+            margin: 24px 0 16px;
             text-align: left;
+            max-width: 460px;
         }
         .p1-radar-title {
             font-size: 12px;
@@ -435,7 +682,7 @@
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 24px;
-            text-align: center;
+            text-align: left;
         }
         .insight-item {
             background: rgba(0,0,0,0.06);
@@ -472,7 +719,7 @@
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 24px;
-            text-align: center;
+            text-align: left;
         }
         .fun-grid {
             display: grid;
@@ -483,7 +730,7 @@
         .fun-card {
             background: rgba(0,0,0,0.06);
             border-radius: 16px;
-            padding: 18px 12px;
+            padding: 18px 14px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.08);
         }
@@ -499,6 +746,12 @@
         .fun-value {
             font-size: 15px;
             font-weight: 700;
+        }
+        .fun-desc {
+            margin-top: 8px;
+            font-size: 12px;
+            line-height: 1.45;
+            opacity: 0.78;
         }
         .fun-summary {
             background: rgba(0,0,0,0.06);
@@ -521,6 +774,7 @@
             gap: 12px;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .persona-share-btns .btn {
             flex: none;
@@ -562,8 +816,10 @@
 
         /* Responsive */
         @media (max-width: 640px) {
-            .persona-page { padding: 32px 20px; min-height: 480px; }
-            .p1-code { font-size: 40px; letter-spacing: 4px; }
+            #step-report { padding: 12px; border-radius: 20px; margin: 0; }
+            .persona-page { padding: 26px 20px; min-height: 460px; }
+            .persona-book::before { background: linear-gradient(180deg, rgba(18,16,14,0.18) 0%, rgba(18,16,14,0.82) 100%); }
+            .p1-code { font-size: 36px; letter-spacing: 2px; }
             .p1-name { font-size: 22px; }
             .fun-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
             .fun-card { padding: 14px 8px; }
@@ -580,20 +836,15 @@
 
     <!-- 欢迎页 -->
     <div class="step active" id="step-welcome">
-        <h1>3 分钟，测出你的居住人格</h1>
-        <p class="subtitle">不是装修问卷，是一次关于「你和你家」的轻测试。<br>你会得到：居住人格类型 · 灵魂城市与节气 · 理想家关键词 · 一张可晒的人格卡片</p>
-        <div style="display:flex;gap:12px;margin:24px 0;flex-wrap:wrap;">
-            <span style="display:inline-block;background:#f0f0f0;padding:6px 14px;border-radius:20px;font-size:13px;color:#666;">⏱️ 约 3-5 分钟</span>
-            <span style="display:inline-block;background:#f0f0f0;padding:6px 14px;border-radius:20px;font-size:13px;color:#666;">📝 11 个生活场景</span>
-            <span style="display:inline-block;background:#f0f0f0;padding:6px 14px;border-radius:20px;font-size:13px;color:#666;">🎯 可跳过不相关的</span>
-        </div>
-        <div class="question">
-            <div class="question-label">我们会从你的真实生活出发，聊聊这些日常：</div>
-            <div class="options">
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>谁住在这个家里？做饭多吗？睡觉轻吗？</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>早上会不会抢卫生间？洗完澡是不是湿一片？</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>东西总找不到？换季像打仗？</span></div>
-                <div class="option" style="cursor: default;"><div class="option-check checkbox" style="background: #0071e3; border-color: #0071e3;"></div><span>周末想宅家还是约朋友？空气不好你第一个知道？</span></div>
+        <div class="hero-cover" aria-label="温暖的家庭生活封面">
+            <div class="hero-copy">
+                <h1>从日常里，看见你真正需要的家</h1>
+                <p>回答几个真实生活场景，生成你的居住人格和设计师可读的需求画像。它不是装修登记表，更像一次帮你把需求说清楚的小测试。</p>
+                <div class="hero-pills">
+                    <span class="hero-pill">约 3 分钟</span>
+                    <span class="hero-pill">可跳过不相关</span>
+                    <span class="hero-pill">生成需求画像</span>
+                </div>
             </div>
         </div>
         <div class="btn-group">
@@ -605,16 +856,6 @@
     <div class="step" id="step-basic">
         <h2>先认识你和你家</h2>
         <p class="subtitle">就像朋友聊天，随便填，没有标准答案。</p>
-
-        <div class="question" id="q-name">
-            <div class="question-label">您的姓名？</div>
-            <input type="text" class="text-input" name="name" placeholder="请输入您的姓名" oninput="state.basic.name=this.value">
-        </div>
-
-        <div class="question" id="q-phone">
-            <div class="question-label">您的手机号？（必填，作为档案唯一标识）</div>
-            <input type="text" class="text-input" name="phone" placeholder="请输入11位手机号，后续凭此号修改档案" oninput="state.basic.phone=this.value">
-        </div>
 
         <div class="question" id="q-people">
             <div class="question-label">家里常住几口人？</div>
@@ -634,6 +875,7 @@
                 <label class="option"><input type="checkbox" name="structure" value="0-3岁婴儿" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>0-3岁婴儿</span></label>
                 <label class="option"><input type="checkbox" name="structure" value="3-12岁儿童" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>3-12岁儿童</span></label>
                 <label class="option"><input type="checkbox" name="structure" value="青少年" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>13-18岁青少年</span></label>
+                <label class="option"><input type="checkbox" name="structure" value="50-64岁长辈" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>50-64岁长辈</span></label>
                 <label class="option"><input type="checkbox" name="structure" value="老人" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>65岁以上老人</span></label>
                 <label class="option"><input type="checkbox" name="structure" value="独居" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>独居（无其他人）</span></label>
             </div>
@@ -642,7 +884,7 @@
         <div class="question" id="q-area">
             <div class="question-label">房屋面积大约多少？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="area" value="60以下" onchange="selectOption(this)"><span class="option-check"></span><span>60㎡以下</span></label>
+                <label class="option"><input type="radio" name="area" value="60以下" onchange="selectOption(this)"><span class="option-check"></span><span>60㎡以下</span></label>
                 <label class="option"><input type="radio" name="area" value="60-90" onchange="selectOption(this)"><span class="option-check"></span><span>60-90㎡</span></label>
                 <label class="option"><input type="radio" name="area" value="90-120" onchange="selectOption(this)"><span class="option-check"></span><span>90-120㎡</span></label>
                 <label class="option"><input type="radio" name="area" value="120-150" onchange="selectOption(this)"><span class="option-check"></span><span>120-150㎡</span></label>
@@ -654,7 +896,7 @@
             <div class="question-label">这次装修的预算区间大概是？</div>
             <div class="question-tip">包含设计、硬装、主材、定制家具，不含家电和软装</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="budget" value="10万以下" onchange="selectOption(this)"><span class="option-check"></span><span>10万以下</span></label>
+                <label class="option"><input type="radio" name="budget" value="10万以下" onchange="selectOption(this)"><span class="option-check"></span><span>10万以下</span></label>
                 <label class="option"><input type="radio" name="budget" value="10-15万" onchange="selectOption(this)"><span class="option-check"></span><span>10-15万</span></label>
                 <label class="option"><input type="radio" name="budget" value="15-20万" onchange="selectOption(this)"><span class="option-check"></span><span>15-20万</span></label>
                 <label class="option"><input type="radio" name="budget" value="20-30万" onchange="selectOption(this)"><span class="option-check"></span><span>20-30万</span></label>
@@ -665,7 +907,7 @@
         <div class="question" id="q-type">
             <div class="question-label">房屋类型是？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="type" value="毛坯" onchange="selectOption(this)"><span class="option-check"></span><span>毛坯新房</span></label>
+                <label class="option"><input type="radio" name="type" value="毛坯" onchange="selectOption(this)"><span class="option-check"></span><span>毛坯新房</span></label>
                 <label class="option"><input type="radio" name="type" value="二手房翻新" onchange="selectOption(this)"><span class="option-check"></span><span>二手房整体翻新</span></label>
                 <label class="option"><input type="radio" name="type" value="局部改造" onchange="selectOption(this)"><span class="option-check"></span><span>局部改造（厨卫/墙面等）</span></label>
             </div>
@@ -676,6 +918,7 @@
             <div class="options">
                 <label class="option"><input type="checkbox" name="tags" value="备孕/孕期" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>备孕/孕期</span></label>
                 <label class="option"><input type="checkbox" name="tags" value="0-3岁婴儿" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>0-3岁婴儿</span></label>
+                <label class="option"><input type="checkbox" name="tags" value="50-64岁长辈" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>50-64岁长辈同住</span></label>
                 <label class="option"><input type="checkbox" name="tags" value="老人" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>65岁以上老人同住</span></label>
                 <label class="option"><input type="checkbox" name="tags" value="宠物" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>养宠物</span></label>
                 <label class="option"><input type="checkbox" name="tags" value="户外" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>户外/露营/骑行装备多</span></label>
@@ -698,10 +941,10 @@
         <div class="question" id="q-k-freq">
             <div class="question-label">家里平时开火做饭的频率是？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="k_freq" value="每天" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check checkbox"></span><span>每天1-2餐</span></label>
-                <label class="option"><input type="checkbox" name="k_freq" value="每周3-5次" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check checkbox"></span><span>每周3-5次</span></label>
-                <label class="option"><input type="checkbox" name="k_freq" value="偶尔" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check checkbox"></span><span>偶尔/基本外卖</span></label>
-                <label class="option"><input type="checkbox" name="k_freq" value="从不" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check checkbox"></span><span>从不做饭</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="每天" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>每天1-2餐</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="每周3-5次" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>每周3-5次</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="偶尔" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>偶尔/基本外卖</span></label>
+                <label class="option"><input type="radio" name="k_freq" value="从不" onchange="selectOption(this); checkKitchenFlow();"><span class="option-check"></span><span>从不做饭</span></label>
             </div>
         </div>
 
@@ -1628,7 +1871,32 @@
 
         <div class="btn-group">
             <button class="btn btn-secondary" onclick="goTo('environment')">返回</button>
-            <button class="btn btn-primary" onclick="generateReport()">生成需求画像</button>
+            <button class="btn btn-primary" onclick="goTo('contact')">下一步</button>
+        </div>
+    </div>
+
+    <!-- 联系方式 -->
+    <div class="step" id="step-contact">
+        <h2>保存你的需求画像</h2>
+        <p class="subtitle">最后一步，用于生成和找回这份档案。</p>
+
+        <div class="contact-note">
+            为了保存你的需求画像，后续可凭手机号继续修改，请留下联系方式。手机号只作为档案唯一标识，不影响前面答案。
+        </div>
+
+        <div class="question" id="q-name">
+            <div class="question-label">您的姓名？</div>
+            <input type="text" class="text-input" name="name" placeholder="请输入您的姓名" oninput="state.basic.name=this.value; saveState();">
+        </div>
+
+        <div class="question" id="q-phone">
+            <div class="question-label">您的手机号？</div>
+            <input type="tel" class="text-input" name="phone" maxlength="11" placeholder="请输入11位手机号，后续凭此号修改档案" oninput="state.basic.phone=this.value.replace(/\D/g,'').slice(0,11); this.value=state.basic.phone; saveState();">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goTo('special')">返回</button>
+            <button class="btn btn-primary" onclick="if(validateContact()) generateReport()">生成需求画像</button>
         </div>
     </div>
 
@@ -1636,10 +1904,6 @@
     <div class="step" id="step-report">
         <div class="report" id="reportContent">
             <!-- 动态生成 -->
-        </div>
-        <div class="btn-group" style="margin-top: 24px;">
-            <button class="btn btn-secondary" onclick="goTo('sleep')">返回修改</button>
-            <button class="btn btn-primary" onclick="window.print()">打印/保存PDF</button>
         </div>
     </div>
 </div>
@@ -1659,19 +1923,46 @@ const state = {
     special: {}
 };
 
-const steps = ['welcome', 'basic', 'kitchen', 'bathroom', 'sleep', 'laundry', 'storage', 'learning', 'fitness', 'entertainment', 'environment', 'special', 'report'];
+const steps = ['welcome', 'basic', 'kitchen', 'bathroom', 'sleep', 'laundry', 'storage', 'learning', 'fitness', 'entertainment', 'environment', 'special', 'contact', 'report'];
+const singleChoiceNames = new Set([
+    'area', 'budget', 'type', 'k_freq', 'k_together', 'k_oil', 'k_board', 'k_crowd', 'k_sink', 'k_faucet', 'k_height',
+    'k_breakfast', 'k_dinner', 'k_guest', 'k_tea', 'k_coffee', 'k_wine', 'k_mess', 'k_wash', 'k_light', 'k_chat', 'k_look',
+    'b_count', 'b_morning', 'b_night', 'b_skin', 'b_makeup', 'b_light', 'b_hair', 'b_shower', 'b_shower_type', 'b_smell',
+    'b_toilet', 'b_old', 'b_temp', 'b_tub', 'b_wet',
+    's_light', 's_partner', 's_posture', 's_night', 's_read', 's_wake', 's_bed', 's_ac',
+    'l_dirty', 'l_method', 'l_dry', 'l_ironing', 'l_shoes',
+    's_misc', 's_season', 's_entry', 's_mess', 's_style',
+    'w_home', 'w_quiet', 'w_kids', 'w_books',
+    'f_habit', 'f_mirror', 'f_shower',
+    'e_movie', 'e_guest', 'e_show',
+    'env_water', 'env_heat', 'env_smart',
+    'sp_nursery', 'sp_old_room', 'sp_pet_hair', 'sp_outdoor', 'sp_outdoor_clean'
+]);
+const exclusiveValues = new Set(['无', '以上都没有', '不需要', '没有', '满意', '无所谓', '不玩', '不喝', '不囤', '从不', '暂无', '暂不需要', '都够']);
+
+function asArray(value) {
+    if (Array.isArray(value)) return value;
+    if (value === undefined || value === null || value === '') return [];
+    return [value];
+}
 
 function updateProgress(step) {
     const idx = steps.indexOf(step);
     const pct = (idx / (steps.length - 1)) * 100;
-    document.getElementById('progressFill').style.width = pct + '%';
+    const bar = document.querySelector('.progress-bar');
+    const fill = document.getElementById('progressFill');
+    if (bar) bar.style.display = step === 'welcome' ? 'none' : 'block';
+    if (fill) fill.style.width = pct + '%';
     const textEl = document.getElementById('progressText');
     if (textEl) {
         if (step === 'welcome') {
             textEl.textContent = '';
+            textEl.style.display = 'none';
         } else if (step === 'report') {
+            textEl.style.display = 'block';
             textEl.textContent = '生成报告中...';
         } else {
+            textEl.style.display = 'block';
             textEl.textContent = `步骤 ${idx} / ${steps.length - 2}`;
         }
     }
@@ -1691,23 +1982,70 @@ function goTo(step) {
 function selectOption(el) {
     const name = el.name;
     const isCheckbox = el.type === 'checkbox';
+    const forceSingle = singleChoiceNames.has(name);
     const parent = el.closest('.options');
+    const option = el.closest('.option');
+    const module = getCurrentModule();
 
-    if (!isCheckbox) {
-        parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+    if (!isCheckbox || forceSingle) {
+        const wasSelected = option.classList.contains('selected');
+        parent.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+            input.checked = false;
+            input.closest('.option')?.classList.remove('selected');
+        });
+        if (isCheckbox && forceSingle && wasSelected) {
+            delete state[module][name];
+            saveState();
+            return;
+        }
+        el.checked = true;
+        option.classList.add('selected');
+        state[module][name] = el.value;
+        saveState();
+        return;
     }
 
-    el.closest('.option').classList.toggle('selected', isCheckbox ? el.checked : true);
+    if (exclusiveValues.has(el.value) && el.checked) {
+        parent.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+            if (input !== el) {
+                input.checked = false;
+                input.closest('.option')?.classList.remove('selected');
+            }
+        });
+    } else if (el.checked) {
+        parent.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+            if (exclusiveValues.has(input.value)) {
+                input.checked = false;
+                input.closest('.option')?.classList.remove('selected');
+            }
+        });
+    }
+
+    option.classList.toggle('selected', el.checked);
 
     // 保存到state
-    const module = getCurrentModule();
-    if (isCheckbox) {
-        const checked = Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value);
-        state[module][name] = checked.length === 1 ? checked[0] : checked;
-    } else {
-        state[module][name] = el.value;
-    }
+    const checked = Array.from(parent.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value);
+    if (checked.length === 0) delete state[module][name];
+    else state[module][name] = checked.length === 1 ? checked[0] : checked;
     saveState();
+}
+
+function initOptionClickHandling() {
+    document.addEventListener('pointerdown', function(e) {
+        const option = e.target.closest('.option');
+        const input = e.target.closest('input[type="radio"]') || option?.querySelector('input[type="radio"]');
+        if (input) input.dataset.wasChecked = input.checked ? '1' : '0';
+    });
+    document.addEventListener('click', function(e) {
+        const option = e.target.closest('.option');
+        const input = e.target.closest('input[type="radio"]') || option?.querySelector('input[type="radio"]');
+        if (!input || input.dataset.wasChecked !== '1') return;
+        const module = getCurrentModule();
+        input.checked = false;
+        input.closest('.option')?.classList.remove('selected');
+        delete state[module][input.name];
+        saveState();
+    });
 }
 
 function saveState() {
@@ -1745,7 +2083,20 @@ function clearSavedState() {
 }
 
 function injectSkipButtons() {
-    const skippable = ['kitchen', 'bathroom', 'sleep', 'laundry', 'storage', 'learning', 'fitness', 'entertainment', 'environment', 'special'];
+    const coreSteps = ['kitchen', 'bathroom', 'sleep', 'storage', 'environment'];
+    const optionalSteps = ['laundry', 'learning', 'fitness', 'entertainment', 'special'];
+    [...coreSteps, ...optionalSteps].forEach(step => {
+        const stepEl = document.getElementById('step-' + step);
+        if (!stepEl || stepEl.querySelector('.flow-badge')) return;
+        const subtitle = stepEl.querySelector('.subtitle');
+        if (!subtitle) return;
+        const badge = document.createElement('div');
+        badge.className = 'flow-badge ' + (coreSteps.includes(step) ? 'core' : 'optional');
+        badge.textContent = coreSteps.includes(step) ? '主线问题' : '可跳过支线';
+        subtitle.parentNode.insertBefore(badge, subtitle.nextSibling);
+    });
+
+    const skippable = optionalSteps;
     skippable.forEach(step => {
         const stepEl = document.getElementById('step-' + step);
         if (!stepEl || stepEl.querySelector('.skip-bar')) return;
@@ -1759,7 +2110,7 @@ function injectSkipButtons() {
 
         const skipBtn = document.createElement('button');
         skipBtn.className = 'btn btn-secondary btn-skip';
-        skipBtn.textContent = '跳过此场景 →';
+        skipBtn.textContent = '跳过支线 →';
         skipBtn.style.cssText = 'padding:8px 16px;font-size:14px;background:#f5f5f7;color:#666;border:2px solid #e5e5ea;border-radius:8px;cursor:pointer;';
         skipBtn.onclick = function() { skipStep(step); };
 
@@ -1794,7 +2145,7 @@ function restoreState() {
             } else {
                 inputs.forEach(input => {
                     input.checked = input.value === value;
-                    if (input.checked) input.closest('.option').classList.add('selected');
+                    input.closest('.option').classList.toggle('selected', input.checked);
                 });
             }
         }
@@ -1845,6 +2196,7 @@ function loadExistingSurvey() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    initOptionClickHandling();
     injectSkipButtons();
     loadExistingSurvey();
 
@@ -1887,9 +2239,11 @@ function getCurrentModule() {
 }
 
 function checkSpecialFlow() {
-    const tags = state.basic.tags || [];
+    const tags = asArray(state.basic.tags);
+    const structure = asArray(state.basic.structure);
+    const hasElder = tags.includes('老人') || tags.includes('50-64岁长辈') || structure.includes('老人') || structure.includes('50-64岁长辈');
     document.getElementById('special-pregnancy').classList.toggle('hidden', !(tags.includes('备孕/孕期') || tags.includes('0-3岁婴儿')));
-    document.getElementById('special-elderly').classList.toggle('hidden', !tags.includes('老人'));
+    document.getElementById('special-elderly').classList.toggle('hidden', !hasElder);
     document.getElementById('special-pet').classList.toggle('hidden', !tags.includes('宠物'));
     document.getElementById('special-outdoor').classList.toggle('hidden', !tags.includes('户外'));
     document.getElementById('special-acg').classList.toggle('hidden', !tags.includes('二次元'));
@@ -1904,18 +2258,22 @@ function skipStep(step) {
 }
 
 function checkKitchenFlow() {
-    const freq = state.kitchen.k_freq || [];
+    const freq = asArray(state.kitchen.k_freq);
     const showCook = freq.includes('每天') || freq.includes('每周3-5次');
     document.getElementById('kitchen-cook').classList.toggle('hidden', !showCook);
     document.getElementById('kitchen-clean').classList.toggle('hidden', !showCook);
 }
 
 function checkBathFlow() {
-    const morning = state.bathroom.b_morning || [];
+    const morning = asArray(state.bathroom.b_morning);
     document.getElementById('bath-queue').classList.toggle('hidden', !morning.includes('会'));
 }
 
 function validateBasic() {
+    return true;
+}
+
+function validateContact() {
     if (!state.basic.name || state.basic.name.trim() === '') {
         alert('请填写您的姓名');
         return false;
@@ -1932,10 +2290,42 @@ function generateReport() {
     const r = analyzeData();
     const p = r.persona;
     const personaHtml = renderPersonaCard(p);
+    const nextActions = generateNextActions(r);
+    const nextActionsHtml = `
+        <div class="priority-card">
+            <h3>基于你的需求，最值得先做的 3 件事</h3>
+            <p>这不是最终设计方案，而是进入快速设计前最该先确认的方向。</p>
+            <div class="priority-list">
+                ${nextActions.map(item => `<div class="priority-item">${item}</div>`).join('')}
+            </div>
+            <div class="conversion-card">
+                <h3>进入快速设计</h3>
+                <p>你已经完成需求梳理。接下来可以把这份画像作为快速设计的起点，家宝会帮你进入下一步方案沟通。</p>
+                <button class="btn" onclick="copyQuickDesignBrief()">复制快速设计摘要给家宝</button>
+                <span class="copy-hint" id="briefCopyHint">已复制，可直接发给家宝。</span>
+            </div>
+        </div>
+    `;
+    const profileSummaryHtml = `
+        <div class="profile-entry-card">
+            <h3>设计师专业档案</h3>
+            <p>把你的答案整理成设计师能快速判断的需求摘要。</p>
+            <div class="profile-summary-card">
+                <div class="profile-summary-item"><strong>${asArray(r.scenes.core).length}</strong><span>核心场景</span></div>
+                <div class="profile-summary-item"><strong>${r.pains.length}</strong><span>明确痛点</span></div>
+                <div class="profile-summary-item"><strong>${r.constraints.length}</strong><span>特殊约束</span></div>
+                <div class="profile-summary-item"><strong>${r.params.length}</strong><span>设计参数</span></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn btn-primary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="toggleLegacyReport()">展开专业档案</button>
+                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="window.print()">打印专业报告</button>
+            </div>
+        </div>
+    `;
 
     const legacyHtml = `
         <div class="persona-legacy" id="legacyReport" style="display:none;">
-            <h3>📋 设计师专业档案（折叠）</h3>
+            <h3>设计师专业档案详情</h3>
             <div class="report-section">
                 <h3>基础锚点</h3>
                 <table class="report-table">
@@ -2001,13 +2391,10 @@ function generateReport() {
 
     const fullHtml = personaHtml + `
         <div class="persona-share-btns">
-            <button class="btn btn-share" onclick="downloadShareCard()">📸 保存人格卡片</button>
-            <button class="btn btn-secondary" onclick="window.print()">🖨 打印专业报告</button>
+            <button class="btn btn-share" onclick="downloadShareCard()">保存人格卡片</button>
+            <button class="btn btn-secondary" onclick="goTo('contact')">修改联系方式</button>
         </div>
-        <div style="text-align:center;margin-top:16px;">
-            <button class="flip-card-btn" onclick="document.getElementById('legacyReport').style.display=document.getElementById('legacyReport').style.display==='none'?'block':'none'">🔽 查看设计师专业档案</button>
-        </div>
-    ` + legacyHtml;
+    ` + nextActionsHtml + profileSummaryHtml + legacyHtml;
 
     // 先显示提交中
     document.getElementById('reportContent').innerHTML = `
@@ -2046,11 +2433,14 @@ function generateReport() {
             const statusHtml = `
                 <div style="margin-top:24px;text-align:center;">
                     <div style="display:inline-block;padding:16px 24px;background:#e8f5e9;border-radius:12px;">
-                        <div style="font-size:20px;margin-bottom:4px;">✅</div>
+                        <div style="font-size:20px;margin-bottom:4px;">完成</div>
                         <div style="font-weight:600;color:#388e3c;">档案已保存 · 编号 #${data.id}</div>
                     </div>
-                    <div style="margin-top:12px;padding:12px;background:#f5f5f7;border-radius:8px;font-size:13px;color:#666;text-align:left;word-break:break-all;">
-                        修改链接：${archiveUrl}
+                    <div class="archive-box">
+                        <div style="font-weight:600;color:#1d1d1f;">以后想补充或修改，保存这个链接即可。</div>
+                        <a href="${archiveUrl}" target="_blank" rel="noopener">${archiveUrl}</a>
+                        <button class="btn btn-secondary" style="flex:none;padding:10px 16px;font-size:14px;" onclick="copyArchiveLink('${archiveUrl}')">复制修改链接</button>
+                        <span class="copy-hint" id="copyHint">已复制，可发给自己或收藏。</span>
                     </div>
                 </div>
             `;
@@ -2082,6 +2472,124 @@ function generateReport() {
             if (descEl) typeWriterEffect(descEl, p.desc, 28);
         }, 200);
     });
+}
+
+function toggleLegacyReport() {
+    const el = document.getElementById('legacyReport');
+    if (!el) return;
+    const nextDisplay = el.style.display === 'none' ? 'block' : 'none';
+    el.style.display = nextDisplay;
+    if (nextDisplay === 'block') {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function copyArchiveLink(url) {
+    const done = () => {
+        const hint = document.getElementById('copyHint');
+        if (!hint) return;
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 2200);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
+    } else {
+        fallbackCopy(url, done);
+    }
+}
+
+function fallbackCopy(text, done) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        done();
+    } finally {
+        document.body.removeChild(textarea);
+    }
+}
+
+function generateNextActions(r) {
+    const actions = [];
+    const hasCore = scene => asArray(r.scenes.core).includes(scene);
+    const hasPain = scene => r.pains.some(p => p.scene === scene);
+
+    if (hasCore('餐厨茶饮') || hasPain('餐厨茶饮')) {
+        actions.push('先确认餐厨动线和台面需求：做饭频率、油烟、洗切炒顺序、小家电数量会直接影响厨房布局。');
+    }
+    if (hasCore('卫浴漱妆') || hasPain('卫浴漱妆')) {
+        actions.push('先判断卫生间是否需要效率改造：早高峰、干湿分离、异味、水温和安全问题要一起看。');
+    }
+    if (hasCore('智慧收纳') || hasPain('智慧收纳')) {
+        actions.push('先梳理全屋收纳增长量：玄关、换季、囤货、杂物和高频物品要分开规划。');
+    }
+    if (hasCore('健康睡眠') || hasPain('健康睡眠')) {
+        actions.push('先处理睡眠环境：遮光、噪音、起夜照明、空调风感和床垫支撑会影响长期居住体验。');
+    }
+    if (hasCore('环境优化') || hasPain('环境优化')) {
+        actions.push('先明确空气、水和温湿度系统：新风、净水、取暖和智能控制要结合预算和维护成本判断。');
+    }
+    if (r.constraints.length) {
+        actions.push('先确认特殊家庭约束：老人、小孩、宠物或孕婴需求会改变安全、环保、动线和材料判断。');
+    }
+
+    const fallback = [
+        '先确定最常使用的 3 个空间，把预算优先给高频生活场景。',
+        '先把“想要好看”拆成颜色、材质、收纳、灯光和维护成本，避免只看效果图。',
+        '先确认哪些需求必须做、哪些只是最好有，减少后期增项和反复改方案。'
+    ];
+    for (const item of fallback) {
+        if (actions.length >= 3) break;
+        actions.push(item);
+    }
+    return actions.slice(0, 3);
+}
+
+function buildQuickDesignBrief() {
+    const r = analyzeData();
+    const lines = [
+        '我已完成幸之住需求洞察，想进入快速设计。',
+        '',
+        `姓名：${state.basic.name || '-'}`,
+        `手机号：${state.basic.phone || '-'}`,
+        `房屋面积：${state.basic.area || '-'}`,
+        `房屋类型：${state.basic.type || '-'}`,
+        `预算区间：${state.basic.budget || '-'}`,
+        `家庭成员：${asArray(state.basic.structure).join('、') || '-'}`,
+        '',
+        `核心场景：${asArray(r.scenes.core).join('、') || '待确认'}`,
+        `次要场景：${asArray(r.scenes.minor).join('、') || '无'}`,
+        '',
+        '明确痛点：',
+        ...(r.pains.length ? r.pains.map(p => `- ${p.scene}：${p.text}`) : ['- 暂无明确痛点记录']),
+        '',
+        '设计参数：',
+        ...(r.params.length ? r.params.map(p => `- ${p.scene}：${p.item}（${p.level}）`) : ['- 暂无明确设计参数']),
+        '',
+        '建议先确认：',
+        ...generateNextActions(r).map((item, index) => `${index + 1}. ${item}`)
+    ];
+    return lines.join('\n');
+}
+
+function copyQuickDesignBrief() {
+    const brief = buildQuickDesignBrief();
+    const done = () => {
+        const hint = document.getElementById('briefCopyHint');
+        if (!hint) return;
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 2200);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(brief).then(done).catch(() => fallbackCopy(brief, done));
+    } else {
+        fallbackCopy(brief, done);
+    }
 }
 
 function analyzeData() {
@@ -2191,7 +2699,8 @@ function analyzeData() {
     }
 
     // 场景分级 - 特殊生活
-    const tags = b.tags || [];
+    const tags = asArray(b.tags);
+    const structure = asArray(b.structure);
     if (tags.length > 0 && !tags.includes('无')) {
         result.scenes.minor.push('特殊生活');
     } else {
@@ -2345,10 +2854,13 @@ function analyzeData() {
     if (sp.sp_acg === '电竞房') result.params.push({ scene: '特殊生活', item: '电竞房/手办房', level: '必须有' });
 
     // 特殊约束
-    if (b.structure && b.structure.includes('0-3岁婴儿')) {
+    if (structure.includes('0-3岁婴儿')) {
         result.constraints.push({ type: '安全', desc: '0-3岁婴儿：家具圆角防撞、插座防误触、防夹手门' });
     }
-    if (b.structure && b.structure.includes('老人')) {
+    if (structure.includes('50-64岁长辈') || tags.includes('50-64岁长辈')) {
+        result.constraints.push({ type: '安全', desc: '50-64岁长辈：提前关注防滑、夜间照明、动线宽度和卫生间安全' });
+    }
+    if (structure.includes('老人')) {
         result.constraints.push({ type: '安全', desc: '65岁以上老人：卫生间防滑扶手、马桶旁助力扶手' });
     }
     if (ba.b_old === '需要' || ba.b_old === '暂无') {
@@ -2356,6 +2868,9 @@ function analyzeData() {
     }
     if (tags.includes('备孕/孕期') || tags.includes('0-3岁婴儿')) {
         result.constraints.push({ type: '环保', desc: '孕婴家庭：ENF级环保板材、低甲醛涂料、无尖角家具' });
+    }
+    if (tags.includes('50-64岁长辈')) {
+        result.constraints.push({ type: '动线', desc: '长辈同住：减少高差和锐角，预留未来适老化升级空间' });
     }
     if (tags.includes('老人')) {
         result.constraints.push({ type: '动线', desc: '养老守护：地面无高差、通道≥900mm、紧急呼叫' });
@@ -2435,7 +2950,7 @@ function buildPersona(result) {
     const sp = state.special;
     const painCount = result.pains.length;
     const hasConstraints = result.constraints.length > 0;
-    const tags = b.tags || [];
+    const tags = asArray(b.tags);
     const hasSpecialTags = tags.length > 0 && !tags.includes('无');
 
     // 维度1: S (Space/空间敏感) vs E (Experience/体验驱动)
@@ -2501,16 +3016,26 @@ function buildPersona(result) {
     };
 
     const dimDesc = {
-        S: '你对居住环境的细节有着近乎直觉的感知，空气、水质、温湿度的微妙变化都会牵动你的神经。',
-        E: '家对你来说不是静态的空间，而是上演生活剧场的舞台。烹饪、娱乐、社交，每一处都该有烟火气。',
-        O: '混乱是你的敌人，秩序是你的氧气。每一件物品都该有归属，每一个角落都该有逻辑。',
-        F: '你不愿被规则束缚，家应该是自由生长的有机体，东西多不代表乱，那叫生活的痕迹。',
-        I: '家是你的避风港，不需要太多人打扰。一本书、一部电影、一顿安静的饭，就是你最好的充电方式。',
-        H: '你的家天生就该热闹，朋友围坐、笑声不断，才是这个空间存在的意义。',
-        P: '你对生活的要求从不将就，每一个场景背后都有不能妥协的理由。',
-        A: '你对环境有着惊人的适应力，不挑剔、不焦虑，能随遇而安也是一种天赋。',
-        R: '你倾向于稳定、经典的生活方式，家是你的根系，越沉淀越舒服。',
-        W: '你渴望新鲜、变化和探索，家不该是一成不变的布景，而是你不断迭代的试验场。'
+        S: '对环境细节敏感',
+        E: '重视生活体验',
+        O: '需要秩序和归位',
+        F: '接受自由和变化',
+        I: '偏爱安静充电',
+        H: '享受热闹连接',
+        P: '关键细节不将就',
+        A: '更能随性适应',
+        R: '喜欢稳定耐看',
+        W: '期待新鲜探索'
+    };
+    const descTemplates = {
+        SOI: '你对环境变化很敏感，也需要明确的秩序感。家最好能让物品各归其位，让光线、空气和动线都稳定下来。',
+        SOH: '你既在意家的细节，也希望它能体面地承接家人和朋友。好的方案要兼顾秩序、待客和日常维护。',
+        SFI: '你需要一个舒服、松弛、能照顾敏感感受的家。空间不必过度规整，但要让睡眠、空气、光线和收纳都少打扰你。',
+        SFH: '你适合开放、轻松、能随时切换状态的家。它要能容纳热闹，也要允许生活自然发生。',
+        EOI: '你重视真实生活体验，也希望家有清晰秩序。厨房、餐桌和收纳不是配角，而是每天让家运转起来的核心。',
+        EOH: '你需要一个能聚餐、能待客、能把热闹留住的家。客餐厨关系、动线和氛围，会直接决定家的生命力。',
+        EFI: '你需要一个自由、有灵感、可以独处创作的家。它不必完全规整，但要给兴趣、休息和变化留下空间。',
+        EFH: '你适合灵活、多场景、能承接兴趣和朋友的家。它要能快速切换：独处、娱乐、待客、探索都不冲突。'
     };
 
     const themes = {
@@ -2564,6 +3089,13 @@ function buildPersona(result) {
         d4 === 'P' ? '精致敏感' : '随性适应',
         d5 === 'R' ? '经典沉淀' : '先锋探索'
     ];
+    const personaImage = d3 === 'H'
+        ? '/static/persona-social.png'
+        : d5 === 'W'
+            ? '/static/persona-explorer.png'
+            : d2 === 'O'
+                ? '/static/persona-order.png'
+                : '/static/persona-quiet.png';
 
     const insights = generateInsights(result, code);
     const funFacts = calculateFunFacts(result, code);
@@ -2571,8 +3103,9 @@ function buildPersona(result) {
     return {
         code,
         name: names[code] || '独特居住者',
-        desc: dimDesc[d1] + ' ' + dimDesc[d2] + ' ' + dimDesc[d3] + ' ' + dimDesc[d4] + ' ' + dimDesc[d5],
+        desc: `${descTemplates[d1 + d2 + d3] || '你需要一个更贴近日常节奏的家。'} ${dimDesc[d4]}，${dimDesc[d5]}。`,
         tags: tagsList,
+        image: personaImage,
         radar,
         theme: themes[code] || themes['EFHA'],
         insights,
@@ -3055,7 +3588,10 @@ function renderPersonaCard(p) {
 
     const tagsHtml = p.tags.map(t => `<span class="p1-tag">${t}</span>`).join('');
 
-    const insightsHtml = p.insights.map((ins, idx) => `
+    const compactInsights = p.insights.slice(0, 3).map(ins => ({
+        text: ins.text.length > 72 ? ins.text.slice(0, 72) + '...' : ins.text
+    }));
+    const insightsHtml = compactInsights.map((ins, idx) => `
         <div class="insight-item">
             <div class="insight-number">0${idx + 1}</div>
             <div class="insight-text">${ins.text}</div>
@@ -3063,18 +3599,14 @@ function renderPersonaCard(p) {
     `).join('');
 
     return `
-        <div class="persona-book" id="personaBook" style="background: ${p.theme.bg}; box-shadow: 0 20px 60px ${p.theme.shadow};">
+        <div class="persona-book" id="personaBook" style="background-image: url('${p.image}'); box-shadow: 0 20px 60px ${p.theme.shadow};">
             <div class="persona-page active" data-page="0">
                 <div class="p1-badge">SBTI 居住人格</div>
                 <div class="p1-code">${p.code}</div>
                 <div class="p1-name">${p.name}</div>
                 <div class="p1-desc" id="p1Desc"></div>
                 <div class="p1-tags">${tagsHtml}</div>
-                <div class="p1-radar">
-                    <div class="p1-radar-title">生活场景关注度</div>
-                    ${radarHtml}
-                </div>
-                <div style="display:flex;justify-content:center;gap:20px;font-size:12px;opacity:0.85;">
+                <div style="display:flex;gap:18px;font-size:12px;opacity:0.9;margin-top:22px;flex-wrap:wrap;">
                     <div><strong>${p.stats.painCount}</strong> 个痛点</div>
                     <div><strong>${p.stats.sceneCount}</strong> 个关注场景</div>
                     <div>超越 <strong>${p.stats.painRank}%</strong> 用户</div>
@@ -3082,56 +3614,45 @@ function renderPersonaCard(p) {
                 <div class="p1-footer">幸之住 · 家居需求洞察</div>
             </div>
             <div class="persona-page" data-page="1">
-                <div class="p2-title">🔍 你的生活洞察</div>
+                <div class="p2-title">生活洞察</div>
                 ${insightsHtml}
             </div>
             <div class="persona-page" data-page="2">
-                <div class="p3-title">🎭 你的居住指纹</div>
+                <div class="p3-title">生活场景关注度</div>
+                <div class="p1-radar">
+                    ${radarHtml}
+                </div>
+                <div class="p3-title" style="margin-top:22px;">居住指纹</div>
                 <div class="fun-grid" style="grid-template-columns: repeat(4, 1fr);">
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.season.emoji}</div>
                         <div class="fun-label">灵魂季节</div>
                         <div class="fun-value">${p.funFacts.season.name}</div>
-                    </div>
-                    <div class="fun-card">
-                        <div class="fun-icon">${p.funFacts.animal.emoji}</div>
-                        <div class="fun-label">灵魂动物</div>
-                        <div class="fun-value">${p.funFacts.animal.name}</div>
+                        <div class="fun-desc">${p.funFacts.season.desc}</div>
                     </div>
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.city.emoji}</div>
                         <div class="fun-label">理想城市</div>
                         <div class="fun-value">${p.funFacts.city.name}</div>
-                    </div>
-                    <div class="fun-card">
-                        <div class="fun-icon">${p.funFacts.district.emoji}</div>
-                        <div class="fun-label">灵魂街区</div>
-                        <div class="fun-value">${p.funFacts.district.name}</div>
+                        <div class="fun-desc">${p.funFacts.city.desc}</div>
                     </div>
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.color.emoji}</div>
                         <div class="fun-label">灵魂色彩</div>
                         <div class="fun-value">${p.funFacts.color.name}</div>
+                        <div class="fun-desc">你对家的第一层情绪色调</div>
                     </div>
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.scent.emoji}</div>
                         <div class="fun-label">灵魂香气</div>
                         <div class="fun-value">${p.funFacts.scent.name}</div>
-                    </div>
-                    <div class="fun-card">
-                        <div class="fun-icon">${p.funFacts.plant.emoji}</div>
-                        <div class="fun-label">灵魂植物</div>
-                        <div class="fun-value">${p.funFacts.plant.name}</div>
+                        <div class="fun-desc">${p.funFacts.scent.desc}</div>
                     </div>
                 </div>
                 <div class="fun-summary">
                     <strong>你的居住指纹</strong>
-                    你是${p.funFacts.season.emoji} ${p.funFacts.season.name}型的人——${p.funFacts.season.desc}。
-                    如果把你的家搬到一座城市，那会是${p.funFacts.city.emoji} ${p.funFacts.city.name}，${p.funFacts.city.desc}。
-                    具体到街区，${p.funFacts.district.emoji} ${p.funFacts.district.name}最对你的胃口——${p.funFacts.district.desc}。
-                    你的灵魂动物${p.funFacts.animal.emoji} ${p.funFacts.animal.name}，${p.funFacts.animal.desc}。
-                    如果家是颜色，你是${p.funFacts.color.name}；如果家是气味，那是${p.funFacts.scent.name}的${p.funFacts.scent.desc}；
-                    角落里还应该有一盆${p.funFacts.plant.emoji} ${p.funFacts.plant.name}，${p.funFacts.plant.desc}。
+                    你的家不只是一种风格，更像一种生活气质：节奏接近${p.funFacts.season.emoji} ${p.funFacts.season.name}，城市气质像${p.funFacts.city.emoji} ${p.funFacts.city.name}。
+                    ${p.funFacts.color.name}决定它的情绪底色，${p.funFacts.scent.name}则像你回家后最先感受到的空气。
                 </div>
             </div>
         </div>
