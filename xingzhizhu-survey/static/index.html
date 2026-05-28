@@ -360,9 +360,29 @@
             border: 1px solid #d8eaff;
         }
         .flow-badge.optional {
-            background: #f6f3ee;
-            color: #7a5a34;
-            border: 1px solid #eadfce;
+            background: #fff4e5;
+            color: #9a4d00;
+            border: 1px solid #ffc978;
+            box-shadow: 0 4px 14px rgba(154,77,0,0.12);
+        }
+        .skip-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin: -4px 0 18px;
+        }
+        .btn-skip {
+            padding: 12px 18px !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            background: #fff7ed !important;
+            color: #9a4d00 !important;
+            border: 2px solid #f59e0b !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 20px rgba(245,158,11,0.16) !important;
+        }
+        .btn-skip:hover {
+            background: #ffedd5 !important;
+            transform: translateY(-1px);
         }
         .priority-card {
             margin-top: 22px;
@@ -839,11 +859,11 @@
         <div class="hero-cover" aria-label="温暖的家庭生活封面">
             <div class="hero-copy">
                 <h1>从日常里，看见你真正需要的家</h1>
-                <p>回答几个真实生活场景，生成你的居住人格和设计师可读的需求画像。它不是装修登记表，更像一次帮你把需求说清楚的小测试。</p>
+                <p>回答几个真实生活场景，生成你的居住人格和设计师可读的需求画像。它不是装修登记表，更像一次帮你把需求说清楚的小测试。最后只需填写微信昵称，姓名和手机号都可不填。</p>
                 <div class="hero-pills">
                     <span class="hero-pill">约 3 分钟</span>
                     <span class="hero-pill">可跳过不相关</span>
-                    <span class="hero-pill">生成需求画像</span>
+                    <span class="hero-pill">不强制留电话</span>
                 </div>
             </div>
         </div>
@@ -1877,21 +1897,26 @@
 
     <!-- 联系方式 -->
     <div class="step" id="step-contact">
-        <h2>保存你的需求画像</h2>
-        <p class="subtitle">最后一步，用于生成和找回这份档案。</p>
+        <h2>最后一步：让家宝找到你</h2>
+        <p class="subtitle">填写微信昵称后，家宝就能对应到这份需求问卷。</p>
 
         <div class="contact-note">
-            为了保存你的需求画像，后续可凭手机号继续修改，请留下联系方式。手机号只作为档案唯一标识，不影响前面答案。
+            微信昵称用于匹配你的问卷，不会展示给其他用户。姓名和手机号都可不填；如果留下手机号，后续可凭手机号继续修改档案。
+        </div>
+
+        <div class="question" id="q-wechat-name">
+            <div class="question-label">微信昵称 <span style="color:#d32f2f;font-size:16px;">*</span></div>
+            <input type="text" class="text-input" name="wechat_name" placeholder="填写你当前微信里的名字" oninput="state.basic.wechat_name=this.value; saveState();">
         </div>
 
         <div class="question" id="q-name">
-            <div class="question-label">您的姓名？</div>
-            <input type="text" class="text-input" name="name" placeholder="请输入您的姓名" oninput="state.basic.name=this.value; saveState();">
+            <div class="question-label">您的姓名？ <span style="color:#86868b;font-size:15px;font-weight:500;">选填</span></div>
+            <input type="text" class="text-input" name="name" placeholder="可不填" oninput="state.basic.name=this.value; saveState();">
         </div>
 
         <div class="question" id="q-phone">
-            <div class="question-label">您的手机号？</div>
-            <input type="tel" class="text-input" name="phone" maxlength="11" placeholder="请输入11位手机号，后续凭此号修改档案" oninput="state.basic.phone=this.value.replace(/\D/g,'').slice(0,11); this.value=state.basic.phone; saveState();">
+            <div class="question-label">您的手机号？ <span style="color:#86868b;font-size:15px;font-weight:500;">选填</span></div>
+            <input type="tel" class="text-input" name="phone" maxlength="11" placeholder="可不填；填写后可凭此号继续修改档案" oninput="state.basic.phone=this.value.replace(/\D/g,'').slice(0,11); this.value=state.basic.phone; saveState();">
         </div>
 
         <div class="btn-group">
@@ -2106,12 +2131,10 @@ function injectSkipButtons() {
 
         const skipBar = document.createElement('div');
         skipBar.className = 'skip-bar';
-        skipBar.style.cssText = 'display:flex;justify-content:flex-end;margin:-8px 0 16px;';
 
         const skipBtn = document.createElement('button');
         skipBtn.className = 'btn btn-secondary btn-skip';
-        skipBtn.textContent = '跳过支线 →';
-        skipBtn.style.cssText = 'padding:8px 16px;font-size:14px;background:#f5f5f7;color:#666;border:2px solid #e5e5ea;border-radius:8px;cursor:pointer;';
+        skipBtn.textContent = '不相关，跳过这一支线 →';
         skipBtn.onclick = function() { skipStep(step); };
 
         skipBar.appendChild(skipBtn);
@@ -2124,8 +2147,10 @@ function restoreState() {
     const hasSaved = loadState();
 
     // 恢复文本输入
+    const wechatInput = document.querySelector('input[name="wechat_name"]');
     const nameInput = document.querySelector('input[name="name"]');
     const phoneInput = document.querySelector('input[name="phone"]');
+    if (wechatInput && state.basic.wechat_name) wechatInput.value = state.basic.wechat_name;
     if (nameInput && state.basic.name) nameInput.value = state.basic.name;
     if (phoneInput && state.basic.phone) phoneInput.value = state.basic.phone;
 
@@ -2134,7 +2159,7 @@ function restoreState() {
         const modState = state[module];
         if (!modState) continue;
         for (const [name, value] of Object.entries(modState)) {
-            if (name === 'name' || name === 'phone') continue;
+            if (name === 'wechat_name' || name === 'name' || name === 'phone') continue;
             const inputs = document.querySelectorAll(`input[name="${name}"]`);
             if (!inputs.length) continue;
             if (Array.isArray(value)) {
@@ -2186,7 +2211,7 @@ function loadExistingSurvey() {
                     const hint = document.createElement('div');
                     hint.className = 'archive-hint';
                     hint.style.cssText = 'margin:16px 0;padding:12px 16px;background:#e3f2fd;border-radius:10px;color:#1976d2;font-size:14px;';
-                    hint.innerHTML = `👋 欢迎回来，<strong>${state.basic.name || ''}</strong>！已为您载入上次填写的档案，可直接修改。`;
+                    hint.innerHTML = `👋 欢迎回来，<strong>${state.basic.wechat_name || state.basic.name || ''}</strong>！已为您载入上次填写的档案，可直接修改。`;
                     const btnGroup = welcomeEl.querySelector('.btn-group');
                     if (btnGroup) welcomeEl.insertBefore(hint, btnGroup);
                 }
@@ -2274,12 +2299,12 @@ function validateBasic() {
 }
 
 function validateContact() {
-    if (!state.basic.name || state.basic.name.trim() === '') {
-        alert('请填写您的姓名');
+    if (!state.basic.wechat_name || state.basic.wechat_name.trim() === '') {
+        alert('请填写您的微信昵称，方便家宝准确找到你');
         return false;
     }
     const phone = state.basic.phone || '';
-    if (!/^\d{11}$/.test(phone)) {
+    if (phone && !/^\d{11}$/.test(phone)) {
         alert('请填写正确的11位手机号');
         return false;
     }
@@ -2299,9 +2324,9 @@ function generateReport() {
                 ${nextActions.map(item => `<div class="priority-item">${item}</div>`).join('')}
             </div>
             <div class="conversion-card">
-                <h3>进入快速设计</h3>
-                <p>你已经完成需求梳理。接下来可以把这份画像作为快速设计的起点，家宝会帮你进入下一步方案沟通。</p>
-                <button class="btn" onclick="copyQuickDesignBrief()">复制快速设计摘要给家宝</button>
+                <h3>已完成需求问卷</h3>
+                <p>复制后回到微信发给家宝即可，家宝会根据这份问卷继续帮你进入下一步方案沟通。</p>
+                <button class="btn" onclick="copyQuickDesignBrief()">复制完成提示给家宝</button>
                 <span class="copy-hint" id="briefCopyHint">已复制，可直接发给家宝。</span>
             </div>
         </div>
@@ -2309,7 +2334,7 @@ function generateReport() {
     const profileSummaryHtml = `
         <div class="profile-entry-card">
             <h3>设计师专业档案</h3>
-            <p>把你的答案整理成设计师能快速判断的需求摘要。</p>
+            <p>你的答案已整理成设计师可读的需求摘要，家宝后续会基于这份内容继续沟通。</p>
             <div class="profile-summary-card">
                 <div class="profile-summary-item"><strong>${asArray(r.scenes.core).length}</strong><span>核心场景</span></div>
                 <div class="profile-summary-item"><strong>${r.pains.length}</strong><span>明确痛点</span></div>
@@ -2329,6 +2354,7 @@ function generateReport() {
             <div class="report-section">
                 <h3>基础锚点</h3>
                 <table class="report-table">
+                    <tr><td>微信昵称</td><td>${r.basic.wechat_name || '-'}</td></tr>
                     <tr><td>客户姓名</td><td>${r.basic.name || '-'}</td></tr>
                     <tr><td>手机号</td><td>${r.basic.phone || '-'}</td></tr>
                     <tr><td>常住人口</td><td>${r.basic.people || '-'} 人</td></tr>
@@ -2389,12 +2415,7 @@ function generateReport() {
         </div>
     `;
 
-    const fullHtml = personaHtml + `
-        <div class="persona-share-btns">
-            <button class="btn btn-share" onclick="downloadShareCard()">保存人格卡片</button>
-            <button class="btn btn-secondary" onclick="goTo('contact')">修改联系方式</button>
-        </div>
-    ` + nextActionsHtml + profileSummaryHtml + legacyHtml;
+    const fullHtml = personaHtml + nextActionsHtml + profileSummaryHtml + legacyHtml;
 
     // 先显示提交中
     document.getElementById('reportContent').innerHTML = `
@@ -2429,19 +2450,20 @@ function generateReport() {
     .then(data => {
         if (data.code === 0) {
             clearSavedState();
-            const archiveUrl = window.location.origin + window.location.pathname + '?phone=' + encodeURIComponent(state.basic.phone);
+            const hasPhone = /^\d{11}$/.test(state.basic.phone || '');
+            const archiveUrl = hasPhone ? window.location.origin + window.location.pathname + '?phone=' + encodeURIComponent(state.basic.phone) : '';
             const statusHtml = `
                 <div style="margin-top:24px;text-align:center;">
                     <div style="display:inline-block;padding:16px 24px;background:#e8f5e9;border-radius:12px;">
                         <div style="font-size:20px;margin-bottom:4px;">完成</div>
                         <div style="font-weight:600;color:#388e3c;">档案已保存 · 编号 #${data.id}</div>
                     </div>
-                    <div class="archive-box">
+                    ${hasPhone ? `<div class="archive-box">
                         <div style="font-weight:600;color:#1d1d1f;">以后想补充或修改，保存这个链接即可。</div>
                         <a href="${archiveUrl}" target="_blank" rel="noopener">${archiveUrl}</a>
                         <button class="btn btn-secondary" style="flex:none;padding:10px 16px;font-size:14px;" onclick="copyArchiveLink('${archiveUrl}')">复制修改链接</button>
                         <span class="copy-hint" id="copyHint">已复制，可发给自己或收藏。</span>
-                    </div>
+                    </div>` : ''}
                 </div>
             `;
             document.getElementById('reportContent').innerHTML = fullHtml + statusHtml;
@@ -2551,30 +2573,7 @@ function generateNextActions(r) {
 }
 
 function buildQuickDesignBrief() {
-    const r = analyzeData();
-    const lines = [
-        '我已完成幸之住需求洞察，想进入快速设计。',
-        '',
-        `姓名：${state.basic.name || '-'}`,
-        `手机号：${state.basic.phone || '-'}`,
-        `房屋面积：${state.basic.area || '-'}`,
-        `房屋类型：${state.basic.type || '-'}`,
-        `预算区间：${state.basic.budget || '-'}`,
-        `家庭成员：${asArray(state.basic.structure).join('、') || '-'}`,
-        '',
-        `核心场景：${asArray(r.scenes.core).join('、') || '待确认'}`,
-        `次要场景：${asArray(r.scenes.minor).join('、') || '无'}`,
-        '',
-        '明确痛点：',
-        ...(r.pains.length ? r.pains.map(p => `- ${p.scene}：${p.text}`) : ['- 暂无明确痛点记录']),
-        '',
-        '设计参数：',
-        ...(r.params.length ? r.params.map(p => `- ${p.scene}：${p.item}（${p.level}）`) : ['- 暂无明确设计参数']),
-        '',
-        '建议先确认：',
-        ...generateNextActions(r).map((item, index) => `${index + 1}. ${item}`)
-    ];
-    return lines.join('\n');
+    return `我的微信名是${state.basic.wechat_name || '-'}，我已填好需求问卷。`;
 }
 
 function copyQuickDesignBrief() {

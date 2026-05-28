@@ -126,12 +126,13 @@ async def submit_survey(request: Request):
             )
 
     basic_data = data.get("basic", {})
+    wechat_name = basic_data.get("wechat_name", "").strip()
     name = basic_data.get("name", "").strip()
     phone = basic_data.get("phone", "").strip()
 
-    if not name:
-        return JSONResponse({"code": 400, "message": "请填写姓名"}, status_code=400)
-    if not phone or not re.match(r'^\d{11}$', phone):
+    if not wechat_name:
+        return JSONResponse({"code": 400, "message": "请填写微信昵称"}, status_code=400)
+    if phone and not re.match(r'^\d{11}$', phone):
         return JSONResponse({"code": 400, "message": "请填写正确的11位手机号"}, status_code=400)
 
     def _d(field):
@@ -152,7 +153,7 @@ async def submit_survey(request: Request):
 
     if DATABASE_URL:
         conn = _pg_conn()
-        existing = conn.run("SELECT id FROM surveys WHERE phone = :phone", phone=phone)
+        existing = conn.run("SELECT id FROM surveys WHERE phone = :phone", phone=phone) if phone else []
         if existing:
             survey_id = existing[0][0]
             conn.run(
@@ -209,8 +210,11 @@ async def submit_survey(request: Request):
         import sqlite3
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute("SELECT id FROM surveys WHERE phone = ?", (phone,))
-        existing = c.fetchone()
+        if phone:
+            c.execute("SELECT id FROM surveys WHERE phone = ?", (phone,))
+            existing = c.fetchone()
+        else:
+            existing = None
         if existing:
             survey_id = existing[0]
             c.execute(
@@ -316,7 +320,7 @@ async def list_surveys():
             {
                 "id": row[0],
                 "created_at": str(row[1]),
-                "name": row[2] or basic.get("name", "-"),
+                "name": basic.get("wechat_name") or row[2] or basic.get("name", "-"),
                 "phone": row[3] or basic.get("phone", "-"),
                 "people": basic.get("people", "-"),
                 "area": basic.get("area", "-"),
@@ -463,7 +467,7 @@ async def admin_page():
                     <tr>
                         <th>ID</th>
                         <th>更新时间</th>
-                        <th>客户姓名</th>
+                        <th>微信/姓名</th>
                         <th>手机号</th>
                         <th>人口</th>
                         <th>面积</th>
@@ -591,6 +595,7 @@ async def report_page(survey_id: int):
                         <div class="report-section">
                             <h3>基础锚点</h3>
                             <table class="report-table">
+                                <tr><td>微信昵称</td><td>${b.wechat_name || '-'}</td></tr>
                                 <tr><td>客户姓名</td><td>${b.name || '-'}</td></tr>
                                 <tr><td>手机号</td><td>${b.phone || '-'}</td></tr>
                                 <tr><td>常住人口</td><td>${b.people || '-'} 人</td></tr>
@@ -670,7 +675,7 @@ def send_feishu(survey_id: int, basic: Dict[str, Any], report: Dict[str, Any]):
     scenes = report.get("scenes", {})
     pains = report.get("pains", [])
     params = report.get("params", [])
-    client_name = basic.get("name", "未知客户")
+    client_name = basic.get("wechat_name") or basic.get("name") or "未知客户"
     client_phone = basic.get("phone", "")
 
     # 构造痛点文本
