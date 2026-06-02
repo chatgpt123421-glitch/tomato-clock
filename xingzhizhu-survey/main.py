@@ -142,11 +142,6 @@ async def submit_survey(request: Request):
     kitchen_json = _d("kitchen")
     bathroom_json = _d("bathroom")
     sleep_json = _d("sleep")
-    living_json = _d("living")
-    entryway_json = _d("entryway")
-    kids_json = _d("kids")
-    study_json = _d("study")
-    balcony_json = _d("balcony")
     laundry_json = _d("laundry")
     storage_json = _d("storage")
     learning_json = _d("learning")
@@ -165,9 +160,7 @@ async def submit_survey(request: Request):
                 """
                 UPDATE surveys SET
                     basic = :basic, kitchen = :kitchen, bathroom = :bathroom,
-                    sleep = :sleep, living = :living, entryway = :entryway,
-                    kids = :kids, study = :study, balcony = :balcony,
-                    laundry = :laundry, storage = :storage,
+                    sleep = :sleep, laundry = :laundry, storage = :storage,
                     learning = :learning, fitness = :fitness, entertainment = :entertainment,
                     environment = :environment, special = :special, report = :report,
                     name = :name, phone = :phone, created_at = CURRENT_TIMESTAMP
@@ -178,11 +171,6 @@ async def submit_survey(request: Request):
                 kitchen=kitchen_json,
                 bathroom=bathroom_json,
                 sleep=sleep_json,
-                living=living_json,
-                entryway=entryway_json,
-                kids=kids_json,
-                study=study_json,
-                balcony=balcony_json,
                 laundry=laundry_json,
                 storage=storage_json,
                 learning=learning_json,
@@ -197,19 +185,14 @@ async def submit_survey(request: Request):
         else:
             result = conn.run(
                 """
-                INSERT INTO surveys (basic, kitchen, bathroom, sleep, living, entryway, kids, study, balcony, laundry, storage, learning, fitness, entertainment, environment, special, report, name, phone)
-                VALUES (:basic, :kitchen, :bathroom, :sleep, :living, :entryway, :kids, :study, :balcony, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report, :name, :phone)
+                INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report, name, phone)
+                VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report, :name, :phone)
                 RETURNING id
                 """,
                 basic=basic_json,
                 kitchen=kitchen_json,
                 bathroom=bathroom_json,
                 sleep=sleep_json,
-                living=living_json,
-                entryway=entryway_json,
-                kids=kids_json,
-                study=study_json,
-                balcony=balcony_json,
                 laundry=laundry_json,
                 storage=storage_json,
                 learning=learning_json,
@@ -238,9 +221,7 @@ async def submit_survey(request: Request):
                 """
                 UPDATE surveys SET
                     basic = :basic, kitchen = :kitchen, bathroom = :bathroom,
-                    sleep = :sleep, living = :living, entryway = :entryway,
-                    kids = :kids, study = :study, balcony = :balcony,
-                    laundry = :laundry, storage = :storage,
+                    sleep = :sleep, laundry = :laundry, storage = :storage,
                     learning = :learning, fitness = :fitness, entertainment = :entertainment,
                     environment = :environment, special = :special, report = :report,
                     name = :name, phone = :phone, created_at = CURRENT_TIMESTAMP
@@ -252,11 +233,6 @@ async def submit_survey(request: Request):
                     "kitchen": kitchen_json,
                     "bathroom": bathroom_json,
                     "sleep": sleep_json,
-                    "living": living_json,
-                    "entryway": entryway_json,
-                    "kids": kids_json,
-                    "study": study_json,
-                    "balcony": balcony_json,
                     "laundry": laundry_json,
                     "storage": storage_json,
                     "learning": learning_json,
@@ -272,8 +248,8 @@ async def submit_survey(request: Request):
         else:
             c.execute(
                 """
-                INSERT INTO surveys (basic, kitchen, bathroom, sleep, living, entryway, kids, study, balcony, laundry, storage, learning, fitness, entertainment, environment, special, report, name, phone)
-                VALUES (:basic, :kitchen, :bathroom, :sleep, :living, :entryway, :kids, :study, :balcony, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report, :name, :phone)
+                INSERT INTO surveys (basic, kitchen, bathroom, sleep, laundry, storage, learning, fitness, entertainment, environment, special, report, name, phone)
+                VALUES (:basic, :kitchen, :bathroom, :sleep, :laundry, :storage, :learning, :fitness, :entertainment, :environment, :special, :report, :name, :phone)
                 RETURNING id
                 """,
                 {
@@ -281,11 +257,6 @@ async def submit_survey(request: Request):
                     "kitchen": kitchen_json,
                     "bathroom": bathroom_json,
                     "sleep": sleep_json,
-                    "living": living_json,
-                    "entryway": entryway_json,
-                    "kids": kids_json,
-                    "study": study_json,
-                    "balcony": balcony_json,
                     "laundry": laundry_json,
                     "storage": storage_json,
                     "learning": learning_json,
