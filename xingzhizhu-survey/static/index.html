@@ -859,7 +859,7 @@
         <div class="hero-cover" aria-label="温暖的家庭生活封面">
             <div class="hero-copy">
                 <h1>从日常里，看见你真正需要的家</h1>
-                <p>回答几个真实生活场景，生成你的居住人格和设计师可读的需求画像。它不是装修登记表，更像一次帮你把需求说清楚的小测试。最后只需填写微信昵称，姓名和手机号都可不填。</p>
+                <p>回答几个真实生活场景，生成你的居住人格和需求画像。它不是让你交资料的表格，而是帮你把未来家的生活需求说清楚。最后只需留下一个微信称呼，姓名和手机号都可不填。</p>
                 <div class="hero-pills">
                     <span class="hero-pill">约 3 分钟</span>
                     <span class="hero-pill">可跳过不相关</span>
@@ -868,7 +868,7 @@
             </div>
         </div>
         <div class="btn-group">
-            <button class="btn btn-primary" onclick="goTo('basic')">开始测试</button>
+            <button class="btn btn-primary" onclick="goTo('basic')">开始需求洞察</button>
         </div>
     </div>
 
@@ -1898,10 +1898,10 @@
     <!-- 联系方式 -->
     <div class="step" id="step-contact">
         <h2>最后一步：让家宝找到你</h2>
-        <p class="subtitle">填写微信昵称后，家宝就能对应到这份需求问卷。</p>
+        <p class="subtitle">填写微信昵称后，家宝就能对应到这份需求画像。</p>
 
         <div class="contact-note">
-            微信昵称用于匹配你的问卷，不会展示给其他用户。姓名和手机号都可不填；如果留下手机号，后续可凭手机号继续修改档案。
+            微信昵称用于匹配你的需求画像，不会展示给其他用户。姓名和手机号都可不填；如果留下手机号，后续可凭手机号继续修改档案。
         </div>
 
         <div class="question" id="q-wechat-name">
@@ -2001,6 +2001,7 @@ function goTo(step) {
     saveState();
     if (step === 'kitchen') checkKitchenFlow();
     if (step === 'bathroom') checkBathFlow();
+    if (['learning', 'fitness', 'entertainment', 'environment'].includes(step)) checkOptionalFlows();
     if (step === 'special') checkSpecialFlow();
 }
 
@@ -2053,6 +2054,30 @@ function selectOption(el) {
     if (checked.length === 0) delete state[module][name];
     else state[module][name] = checked.length === 1 ? checked[0] : checked;
     saveState();
+    checkOptionalFlows();
+}
+
+function setQuestionVisible(questionId, module, fieldNames, visible) {
+    const el = document.getElementById(questionId);
+    if (!el) return;
+    el.classList.toggle('hidden', !visible);
+    if (visible) return;
+
+    let changed = false;
+    fieldNames.forEach(name => {
+        if (state[module] && Object.prototype.hasOwnProperty.call(state[module], name)) {
+            delete state[module][name];
+            changed = true;
+        }
+        document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+            if (input.checked) {
+                input.checked = false;
+                changed = true;
+            }
+            input.closest('.option')?.classList.remove('selected');
+        });
+    });
+    if (changed) saveState();
 }
 
 function initOptionClickHandling() {
@@ -2178,6 +2203,7 @@ function restoreState() {
 
     checkKitchenFlow();
     checkBathFlow();
+    checkOptionalFlows();
     checkSpecialFlow();
 
     return hasSaved;
@@ -2236,7 +2262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hint.style.cssText = 'margin-bottom:16px;';
             hint.innerHTML = `
                 <div style="display:inline-block;padding:10px 16px;background:#e3f2fd;border-radius:10px;font-size:14px;color:#1976d2;">
-                    💡 检测到你上次有未完成的测试，点击「开始测试」会自动恢复进度
+                    💡 检测到你上次有未完成的需求洞察，点击「开始需求洞察」会自动恢复进度
                 </div>
             `;
             btnGroup.parentNode.insertBefore(hint, btnGroup);
@@ -2294,6 +2320,34 @@ function checkBathFlow() {
     document.getElementById('bath-queue').classList.toggle('hidden', !morning.includes('会'));
 }
 
+function checkOptionalFlows() {
+    const le = state.learning || {};
+    const learningActive = asArray(le.w_home).some(item => item && item !== '不需要');
+    setQuestionVisible('q-w-quiet', 'learning', ['w_quiet'], learningActive);
+    setQuestionVisible('q-w-kids', 'learning', ['w_kids'], learningActive);
+    setQuestionVisible('q-w-books', 'learning', ['w_books'], learningActive);
+    setQuestionVisible('q-w-desk', 'learning', ['w_desk'], learningActive);
+
+    const f = state.fitness || {};
+    const fitnessActive = asArray(f.f_habit).some(item => item && item !== '没有');
+    setQuestionVisible('q-f-type', 'fitness', ['f_type'], fitnessActive);
+    setQuestionVisible('q-f-mirror', 'fitness', ['f_mirror'], fitnessActive);
+    setQuestionVisible('q-f-shower', 'fitness', ['f_shower'], fitnessActive);
+
+    const e = state.entertainment || {};
+    const livingUses = asArray(e.e_living);
+    const entertainmentActive = livingUses.some(item => ['看电视', '会客', '亲子'].includes(item));
+    setQuestionVisible('q-e-movie', 'entertainment', ['e_movie'], entertainmentActive);
+    setQuestionVisible('q-e-game', 'entertainment', ['e_game'], entertainmentActive);
+    setQuestionVisible('q-e-guest', 'entertainment', ['e_guest'], entertainmentActive);
+    setQuestionVisible('q-e-show', 'entertainment', ['e_show'], entertainmentActive);
+
+    const env = state.environment || {};
+    const envAirIssues = asArray(env.env_air).some(item => item && item !== '满意');
+    const envActive = ['异味', '水垢'].includes(env.env_water) || envAirIssues || env.env_heat === '没有';
+    setQuestionVisible('q-env-smart', 'environment', ['env_smart'], envActive);
+}
+
 function validateBasic() {
     return true;
 }
@@ -2318,23 +2372,23 @@ function generateReport() {
     const nextActions = generateNextActions(r);
     const nextActionsHtml = `
         <div class="priority-card">
-            <h3>基于你的需求，最值得先做的 3 件事</h3>
-            <p>这不是最终设计方案，而是进入快速设计前最该先确认的方向。</p>
+            <h3>基于你的需求，下一步最该确认的 3 个点</h3>
+            <p>这不是户型诊断，也不是设计方案，只是下一步结合户型资料前最该先确认的生活需求。</p>
             <div class="priority-list">
                 ${nextActions.map(item => `<div class="priority-item">${item}</div>`).join('')}
             </div>
             <div class="conversion-card">
-                <h3>已完成需求问卷</h3>
-                <p>复制后回到微信发给家宝即可，家宝会根据这份问卷继续帮你进入下一步方案沟通。</p>
-                <button class="btn" onclick="copyQuickDesignBrief()">复制完成提示给家宝</button>
+                <h3>需求画像已生成</h3>
+                <p>复制后回到微信发给家宝即可。下一步只需要补充户型图、现场照片或房屋基础信息，家宝会把你的生活需求和户型资料放在一起继续整理。</p>
+                <button class="btn" onclick="copyQuickDesignBrief()">复制给家宝，提交户型资料</button>
                 <span class="copy-hint" id="briefCopyHint">已复制，可直接发给家宝。</span>
             </div>
         </div>
     `;
     const profileSummaryHtml = `
         <div class="profile-entry-card">
-            <h3>设计师专业档案</h3>
-            <p>你的答案已整理成设计师可读的需求摘要，家宝后续会基于这份内容继续沟通。</p>
+            <h3>下一步沟通摘要</h3>
+            <p>你的生活场景、痛点和约束已整理成一份摘要，方便下一步结合户型资料继续沟通。</p>
             <div class="profile-summary-card">
                 <div class="profile-summary-item"><strong>${asArray(r.scenes.core).length}</strong><span>核心场景</span></div>
                 <div class="profile-summary-item"><strong>${r.pains.length}</strong><span>明确痛点</span></div>
@@ -2342,15 +2396,15 @@ function generateReport() {
                 <div class="profile-summary-item"><strong>${r.params.length}</strong><span>设计参数</span></div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn btn-primary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="toggleLegacyReport()">展开专业档案</button>
-                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="window.print()">打印专业报告</button>
+                <button class="btn btn-primary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="toggleLegacyReport()">展开沟通摘要</button>
+                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="window.print()">打印需求画像</button>
             </div>
         </div>
     `;
 
     const legacyHtml = `
         <div class="persona-legacy" id="legacyReport" style="display:none;">
-            <h3>设计师专业档案详情</h3>
+            <h3>下一步沟通摘要详情</h3>
             <div class="report-section">
                 <h3>基础锚点</h3>
                 <table class="report-table">
@@ -2573,7 +2627,7 @@ function generateNextActions(r) {
 }
 
 function buildQuickDesignBrief() {
-    return `我的微信名是${state.basic.wechat_name || '-'}，我已填好需求问卷。`;
+    return `我的微信称呼是${state.basic.wechat_name || '-'}，我已生成需求画像。下一步我准备提交户型图/现场照片/房屋基础信息，请家宝继续帮我整理。`;
 }
 
 function copyQuickDesignBrief() {
@@ -2688,7 +2742,8 @@ function analyzeData() {
     }
 
     // 场景分级 - 环境优化
-    const envPain = (env.env_water === '异味' || env.env_water === '水垢') || (env.env_air !== '满意') || (env.env_heat === '没有') || (env.env_smart === '必须');
+    const envAirIssues = asArray(env.env_air).filter(item => item && item !== '满意');
+    const envPain = (env.env_water === '异味' || env.env_water === '水垢') || envAirIssues.length > 0 || (env.env_heat === '没有') || (env.env_smart === '必须');
     if (envPain) {
         result.scenes.core.push('环境优化');
     } else if (env.env_smart === '部分') {
@@ -2755,8 +2810,8 @@ function analyzeData() {
     // 痛点 - 环境优化
     if (env.env_water === '异味') result.pains.push({ scene: '环境优化', text: '自来水有异味，影响饮用和洗漱' });
     if (env.env_water === '水垢') result.pains.push({ scene: '环境优化', text: '水垢严重，龙头/花洒易堵塞' });
-    if (env.env_air === '雾霾') result.pains.push({ scene: '环境优化', text: '室外雾霾/灰尘大，室内空气质量差' });
-    if (env.env_air === '异味') result.pains.push({ scene: '环境优化', text: '室内有装修味/油烟残留' });
+    if (envAirIssues.includes('雾霾')) result.pains.push({ scene: '环境优化', text: '室外雾霾/灰尘大，室内空气质量差' });
+    if (envAirIssues.includes('异味')) result.pains.push({ scene: '环境优化', text: '室内有装修味/油烟残留' });
     if (env.env_heat === '没有') result.pains.push({ scene: '环境优化', text: '冬季无集中取暖，室内寒冷' });
 
     // 设计参数 - 餐厨
@@ -2834,7 +2889,7 @@ function analyzeData() {
 
     // 设计参数 - 环境优化
     if (env.env_water === '异味' || env.env_water === '水垢') result.params.push({ scene: '环境优化', item: '全屋净水+软水机', level: '必须有' });
-    if (env.env_air !== '满意') result.params.push({ scene: '环境优化', item: '新风系统/空气净化器位', level: '最好有' });
+    if (envAirIssues.length > 0) result.params.push({ scene: '环境优化', item: '新风系统/空气净化器位', level: '最好有' });
     if (env.env_heat === '没有') result.params.push({ scene: '环境优化', item: '地暖/暖气片改造', level: '必须有' });
     if (env.env_smart === '必须') result.params.push({ scene: '环境优化', item: '全屋智能中枢（灯光/窗帘/空调）', level: '必须有' });
     if (env.env_smart === '部分') result.params.push({ scene: '环境优化', item: '部分智能（智能开关/窗帘电机）', level: '最好有' });
@@ -2955,7 +3010,7 @@ function buildPersona(result) {
     // 维度1: S (Space/空间敏感) vs E (Experience/体验驱动)
     let d1 = 'E';
     const envActive = env.env_water && env.env_water !== '满意' && env.env_water !== '无问题';
-    const envAir = env.env_air && env.env_air !== '满意';
+    const envAir = asArray(env.env_air).some(item => item && item !== '满意');
     const envHeat = env.env_heat && env.env_heat === '没有';
     const envSmart = env.env_smart && env.env_smart === '必须';
     if (envActive || envAir || envHeat || envSmart || painCount >= 4) d1 = 'S';
@@ -3165,7 +3220,7 @@ function generateInsights(result, code) {
                 '别人问"今天去哪儿玩"，你的答案是"回家"。因为你的客厅已经装下了所有你想玩的。'
             ])
         });
-    } else if (env.env_air && env.env_air !== '满意') {
+    } else if (asArray(env.env_air).some(item => item && item !== '满意')) {
         insights.push({
             title: '生活方式',
             text: pickOne([
@@ -3310,7 +3365,7 @@ function generateInsights(result, code) {
         insights.push({
             title: '理想家预言',
             text: pickOne([
-                '你的理想家还在酝酿中。不过没关系，完成这份问卷本身就是一次梳理——你已经开始知道，自己不要什么。',
+                '你的理想家还在酝酿中。不过没关系，完成这次需求洞察本身就是一次梳理——你已经开始知道，自己不要什么。',
                 '没有明确偏好，意味着你有最大的自由度。我们可以从一张白纸开始，画出任何你想要的形状。',
                 '"不确定"是设计的起点，不是终点。接下来我们会帮你把模糊的感觉，变成清晰的画面。'
             ])
