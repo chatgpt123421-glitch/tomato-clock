@@ -1552,7 +1552,19 @@
             }
         }
     </style>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        window.loadHtml2CanvasFallback = function (script) {
+            const fallbacks = [
+                'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+                'https://html2canvas.hertzen.com/dist/html2canvas.min.js'
+            ];
+            const next = Number(script.dataset.fallbackIndex || 0);
+            if (next >= fallbacks.length) return;
+            script.dataset.fallbackIndex = String(next + 1);
+            script.src = fallbacks[next];
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" onerror="window.loadHtml2CanvasFallback(this)"></script>
 </head>
 <body>
 <div class="container">
