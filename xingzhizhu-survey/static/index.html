@@ -534,6 +534,76 @@
             box-shadow: none;
             backdrop-filter: none;
         }
+        .image-preview-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(0,0,0,0.72);
+        }
+        .image-preview-overlay.show {
+            display: flex;
+        }
+        .image-preview-panel {
+            width: min(100%, 520px);
+            max-height: 92vh;
+            overflow: auto;
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            color: #1d1d1f;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.28);
+        }
+        .image-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .image-preview-header strong {
+            font-size: 17px;
+        }
+        .image-preview-close {
+            border: 0;
+            background: #f2f3f5;
+            color: #1d1d1f;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 22px;
+            line-height: 1;
+        }
+        .image-preview-help {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #6f675b;
+            margin-bottom: 12px;
+        }
+        .image-preview-panel img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid #eceef2;
+            background: #fff;
+        }
+        .image-preview-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .image-preview-actions .btn {
+            flex: 1 1 160px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 11px 14px;
+        }
         .archive-box {
             margin-top: 18px;
             padding: 18px;
@@ -2429,7 +2499,7 @@ function generateReport() {
             </div>
             <div class="profile-actions" data-no-export="true">
                 <button class="btn btn-primary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="toggleLegacyReport()">展开沟通摘要</button>
-                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="downloadCustomerReport()">下载需求画像图片</button>
+                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="downloadCustomerReport()">生成可保存图片</button>
                 <span class="profile-action-note" id="customerReportHint"></span>
             </div>
         </div>
@@ -2600,6 +2670,58 @@ function showCustomerReportHint(text) {
     hint.classList.add('show');
 }
 
+function getShareImageFileName() {
+    const rawName = state.basic.name || state.basic.wechat_name || '我的';
+    const cleanName = rawName
+        .replace(/[\\/:*?"<>|，。、“”‘’《》（）【】\s]+/g, '')
+        .trim() || '我的';
+    return `幸之住_需求画像_${cleanName}.png`;
+}
+
+function closeReportImagePreview() {
+    const overlay = document.getElementById('reportImagePreview');
+    if (!overlay) return;
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function showReportImagePreview(imageUrl, fileName) {
+    let overlay = document.getElementById('reportImagePreview');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'reportImagePreview';
+        overlay.className = 'image-preview-overlay';
+        overlay.innerHTML = `
+            <div class="image-preview-panel" role="dialog" aria-modal="true" aria-label="需求画像图片预览">
+                <div class="image-preview-header">
+                    <strong>图片已生成</strong>
+                    <button class="image-preview-close" type="button" onclick="closeReportImagePreview()" aria-label="关闭">×</button>
+                </div>
+                <div class="image-preview-help">
+                    在微信里长按下方图片，选择“保存图片”或“发送给朋友”。如果系统没有出现保存选项，再用下方备用下载。
+                </div>
+                <img id="reportPreviewImage" alt="幸之住需求画像图片">
+                <div class="image-preview-actions">
+                    <a class="btn btn-secondary" id="reportPreviewDownload">备用下载</a>
+                    <button class="btn btn-primary" type="button" onclick="closeReportImagePreview()">完成</button>
+                </div>
+            </div>
+        `;
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) closeReportImagePreview();
+        });
+        document.body.appendChild(overlay);
+    }
+
+    const image = overlay.querySelector('#reportPreviewImage');
+    const download = overlay.querySelector('#reportPreviewDownload');
+    image.src = imageUrl;
+    download.href = imageUrl;
+    download.download = fileName;
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
 async function downloadCustomerReport() {
     const source = document.getElementById('reportContent');
     if (!source || typeof html2canvas === 'undefined') {
@@ -2607,7 +2729,7 @@ async function downloadCustomerReport() {
         return;
     }
 
-    showCustomerReportHint('正在生成图片，请不要关闭页面。');
+    showCustomerReportHint('正在生成图片，生成后可在微信里长按保存或转发。');
 
     const stage = document.createElement('div');
     stage.className = 'report-export-stage';
@@ -2638,14 +2760,9 @@ async function downloadCustomerReport() {
             imageTimeout: 8000,
             windowWidth: 720
         });
-        const link = document.createElement('a');
-        const name = (state.basic.name || state.basic.wechat_name || '我的').replace(/[\\/:*?"<>|]/g, '');
-        link.download = `幸之住_需求画像_${name}.png`;
-        link.href = canvas.toDataURL('image/png');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showCustomerReportHint('图片已生成。若微信内未自动保存，请从右上角菜单用浏览器打开后再下载。');
+        const imageUrl = canvas.toDataURL('image/png');
+        showReportImagePreview(imageUrl, getShareImageFileName());
+        showCustomerReportHint('图片已生成。请长按图片保存，或直接发送给朋友。');
     } catch (err) {
         console.error(err);
         showCustomerReportHint('图片生成失败，请先用系统截图保存，或从浏览器打开后重试。');
