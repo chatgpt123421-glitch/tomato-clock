@@ -503,6 +503,37 @@
             line-height: 1.7;
             margin-bottom: 14px;
         }
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .profile-action-note {
+            width: 100%;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #6f675b;
+            display: none;
+        }
+        .profile-action-note.show {
+            display: block;
+        }
+        .report-export-stage {
+            position: fixed;
+            left: -10000px;
+            top: 0;
+            width: 720px;
+            background: #fff;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .report-export-stage .report {
+            width: 720px;
+            background: #fff;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
         .archive-box {
             margin-top: 18px;
             padding: 18px;
@@ -541,6 +572,7 @@
             .hero-copy { left: 22px; right: 22px; bottom: 24px; }
             .hero-copy h1 { font-size: 30px; }
             .profile-summary-card { grid-template-columns: repeat(2, 1fr); }
+            .profile-actions .btn { flex: 1 1 160px !important; }
             .priority-item { grid-template-columns: 30px 1fr; }
         }
 
@@ -956,7 +988,7 @@
     <!-- 餐厨茶饮 -->
     <div class="step" id="step-kitchen">
         <h2>🍳 你在厨房里是什么角色？</h2>
-        <p class="subtitle">是烟火气的主理人，还是外卖软件的忠实用户？</p>
+        <p class="subtitle">是烟火气的主理人，还是外卖软件的重度使用者？</p>
 
         <div class="question" id="q-k-freq">
             <div class="question-label">家里平时开火做饭的频率是？</div>
@@ -1901,7 +1933,7 @@
         <p class="subtitle">填写微信昵称后，家宝就能对应到这份需求画像。</p>
 
         <div class="contact-note">
-            微信昵称用于匹配你的需求画像，不会展示给其他用户。姓名和手机号都可不填；如果留下手机号，后续可凭手机号继续修改档案。
+            微信昵称用于匹配你的需求画像。姓名和手机号都可不填；如果留下手机号，后续可凭手机号继续修改这份画像。
         </div>
 
         <div class="question" id="q-wechat-name">
@@ -1910,13 +1942,13 @@
         </div>
 
         <div class="question" id="q-name">
-            <div class="question-label">您的姓名？ <span style="color:#86868b;font-size:15px;font-weight:500;">选填</span></div>
+            <div class="question-label">你的姓名？ <span style="color:#86868b;font-size:15px;font-weight:500;">选填</span></div>
             <input type="text" class="text-input" name="name" placeholder="可不填" oninput="state.basic.name=this.value; saveState();">
         </div>
 
         <div class="question" id="q-phone">
-            <div class="question-label">您的手机号？ <span style="color:#86868b;font-size:15px;font-weight:500;">选填</span></div>
-            <input type="tel" class="text-input" name="phone" maxlength="11" placeholder="可不填；填写后可凭此号继续修改档案" oninput="state.basic.phone=this.value.replace(/\D/g,'').slice(0,11); this.value=state.basic.phone; saveState();">
+            <div class="question-label">你的手机号？ <span style="color:#86868b;font-size:15px;font-weight:500;">选填</span></div>
+            <input type="tel" class="text-input" name="phone" maxlength="11" placeholder="可不填；填写后可凭此号继续修改这份画像" oninput="state.basic.phone=this.value.replace(/\D/g,'').slice(0,11); this.value=state.basic.phone; saveState();">
         </div>
 
         <div class="btn-group">
@@ -1985,7 +2017,7 @@ function updateProgress(step) {
             textEl.style.display = 'none';
         } else if (step === 'report') {
             textEl.style.display = 'block';
-            textEl.textContent = '生成报告中...';
+            textEl.textContent = '正在生成你的需求画像...';
         } else {
             textEl.style.display = 'block';
             textEl.textContent = `步骤 ${idx} / ${steps.length - 2}`;
@@ -2237,7 +2269,7 @@ function loadExistingSurvey() {
                     const hint = document.createElement('div');
                     hint.className = 'archive-hint';
                     hint.style.cssText = 'margin:16px 0;padding:12px 16px;background:#e3f2fd;border-radius:10px;color:#1976d2;font-size:14px;';
-                    hint.innerHTML = `👋 欢迎回来，<strong>${state.basic.wechat_name || state.basic.name || ''}</strong>！已为您载入上次填写的档案，可直接修改。`;
+                    hint.innerHTML = `👋 欢迎回来，<strong>${state.basic.wechat_name || state.basic.name || ''}</strong>！已为你载入上次填写的内容，可直接修改。`;
                     const btnGroup = welcomeEl.querySelector('.btn-group');
                     if (btnGroup) welcomeEl.insertBefore(hint, btnGroup);
                 }
@@ -2354,7 +2386,7 @@ function validateBasic() {
 
 function validateContact() {
     if (!state.basic.wechat_name || state.basic.wechat_name.trim() === '') {
-        alert('请填写您的微信昵称，方便家宝准确找到你');
+        alert('请填写你的微信昵称，方便家宝准确找到你');
         return false;
     }
     const phone = state.basic.phone || '';
@@ -2380,7 +2412,7 @@ function generateReport() {
             <div class="conversion-card">
                 <h3>需求画像已生成</h3>
                 <p>复制后回到微信发给家宝即可。下一步只需要补充户型图、现场照片或房屋基础信息，家宝会把你的生活需求和户型资料放在一起继续整理。</p>
-                <button class="btn" onclick="copyQuickDesignBrief()">复制给家宝，提交户型资料</button>
+                <button class="btn" onclick="copyQuickDesignBrief()">复制给家宝，继续补充户型资料</button>
                 <span class="copy-hint" id="briefCopyHint">已复制，可直接发给家宝。</span>
             </div>
         </div>
@@ -2395,9 +2427,10 @@ function generateReport() {
                 <div class="profile-summary-item"><strong>${r.constraints.length}</strong><span>特殊约束</span></div>
                 <div class="profile-summary-item"><strong>${r.params.length}</strong><span>设计参数</span></div>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div class="profile-actions" data-no-export="true">
                 <button class="btn btn-primary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="toggleLegacyReport()">展开沟通摘要</button>
-                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="window.print()">打印需求画像</button>
+                <button class="btn btn-secondary" style="flex:none;padding:10px 18px;font-size:14px;" onclick="downloadCustomerReport()">下载需求画像图片</button>
+                <span class="profile-action-note" id="customerReportHint"></span>
             </div>
         </div>
     `;
@@ -2409,7 +2442,7 @@ function generateReport() {
                 <h3>基础锚点</h3>
                 <table class="report-table">
                     <tr><td>微信昵称</td><td>${r.basic.wechat_name || '-'}</td></tr>
-                    <tr><td>客户姓名</td><td>${r.basic.name || '-'}</td></tr>
+                    <tr><td>姓名</td><td>${r.basic.name || '-'}</td></tr>
                     <tr><td>手机号</td><td>${r.basic.phone || '-'}</td></tr>
                     <tr><td>常住人口</td><td>${r.basic.people || '-'} 人</td></tr>
                     <tr><td>人口结构</td><td>${(Array.isArray(r.basic.structure) ? r.basic.structure : (r.basic.structure ? [r.basic.structure] : [])).join('、') || '-'}</td></tr>
@@ -2510,7 +2543,7 @@ function generateReport() {
                 <div style="margin-top:24px;text-align:center;">
                     <div style="display:inline-block;padding:16px 24px;background:#e8f5e9;border-radius:12px;">
                         <div style="font-size:20px;margin-bottom:4px;">完成</div>
-                        <div style="font-weight:600;color:#388e3c;">档案已保存 · 编号 #${data.id}</div>
+                        <div style="font-weight:600;color:#388e3c;">已保存 · 编号 #${data.id}</div>
                     </div>
                     ${hasPhone ? `<div class="archive-box">
                         <div style="font-weight:600;color:#1d1d1f;">以后想补充或修改，保存这个链接即可。</div>
@@ -2557,6 +2590,67 @@ function toggleLegacyReport() {
     el.style.display = nextDisplay;
     if (nextDisplay === 'block') {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function showCustomerReportHint(text) {
+    const hint = document.getElementById('customerReportHint');
+    if (!hint) return;
+    hint.textContent = text;
+    hint.classList.add('show');
+}
+
+async function downloadCustomerReport() {
+    const source = document.getElementById('reportContent');
+    if (!source || typeof html2canvas === 'undefined') {
+        alert('图片生成功能加载中，请稍后重试');
+        return;
+    }
+
+    showCustomerReportHint('正在生成图片，请不要关闭页面。');
+
+    const stage = document.createElement('div');
+    stage.className = 'report-export-stage';
+    const clone = source.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    clone.querySelectorAll('[data-no-export], .persona-dots, .persona-nav, .archive-box, .copy-hint').forEach(el => el.remove());
+
+    const desc = clone.querySelector('.p1-desc');
+    if (desc && window._currentPersona && window._currentPersona.desc) {
+        desc.textContent = window._currentPersona.desc;
+    }
+
+    const legacy = clone.querySelector('.persona-legacy');
+    if (legacy) {
+        legacy.style.display = 'block';
+    }
+
+    stage.appendChild(clone);
+    document.body.appendChild(stage);
+
+    try {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const canvas = await html2canvas(clone, {
+            scale: Math.min(2, window.devicePixelRatio || 2),
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            imageTimeout: 8000,
+            windowWidth: 720
+        });
+        const link = document.createElement('a');
+        const name = (state.basic.name || state.basic.wechat_name || '我的').replace(/[\\/:*?"<>|]/g, '');
+        link.download = `幸之住_需求画像_${name}.png`;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showCustomerReportHint('图片已生成。若微信内未自动保存，请从右上角菜单用浏览器打开后再下载。');
+    } catch (err) {
+        console.error(err);
+        showCustomerReportHint('图片生成失败，请先用系统截图保存，或从浏览器打开后重试。');
+    } finally {
+        document.body.removeChild(stage);
     }
 }
 
@@ -3663,7 +3757,7 @@ function renderPersonaCard(p) {
                 <div style="display:flex;gap:18px;font-size:12px;opacity:0.9;margin-top:22px;flex-wrap:wrap;">
                     <div><strong>${p.stats.painCount}</strong> 个痛点</div>
                     <div><strong>${p.stats.sceneCount}</strong> 个关注场景</div>
-                    <div>超越 <strong>${p.stats.painRank}%</strong> 用户</div>
+                    <div>需求清晰度 <strong>${p.stats.painRank}%</strong></div>
                 </div>
                 <div class="p1-footer">幸之住 · 家居需求洞察</div>
             </div>
