@@ -525,7 +525,8 @@
             top: 0;
             width: 720px;
             background: #fff;
-            z-index: -1;
+            z-index: 0;
+            opacity: 0;
             pointer-events: none;
         }
         .report-export-stage .report {
@@ -533,6 +534,16 @@
             background: #fff;
             box-shadow: none;
             backdrop-filter: none;
+            border: 0;
+        }
+        .report-export-stage .persona-book,
+        .report-export-stage .priority-card,
+        .report-export-stage .profile-entry-card,
+        .report-export-stage .persona-legacy {
+            box-shadow: none !important;
+        }
+        .report-export-stage .persona-legacy {
+            padding-bottom: 6px;
         }
         .image-preview-overlay {
             position: fixed;
@@ -590,6 +601,9 @@
             border-radius: 12px;
             border: 1px solid #eceef2;
             background: #fff;
+            -webkit-user-select: auto;
+            user-select: auto;
+            -webkit-touch-callout: default;
         }
         .image-preview-actions {
             display: flex;
@@ -604,12 +618,17 @@
             font-size: 14px;
             padding: 11px 14px;
         }
+        .image-preview-download-hidden {
+            display: none !important;
+        }
         .archive-box {
             margin-top: 18px;
             padding: 18px;
-            background: #f5f7fa;
-            border-radius: 14px;
+            background: #fffdf8;
+            border: 1px solid rgba(230,225,216,0.9);
+            border-radius: 10px;
             text-align: left;
+            box-shadow: 0 8px 24px rgba(39,66,54,0.045);
         }
         .archive-box a {
             display: block;
@@ -946,6 +965,592 @@
             .fun-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
             .fun-card { padding: 14px 8px; }
         }
+
+        /* --- Commercial UI refresh --- */
+        :root {
+            --ink: #20231f;
+            --muted: #72766f;
+            --line: #e6e1d8;
+            --paper: #fffdf8;
+            --paper-strong: #ffffff;
+            --mist: #f3f7f1;
+            --green: #274236;
+            --green-strong: #19352b;
+            --blue: #1767b1;
+            --amber: #b97623;
+            --shadow-soft: 0 12px 34px rgba(39,66,54,0.08);
+            --shadow-lift: 0 18px 46px rgba(39,66,54,0.14);
+        }
+        body {
+            background:
+                radial-gradient(circle at 16% 0%, rgba(183,118,35,0.14) 0, rgba(183,118,35,0) 28%),
+                radial-gradient(circle at 88% 18%, rgba(23,103,177,0.12) 0, rgba(23,103,177,0) 26%),
+                linear-gradient(180deg, #f7f4ee 0%, #eef4ef 48%, #f7f7f3 100%);
+            color: var(--ink);
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 820px;
+            padding: 32px 18px 56px;
+            position: relative;
+            z-index: 1;
+        }
+        .progress-bar {
+            height: 7px;
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(230,225,216,0.95);
+            border-radius: 999px;
+            margin: 0 0 22px;
+            box-shadow: inset 0 1px 2px rgba(32,35,31,0.04);
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, var(--green) 0%, var(--blue) 100%);
+            border-radius: inherit;
+        }
+        #progressText {
+            margin: 0 0 14px !important;
+            color: var(--muted) !important;
+            font-size: 13px !important;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+        h1, h2 {
+            color: var(--ink);
+            letter-spacing: 0;
+        }
+        h2 {
+            font-size: 28px;
+            line-height: 1.28;
+            font-weight: 750;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 22px;
+        }
+        .step:not(#step-welcome):not(#step-report) {
+            background: rgba(255,253,248,0.82);
+            border: 1px solid rgba(230,225,216,0.78);
+            border-radius: 12px;
+            padding: 26px;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(18px);
+        }
+        .step:not(#step-welcome):not(#step-report)::before {
+            content: "幸之住 · 需求洞察";
+            display: inline-flex;
+            align-items: center;
+            height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #edf5ef;
+            color: #315c48;
+            border: 1px solid #d8e8dc;
+            font-size: 12px;
+            font-weight: 760;
+            margin-bottom: 14px;
+        }
+        .question {
+            background: var(--paper-strong);
+            border: 1px solid rgba(230,225,216,0.9);
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 24px rgba(32,35,31,0.045);
+        }
+        .question-label {
+            font-size: 17px;
+            font-weight: 750;
+            color: var(--ink);
+            margin-bottom: 14px;
+        }
+        .question-label span[style*="color:#d32f2f"] {
+            color: #b3342a !important;
+        }
+        .question-label span[style*="color:#86868b"] {
+            color: var(--muted) !important;
+        }
+        .question-tip,
+        .contact-note {
+            background: #eef6f2;
+            color: #275143;
+            border: 1px solid #d8e9df;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .options {
+            gap: 8px;
+        }
+        .option {
+            min-height: 52px;
+            padding: 13px 14px;
+            border: 1px solid #e0ddd5;
+            border-radius: 8px;
+            background: #fbfaf6;
+            color: #2a2d29;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.88) inset;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option:hover {
+            border-color: rgba(39,66,54,0.45);
+            background: #f6faf7;
+            transform: translateY(-1px);
+        }
+        .option.selected {
+            border-color: rgba(39,66,54,0.88);
+            background: linear-gradient(180deg, #f0f7f2 0%, #f9fbf7 100%);
+            box-shadow: 0 0 0 3px rgba(39,66,54,0.08);
+        }
+        .option span:last-child {
+            min-width: 0;
+        }
+        .option-check {
+            width: 20px;
+            height: 20px;
+            border-color: #b9b4aa;
+            margin-right: 12px;
+        }
+        .option.selected .option-check {
+            border-color: var(--green);
+            background: var(--green);
+        }
+        .text-input {
+            border: 1px solid #ded9cf;
+            border-radius: 8px;
+            background: #fffdf8;
+            color: var(--ink);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
+        }
+        .text-input:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(39,66,54,0.1);
+        }
+        .btn-group {
+            gap: 10px;
+            margin-top: 24px;
+        }
+        .btn {
+            border-radius: 9px;
+            font-weight: 760;
+            letter-spacing: 0;
+            min-height: 50px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .btn:focus-visible,
+        .option:focus-within,
+        .text-input:focus-visible,
+        .image-preview-close:focus-visible {
+            outline: 3px solid rgba(23,103,177,0.28);
+            outline-offset: 2px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--green) 0%, #315c48 100%);
+            box-shadow: 0 12px 28px rgba(39,66,54,0.22);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.85);
+            color: var(--ink);
+            border: 1px solid #dcd7cd;
+        }
+        .btn-secondary:hover {
+            border-color: rgba(39,66,54,0.55);
+            background: #fff;
+        }
+        .hero-cover {
+            min-height: 520px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-lift);
+        }
+        .hero-cover::after {
+            background:
+                linear-gradient(90deg, rgba(18,25,21,0.86) 0%, rgba(18,25,21,0.56) 48%, rgba(18,25,21,0.16) 100%),
+                linear-gradient(180deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.26) 100%);
+        }
+        .hero-copy {
+            left: 38px;
+            right: 38px;
+            bottom: 36px;
+        }
+        .hero-copy h1 {
+            font-size: 42px;
+            line-height: 1.12;
+            font-weight: 800;
+            max-width: 560px;
+            color: #fff;
+            text-shadow: 0 3px 18px rgba(0,0,0,0.34);
+        }
+        .hero-copy p {
+            max-width: 560px;
+            color: rgba(255,255,255,0.88);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.28);
+        }
+        .hero-pill {
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.22);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset;
+        }
+        .flow-badge {
+            border-radius: 999px;
+            letter-spacing: 0;
+        }
+        .flow-badge.core {
+            background: #eef6f2;
+            color: #275143;
+            border-color: #d7e8de;
+        }
+        .flow-badge.optional {
+            background: #fff5e8;
+            color: #8a4e16;
+            border-color: #f2d5ab;
+            box-shadow: none;
+        }
+        .btn-skip {
+            background: #fff7ec !important;
+            color: #8a4e16 !important;
+            border: 1px solid #eccd9c !important;
+            border-radius: 9px !important;
+            box-shadow: none !important;
+        }
+        #step-report {
+            border-radius: 14px;
+            background:
+                linear-gradient(180deg, rgba(255,253,248,0.78), rgba(246,248,243,0.95)),
+                url('/static/report-bg.png') center/cover no-repeat;
+            border: 1px solid rgba(230,225,216,0.86);
+            box-shadow: var(--shadow-lift);
+        }
+        .report {
+            border-radius: 12px;
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(230,225,216,0.82);
+            box-shadow: 0 16px 44px rgba(39,66,54,0.08);
+        }
+        .generation-state {
+            min-height: 360px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 48px 20px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fffdf8, #f3f7f1);
+            border: 1px solid rgba(230,225,216,0.88);
+        }
+        .generation-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #edf5ef;
+            color: var(--green);
+            font-size: 30px;
+            box-shadow: inset 0 0 0 1px #d8e8dc;
+        }
+        .generation-state h3 {
+            font-size: 22px;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .generation-state p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .save-status-wrap {
+            margin-top: 22px;
+            text-align: center;
+        }
+        .save-status {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 210px;
+            padding: 16px 24px;
+            border-radius: 10px;
+            background: #edf8ef;
+            border: 1px solid #d8e8dc;
+            color: #28603b;
+            box-shadow: 0 8px 24px rgba(40,96,59,0.08);
+        }
+        .save-status-title {
+            font-size: 18px;
+            color: var(--ink);
+        }
+        .save-status-code {
+            font-weight: 800;
+        }
+        .save-status.error {
+            background: #fff0ee;
+            border-color: #f3d0ca;
+            color: #b3342a;
+        }
+        .save-status.error .save-status-title {
+            color: #b3342a;
+        }
+        .insight-report-head {
+            padding: 22px;
+            border-radius: 10px;
+            background:
+                linear-gradient(135deg, rgba(39,66,54,0.96), rgba(55,86,70,0.9)),
+                url('/static/report-bg.png') center/cover no-repeat;
+            color: #fff;
+            margin-bottom: 18px;
+            box-shadow: 0 18px 42px rgba(39,66,54,0.18);
+        }
+        .insight-report-kicker {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: rgba(255,255,255,0.72);
+            margin-bottom: 14px;
+        }
+        .insight-report-head h2 {
+            color: #fff;
+            font-size: 28px;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .insight-report-head p {
+            color: rgba(255,255,255,0.82);
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 560px;
+        }
+        .insight-report-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .insight-report-meta div {
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.16);
+        }
+        .insight-report-meta span {
+            display: block;
+            font-size: 11px;
+            color: rgba(255,255,255,0.68);
+            margin-bottom: 4px;
+        }
+        .insight-report-meta strong {
+            display: block;
+            font-size: 15px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .insight-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 0 18px;
+        }
+        .insight-strip-item {
+            padding: 14px;
+            border-radius: 10px;
+            background: #fffdf8;
+            border: 1px solid rgba(230,225,216,0.95);
+            box-shadow: 0 8px 24px rgba(39,66,54,0.045);
+        }
+        .insight-strip-item span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .insight-strip-item strong {
+            display: block;
+            font-size: 16px;
+            color: var(--green);
+            line-height: 1.35;
+        }
+        .priority-card,
+        .profile-entry-card,
+        .persona-legacy {
+            border-radius: 10px;
+            border: 1px solid rgba(230,225,216,0.9);
+            box-shadow: 0 10px 30px rgba(39,66,54,0.06);
+        }
+        .priority-item,
+        .profile-summary-item {
+            border-radius: 8px;
+            background: #f8faf7;
+            border-color: #e7e9e3;
+        }
+        .priority-item::before {
+            background: var(--green);
+        }
+        .conversion-card {
+            border-radius: 10px;
+            background: linear-gradient(135deg, #20382e 0%, #486050 100%);
+            box-shadow: 0 14px 28px rgba(32,56,46,0.18);
+        }
+        .profile-entry-card {
+            background: linear-gradient(180deg, #fffdf8 0%, #f6f1e9 100%);
+        }
+        .profile-summary-item strong {
+            color: var(--green);
+            font-size: 22px;
+        }
+        .report-section h3 {
+            color: var(--green);
+        }
+        .report-section h3::before {
+            background: linear-gradient(180deg, var(--green), var(--blue));
+        }
+        .persona-book {
+            border-radius: 12px;
+            box-shadow: 0 22px 56px rgba(18,25,21,0.24);
+        }
+        .persona-page {
+            padding: 36px;
+        }
+        .persona-nav .btn {
+            border-radius: 8px;
+            background: var(--green);
+        }
+        .persona-nav .btn:hover {
+            background: var(--green-strong);
+        }
+        .dot {
+            background: rgba(39,66,54,0.26);
+        }
+        .dot.active {
+            background: var(--green);
+        }
+        .tag-red { background: #fff0ee; color: #b3342a; }
+        .tag-yellow { background: #fff6e5; color: #9b6118; }
+        .tag-green { background: #edf8ef; color: #28603b; }
+        .tag-gray { background: #f2f2ef; color: #696c66; }
+        .tag-blue { background: #edf5ff; color: #1767b1; }
+        .image-preview-panel {
+            border-radius: 12px;
+        }
+        .image-preview-panel img {
+            border-radius: 8px;
+        }
+        @media (min-width: 780px) {
+            .options {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .question .text-input,
+            #q-wechat-name .text-input,
+            #q-name .text-input,
+            #q-phone .text-input {
+                max-width: 460px;
+            }
+        }
+        @media (max-width: 640px) {
+            .container {
+                padding: 18px 12px 36px;
+            }
+            .step:not(#step-welcome):not(#step-report) {
+                padding: 18px 14px;
+                border-radius: 12px;
+            }
+            .step:not(#step-welcome):not(#step-report)::before {
+                margin-bottom: 12px;
+            }
+            h2 {
+                font-size: 24px;
+            }
+            .subtitle {
+                margin-bottom: 18px;
+            }
+            .question {
+                padding: 18px 14px;
+                border-radius: 9px;
+            }
+            .option {
+                min-height: 50px;
+                font-size: 15px;
+            }
+            .step:not(#step-welcome):not(#step-report) > .btn-group {
+                position: sticky;
+                bottom: 10px;
+                z-index: 20;
+                padding: 8px;
+                margin-left: -8px;
+                margin-right: -8px;
+                background: rgba(247,244,238,0.78);
+                border: 1px solid rgba(230,225,216,0.8);
+                border-radius: 12px;
+                backdrop-filter: blur(16px);
+            }
+            .hero-cover {
+                min-height: 560px;
+                border-radius: 14px;
+            }
+            .hero-cover::after {
+                background:
+                    linear-gradient(180deg, rgba(18,25,21,0.24) 0%, rgba(18,25,21,0.52) 46%, rgba(18,25,21,0.94) 100%),
+                    linear-gradient(90deg, rgba(18,25,21,0.28) 0%, rgba(18,25,21,0.08) 100%);
+            }
+            .hero-copy {
+                left: 22px;
+                right: 22px;
+                bottom: 24px;
+            }
+            .hero-copy h1 {
+                font-size: 32px;
+            }
+            .hero-copy p {
+                font-size: 15px;
+            }
+            #step-report {
+                padding: 10px;
+                border-radius: 12px;
+            }
+            .report {
+                padding: 18px;
+                border-radius: 10px;
+            }
+            .insight-report-head {
+                padding: 18px;
+            }
+            .insight-report-head h2 {
+                font-size: 24px;
+            }
+            .insight-report-meta,
+            .insight-strip {
+                grid-template-columns: 1fr;
+            }
+            .priority-card,
+            .profile-entry-card,
+            .persona-legacy {
+                padding: 18px;
+            }
+            .persona-page {
+                padding: 26px 20px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
@@ -1111,7 +1716,7 @@
             <div class="question" id="q-k-crowd">
                 <div class="question-label">两个人同时在厨房时，会不会互相挡路、转不开身？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="k_crowd" value="会" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>会，跟打仗一样</span></label>
+                <label class="option"><input type="checkbox" name="k_crowd" value="会" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>会，两个人一起做饭就互相让路</span></label>
                     <label class="option"><input type="checkbox" name="k_crowd" value="否" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不会，空间够</span></label>
                 </div>
             </div>
@@ -1283,7 +1888,7 @@
 
     <!-- 卫浴漱妆 -->
     <div class="step" id="step-bathroom">
-        <h2>🚿 早晨的卫生间，是战场还是SPA？</h2>
+        <h2>🚿 早晨的卫生间，是拥挤还是顺手？</h2>
         <p class="subtitle">从抢厕所到吹头发，聊聊你真实的洗漱体验。</p>
 
         <div class="question" id="q-b-count">
@@ -1503,7 +2108,7 @@
         <div class="question" id="q-s-read">
             <div class="question-label">睡前会在床上看书/看手机吗？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_read" value="看书" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>看书（纸质书/Kindle）</span></label>
+                <label class="option"><input type="checkbox" name="s_read" value="看书" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>看书（纸质书/电子书）</span></label>
                 <label class="option"><input type="checkbox" name="s_read" value="手机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>看手机/平板，刷到困</span></label>
                 <label class="option"><input type="checkbox" name="s_read" value="不" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不，躺下就睡</span></label>
             </div>
@@ -1551,10 +2156,10 @@
         <div class="question" id="q-l-dirty">
             <div class="question-label">换下来的脏衣服，最后都出现在什么地方？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_dirty" value="脏衣篮" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>乖乖待在脏衣篮里</span></label>
-                <label class="option"><input type="checkbox" name="l_dirty" value="椅子沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>椅子、沙发、床尾——长衣服了</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="脏衣篮" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本都能进脏衣篮</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="椅子沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>椅子、沙发、床尾会临时堆衣服</span></label>
                 <label class="option"><input type="checkbox" name="l_dirty" value="卫生间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>直接扔在卫生间地上</span></label>
-                <label class="option"><input type="checkbox" name="l_dirty" value="地上" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>哪脱的哪扔，遍地开花</span></label>
+                <label class="option"><input type="checkbox" name="l_dirty" value="地上" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常随手一放，之后再集中收</span></label>
             </div>
         </div>
 
@@ -1572,14 +2177,14 @@
             <div class="question-label">晾衣服这件事，你家现在怎么解决的？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="l_dry" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台晾晒，但常挂满一周不收</span></label>
-                <label class="option"><input type="checkbox" name="l_dry" value="烘干机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>烘干机，梅雨天的救星</span></label>
+                <label class="option"><input type="checkbox" name="l_dry" value="烘干机" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>烘干机，阴雨天会轻松很多</span></label>
                 <label class="option"><input type="checkbox" name="l_dry" value="客厅" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>客厅/卧室临时支个架子晾</span></label>
                 <label class="option"><input type="checkbox" name="l_dry" value="卫生间" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>卫生间阴干，总有股潮味</span></label>
             </div>
         </div>
 
         <div class="question" id="q-l-wardrobe">
-            <div class="question-label">每天早上找衣服，是不是像在开盲盒？（多选）</div>
+            <div class="question-label">每天早上找衣服时，是否经常耗费时间？（多选）</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="l_wardrobe" value="不够挂" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>挂衣区不够，衣服只能堆叠</span></label>
                 <label class="option"><input type="checkbox" name="l_wardrobe" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>翻来翻去找不到那件想穿的</span></label>
@@ -1589,22 +2194,22 @@
         </div>
 
         <div class="question" id="q-l-ironing">
-            <div class="question-label">出门前，衣服需不需要「抢救」一下？</div>
+            <div class="question-label">出门前，衣物是否经常需要临时整理？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="l_ironing" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>衬衫控，每天必须熨得笔挺</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>衬衫、西装较多，需要经常熨烫</span></label>
                 <label class="option"><input type="checkbox" name="l_ironing" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔需要，但家里没地方熨</span></label>
-                <label class="option"><input type="checkbox" name="l_ironing" value="挂烫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>挂烫机凑合用，但得找个插座</span></label>
-                <label class="option"><input type="checkbox" name="l_ironing" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>从不熨，皱就皱吧</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="挂烫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>用挂烫机，但插座和悬挂位置不顺手</span></label>
+                <label class="option"><input type="checkbox" name="l_ironing" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本不需要熨烫</span></label>
             </div>
         </div>
 
         <div class="question" id="q-l-shoes">
-            <div class="question-label">门口是不是被鞋子占领了？</div>
+            <div class="question-label">门口的鞋子，现在是否容易堆在外面？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="l_shoes" value="鞋柜够" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>鞋柜够用，门口整洁</span></label>
                 <label class="option"><input type="checkbox" name="l_shoes" value="鞋柜不够" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>鞋柜太小，门口一堆鞋</span></label>
                 <label class="option"><input type="checkbox" name="l_shoes" value="常换" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>鞋子多，当季和换季要分开</span></label>
-                <label class="option"><input type="checkbox" name="l_shoes" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不care，能穿就行</span></label>
+                <label class="option"><input type="checkbox" name="l_shoes" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不太在意，能顺手拿取即可</span></label>
             </div>
         </div>
 
@@ -1620,7 +2225,7 @@
         <p class="subtitle">找钥匙、翻换季、理杂物——哪个是你的日常？</p>
 
         <div class="question" id="q-s-hoard">
-            <div class="question-label">618、双11之后，家里是不是会突然多出很多「储备粮」？（多选）</div>
+            <div class="question-label">集中采购后，家里是否需要更多囤货空间？（多选）</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="s_hoard" value="纸巾洗护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>纸巾、洗衣液按箱买，得有地方囤</span></label>
                 <label class="option"><input type="checkbox" name="s_hoard" value="粮油" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>粮油调料也喜欢批量采购</span></label>
@@ -1631,16 +2236,16 @@
         <div class="question" id="q-s-misc">
             <div class="question-label">找创可贴、螺丝刀、胶带这些「小东西」时，你一般花多久？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_misc" value="抽屉" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>秒找到，每个抽屉都有标签</span></label>
+                <label class="option"><input type="checkbox" name="s_misc" value="抽屉" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>很快找到，每类小物都有固定位置</span></label>
                 <label class="option"><input type="checkbox" name="s_misc" value="柜子" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>知道在某个柜子里，但得翻一会儿</span></label>
-                <label class="option"><input type="checkbox" name="s_misc" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常翻箱倒柜也找不到，最后放弃</span></label>
+                <label class="option"><input type="checkbox" name="s_misc" value="找不到" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常翻很久，最后只能临时再买</span></label>
             </div>
         </div>
 
         <div class="question" id="q-s-season">
             <div class="question-label">换季的时候，厚被子和羽绒服往哪塞？</div>
             <div class="options">
-                <label class="option"><input type="checkbox" name="s_season" value="床底" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>床底/沙发底，眼不见为净</span></label>
+                <label class="option"><input type="checkbox" name="s_season" value="床底" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>床底/沙发底，先收进去再说</span></label>
                 <label class="option"><input type="checkbox" name="s_season" value="衣柜顶" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>衣柜顶，每次拿都要搬梯子</span></label>
                 <label class="option"><input type="checkbox" name="s_season" value="阳台" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>阳台/角落，堆成一座小山</span></label>
                 <label class="option"><input type="checkbox" name="s_season" value="储藏室" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有独立储藏间，井井有条</span></label>
@@ -1651,7 +2256,7 @@
             <div class="question-label">下班进门，包、钥匙、口罩有「归宿」吗？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="s_entry" value="有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有固定位置，进门就归位</span></label>
-                <label class="option"><input type="checkbox" name="s_entry" value="没有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没有，沙发、餐桌、鞋柜上到处长</span></label>
+                <label class="option"><input type="checkbox" name="s_entry" value="没有" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>没有，沙发、餐桌、鞋柜上都会放</span></label>
             </div>
         </div>
 
@@ -1665,11 +2270,11 @@
         </div>
 
         <div class="question" id="q-s-style">
-            <div class="question-label">如果让你的家拍一张证件照，你希望它看起来是？</div>
+            <div class="question-label">你希望家里的整体状态更接近哪一种？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="s_style" value="空无一物" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>空无一物，像杂志封面</span></label>
                 <label class="option"><input type="checkbox" name="s_style" value="温馨" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>满满当当，但很有生活气息</span></label>
-                <label class="option"><input type="checkbox" name="s_style" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，顺手比好看重要</span></label>
+                <label class="option"><input type="checkbox" name="s_style" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>顺手优先，好看可以排在后面</span></label>
             </div>
         </div>
 
@@ -1685,11 +2290,11 @@
         <p class="subtitle">孩子的作业角、你的工作台，现在顺手吗？</p>
 
         <div class="question" id="q-w-home">
-            <div class="question-label">周末或晚上，家里有人需要「闭关」办公或上网课吗？</div>
+            <div class="question-label">周末或晚上，家里有人需要安静办公或上网课吗？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="w_home" value="每天" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>经常，家里得有个不被打扰的角落</span></label>
-                <label class="option"><input type="checkbox" name="w_home" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔，餐桌凑合用也行</span></label>
-                <label class="option"><input type="checkbox" name="w_home" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不需要，下班就是下班</span></label>
+                <label class="option"><input type="checkbox" name="w_home" value="偶尔" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>偶尔，餐桌临时办公也能接受</span></label>
+                <label class="option"><input type="checkbox" name="w_home" value="不需要" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>基本不需要在家办公学习</span></label>
             </div>
         </div>
 
@@ -1697,7 +2302,7 @@
             <div class="question-label">当你需要专注时，家里的环境配合吗？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="w_quiet" value="必须" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>必须关门独处，一点声音都不行</span></label>
-                <label class="option"><input type="checkbox" name="w_quiet" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，咖啡厅那么吵我也能写</span></label>
+                <label class="option"><input type="checkbox" name="w_quiet" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>不太挑环境，有个稳定台面就行</span></label>
                 <label class="option"><input type="checkbox" name="w_quiet" value="喜欢陪" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>喜欢有人在旁边，各忙各的也安心</span></label>
             </div>
         </div>
@@ -1712,11 +2317,11 @@
         </div>
 
         <div class="question" id="q-w-books">
-            <div class="question-label">家里的书和文件，是 pride 还是 burden？</div>
+            <div class="question-label">家里的书和文件，现在更像展示资产还是收纳压力？</div>
             <div class="options">
                 <label class="option"><input type="checkbox" name="w_books" value="很多" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>满墙书，搬家最重的行李</span></label>
                 <label class="option"><input type="checkbox" name="w_books" value="一般" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>有一些，希望有个好看的书柜展示</span></label>
-                <label class="option"><input type="checkbox" name="w_books" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>Kindle/电脑搞定一切，书占地方</span></label>
+                <label class="option"><input type="checkbox" name="w_books" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>主要看电子书/电脑资料，纸质书不多</span></label>
             </div>
         </div>
 
@@ -1892,7 +2497,7 @@
     <!-- 特殊生活 -->
     <div class="step" id="step-special">
         <h2>🐾 家里有「特殊成员」吗？</h2>
-        <p class="subtitle">毛孩子、小宝贝、长辈、手办墙——谁需要特别照顾？</p>
+        <p class="subtitle">宠物、宝宝、长辈、兴趣收藏——谁需要被提前考虑？</p>
 
         <div id="special-pregnancy" class="hidden">
             <div class="question" id="q-sp-nursery">
@@ -1936,27 +2541,27 @@
 
         <div id="special-pet" class="hidden">
             <div class="question" id="q-sp-pet">
-                <div class="question-label">毛孩子是家里的「霸道总裁」还是「贴心小棉袄」？（多选）</div>
+                <div class="question-label">宠物在家里需要哪些专属空间？（多选）</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_pet" value="猫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>猫主子——需要猫爬架、猫砂盆专属区</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet" value="狗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>汪星人——需要活动空间和狗窝</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet" value="其他" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>其他萌宠（鱼/鸟/爬宠/仓鼠）</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="猫" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>猫：需要猫爬架、猫砂盆专属区</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="狗" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>狗：需要活动空间和休息区</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet" value="其他" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>其他宠物：需要稳定、安全的饲养位置</span></label>
                     <label class="option"><input type="checkbox" name="sp_pet" value="防护" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>担心阳台/窗户，想装防护网</span></label>
                 </div>
             </div>
             <div class="question" id="q-sp-pet-hair">
-                <div class="question-label">宠物掉毛季，家里哪个地方最惨烈？</div>
+                <div class="question-label">宠物掉毛季，家里哪个区域最需要易清洁设计？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>沙发和床，永远无法干净</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="地毯" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>地毯/地垫，吸尘器都救不了</span></label>
-                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>已经放弃，毛是家的装饰</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="沙发" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>沙发和床，需要更易清洁的材质</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="地毯" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>地毯/地垫，清洁压力较大</span></label>
+                    <label class="option"><input type="checkbox" name="sp_pet_hair" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>可以接受，不作为重点问题</span></label>
                 </div>
             </div>
         </div>
 
         <div id="special-outdoor" class="hidden">
             <div class="question" id="q-sp-outdoor">
-                <div class="question-label">你的户外装备，现在占用了家里多少「领土」？</div>
+            <div class="question-label">户外装备现在占用了多少收纳空间？</div>
                 <div class="options">
                     <label class="option"><input type="checkbox" name="sp_outdoor" value="多" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>半个储藏室——帐篷、滑雪板、骑行装备全齐</span></label>
                     <label class="option"><input type="checkbox" name="sp_outdoor" value="少" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>就几个包，但总得找个地方挂</span></label>
@@ -1967,26 +2572,26 @@
                 <div class="question-label">户外回来后，脏鞋脏衣服有地方处理吗？</div>
                 <div class="options">
                     <label class="option"><input type="checkbox" name="sp_outdoor_clean" value="入户" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>想在入户区直接换洗，不带进客厅</span></label>
-                    <label class="option"><input type="checkbox" name="sp_outdoor_clean" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>无所谓，先扔地上再说</span></label>
+                    <label class="option"><input type="checkbox" name="sp_outdoor_clean" value="无所谓" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>目前没有固定处理区，回来后临时放</span></label>
                 </div>
             </div>
         </div>
 
         <div id="special-acg" class="hidden">
             <div class="question" id="q-sp-acg">
-                <div class="question-label">你的「宝藏」，现在是藏起来还是秀出来？</div>
+            <div class="question-label">收藏品和兴趣物品，现在更适合收纳还是展示？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_acg" value="展示柜" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>必须 glass case，防尘还要带灯</span></label>
-                    <label class="option"><input type="checkbox" name="sp_acg" value="电竞房" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>想要独立电竞房/手办房，我的圣地</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg" value="展示柜" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>需要防尘展示柜，最好带灯光</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg" value="电竞房" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>想要独立电竞房/收藏房，安静又完整</span></label>
                     <label class="option"><input type="checkbox" name="sp_acg" value="墙面" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>海报/漫画上墙，每天抬头就能充电</span></label>
                 </div>
             </div>
             <div class="question" id="q-sp-acg-gadget">
                 <div class="question-label">你的电子设备（主机、手办、周边），最缺什么？</div>
                 <div class="options">
-                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="散热" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>散热——夏天打游戏像蒸桑拿</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="散热" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>散热——长时间使用时房间容易闷热</span></label>
                     <label class="option"><input type="checkbox" name="sp_acg_gadget" value="插座" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>插座——充电头永远不够</span></label>
-                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="收纳" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>收纳——盒子堆成山，但舍不得扔</span></label>
+                    <label class="option"><input type="checkbox" name="sp_acg_gadget" value="收纳" onchange="selectOption(this)"><span class="option-check checkbox"></span><span>收纳——包装盒和周边多，但想保留</span></label>
                 </div>
             </div>
         </div>
@@ -2093,6 +2698,13 @@ function updateProgress(step) {
             textEl.textContent = `步骤 ${idx} / ${steps.length - 2}`;
         }
     }
+}
+
+function setProgressText(text) {
+    const textEl = document.getElementById('progressText');
+    if (!textEl) return;
+    textEl.style.display = 'block';
+    textEl.textContent = text;
 }
 
 function goTo(step) {
@@ -2472,6 +3084,30 @@ function generateReport() {
     const p = r.persona;
     const personaHtml = renderPersonaCard(p);
     const nextActions = generateNextActions(r);
+    const reportName = r.basic.name || r.basic.wechat_name || '我的家';
+    const reportDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
+    const topSceneText = r.scenes.core[0] || r.scenes.minor[0] || '待补充';
+    const topRiskText = r.constraints[0] ? `${r.constraints[0].type} · ${r.constraints[0].desc}` : (r.pains[0] ? r.pains[0].text : '暂无明显风险');
+    const reportHeadHtml = `
+        <div class="insight-report-head">
+            <div class="insight-report-kicker">
+                <span>幸之住 · 家居需求洞察</span>
+                <span>${reportDate}</span>
+            </div>
+            <h2>${reportName}的需求画像</h2>
+            <p>这份画像用于把生活习惯、空间痛点和下一步沟通重点整理清楚，方便后续结合户型图、现场照片和设计师方案继续深化。</p>
+            <div class="insight-report-meta">
+                <div><span>居住人格</span><strong>${p.name}</strong></div>
+                <div><span>优先场景</span><strong>${topSceneText}</strong></div>
+                <div><span>画像编号</span><strong>${p.code}</strong></div>
+            </div>
+        </div>
+        <div class="insight-strip">
+            <div class="insight-strip-item"><span>核心场景</span><strong>${asArray(r.scenes.core).length || 0} 个</strong></div>
+            <div class="insight-strip-item"><span>明确痛点</span><strong>${r.pains.length || 0} 个</strong></div>
+            <div class="insight-strip-item"><span>优先提醒</span><strong>${topRiskText.length > 30 ? topRiskText.slice(0, 30) + '...' : topRiskText}</strong></div>
+        </div>
+    `;
     const nextActionsHtml = `
         <div class="priority-card">
             <h3>基于你的需求，下一步最该确认的 3 个点</h3>
@@ -2572,14 +3208,16 @@ function generateReport() {
         </div>
     `;
 
-    const fullHtml = personaHtml + nextActionsHtml + profileSummaryHtml + legacyHtml;
+    const fullHtml = reportHeadHtml + personaHtml + nextActionsHtml + profileSummaryHtml + legacyHtml;
 
     // 先显示提交中
     document.getElementById('reportContent').innerHTML = `
-        <div style="text-align:center;padding:60px 20px;">
-            <div style="font-size:48px;margin-bottom:20px;">⏳</div>
-            <h3 style="font-size:20px;margin-bottom:12px;">正在生成你的居住人格...</h3>
-            <p style="color:#86868b;">请稍候，正在分析你的生活 DNA</p>
+        <div class="generation-state">
+            <div>
+                <div class="generation-state-icon">⌁</div>
+                <h3>正在生成你的需求画像</h3>
+                <p>正在整理生活场景、空间痛点和下一步沟通重点，请稍候。</p>
+            </div>
         </div>
     `;
     goTo('report');
@@ -2610,10 +3248,10 @@ function generateReport() {
             const hasPhone = /^\d{11}$/.test(state.basic.phone || '');
             const archiveUrl = hasPhone ? window.location.origin + window.location.pathname + '?phone=' + encodeURIComponent(state.basic.phone) : '';
             const statusHtml = `
-                <div style="margin-top:24px;text-align:center;">
-                    <div style="display:inline-block;padding:16px 24px;background:#e8f5e9;border-radius:12px;">
-                        <div style="font-size:20px;margin-bottom:4px;">完成</div>
-                        <div style="font-weight:600;color:#388e3c;">已保存 · 编号 #${data.id}</div>
+                <div class="save-status-wrap">
+                    <div class="save-status">
+                        <div class="save-status-title">完成</div>
+                        <div class="save-status-code">已保存 · 编号 #${data.id}</div>
                     </div>
                     ${hasPhone ? `<div class="archive-box">
                         <div style="font-weight:600;color:#1d1d1f;">以后想补充或修改，保存这个链接即可。</div>
@@ -2624,6 +3262,7 @@ function generateReport() {
                 </div>
             `;
             document.getElementById('reportContent').innerHTML = fullHtml + statusHtml;
+            setProgressText('需求画像已生成');
             window._currentPersona = p;
             setTimeout(() => {
                 animateRadarBars();
@@ -2636,14 +3275,15 @@ function generateReport() {
     })
     .catch(err => {
         document.getElementById('reportContent').innerHTML = fullHtml + `
-            <div style="margin-top:24px;text-align:center;">
-                <div style="display:inline-block;padding:16px 24px;background:#ffe5e5;border-radius:12px;">
-                    <div style="font-size:20px;margin-bottom:4px;">⚠️</div>
-                    <div style="font-weight:600;color:#d32f2f;">提交失败，请截图保存人格卡片</div>
-                    <div style="font-size:13px;color:#666;margin-top:4px;">${err.message || '网络错误'}</div>
+            <div class="save-status-wrap">
+                <div class="save-status error">
+                    <div class="save-status-title">提交失败</div>
+                    <div class="save-status-code">请先保存当前这份画像</div>
+                    <div style="font-size:13px;margin-top:4px;">${err.message || '网络错误'}</div>
                 </div>
             </div>
         `;
+        setProgressText('需求画像已生成');
         window._currentPersona = p;
         setTimeout(() => {
             animateRadarBars();
@@ -2685,7 +3325,21 @@ function closeReportImagePreview() {
     document.body.style.overflow = '';
 }
 
-function showReportImagePreview(imageUrl, fileName) {
+function isWeChatBrowser() {
+    return /MicroMessenger/i.test(navigator.userAgent || '');
+}
+
+function canvasToBlob(canvas) {
+    return new Promise(resolve => {
+        if (!canvas.toBlob) {
+            resolve(null);
+            return;
+        }
+        canvas.toBlob(blob => resolve(blob), 'image/png', 1);
+    });
+}
+
+function showReportImagePreview(imageUrl, fileName, downloadUrl) {
     let overlay = document.getElementById('reportImagePreview');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -2698,11 +3352,11 @@ function showReportImagePreview(imageUrl, fileName) {
                     <button class="image-preview-close" type="button" onclick="closeReportImagePreview()" aria-label="关闭">×</button>
                 </div>
                 <div class="image-preview-help">
-                    在微信里长按下方图片，选择“保存图片”或“发送给朋友”。如果系统没有出现保存选项，再用下方备用下载。
+                    图片已经在当前页面生成。微信里请长按下方图片，选择“保存图片”或“发送给朋友”，不要从文件下载入口打开。
                 </div>
                 <img id="reportPreviewImage" alt="幸之住需求画像图片">
                 <div class="image-preview-actions">
-                    <a class="btn btn-secondary" id="reportPreviewDownload">备用下载</a>
+                    <a class="btn btn-secondary" id="reportPreviewDownload">下载图片</a>
                     <button class="btn btn-primary" type="button" onclick="closeReportImagePreview()">完成</button>
                 </div>
             </div>
@@ -2715,9 +3369,23 @@ function showReportImagePreview(imageUrl, fileName) {
 
     const image = overlay.querySelector('#reportPreviewImage');
     const download = overlay.querySelector('#reportPreviewDownload');
+    const oldDownloadUrl = download.dataset.objectUrl;
+    if (oldDownloadUrl) {
+        URL.revokeObjectURL(oldDownloadUrl);
+        delete download.dataset.objectUrl;
+    }
     image.src = imageUrl;
-    download.href = imageUrl;
-    download.download = fileName;
+    if (downloadUrl && !isWeChatBrowser()) {
+        download.href = downloadUrl;
+        download.download = fileName;
+        download.dataset.objectUrl = downloadUrl;
+        download.classList.remove('image-preview-download-hidden');
+    } else {
+        if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+        download.removeAttribute('href');
+        download.removeAttribute('download');
+        download.classList.add('image-preview-download-hidden');
+    }
     overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
@@ -2725,7 +3393,7 @@ function showReportImagePreview(imageUrl, fileName) {
 async function downloadCustomerReport() {
     const source = document.getElementById('reportContent');
     if (!source || typeof html2canvas === 'undefined') {
-        alert('图片生成功能加载中，请稍后重试');
+        showCustomerReportHint('图片生成组件还没加载完成。请刷新页面后重试；如果仍不行，可先用系统截图保存当前画像。');
         return;
     }
 
@@ -2761,7 +3429,9 @@ async function downloadCustomerReport() {
             windowWidth: 720
         });
         const imageUrl = canvas.toDataURL('image/png');
-        showReportImagePreview(imageUrl, getShareImageFileName());
+        const blob = await canvasToBlob(canvas);
+        const downloadUrl = blob ? URL.createObjectURL(blob) : '';
+        showReportImagePreview(imageUrl, getShareImageFileName(), downloadUrl);
         showCustomerReportHint('图片已生成。请长按图片保存，或直接发送给朋友。');
     } catch (err) {
         console.error(err);
@@ -3263,20 +3933,20 @@ function buildPersona(result) {
 
     const names = {
         'SOIP-R': '秩序重建者', 'SOIP-W': '秩序重构者',
-        'SOIA-R': '极简隐士', 'SOIA-W': '数字游民',
-        'SOHP-R': '完美东道主', 'SOHP-W': '派对策展人',
+        'SOIA-R': '极简守序者', 'SOIA-W': '灵活独居者',
+        'SOHP-R': '完美东道主', 'SOHP-W': '社交策划者',
         'SOHA-R': '干净社交家', 'SOHA-W': '氛围组组长',
         'SFIP-R': '敏感独行者', 'SFIP-W': '旷野观察者',
         'SFIA-R': '佛系宅家党', 'SFIA-W': '游牧生活家',
-        'SFHP-R': '自由派对家', 'SFHP-W': '即兴艺术家',
+        'SFHP-R': '自由社交家', 'SFHP-W': '即兴生活家',
         'SFHA-R': '快乐社交家', 'SFHA-W': '跨界连接者',
         'EOIP-R': '烟火气守护者', 'EOIP-W': '味觉探险家',
-        'EOIA-R': '精致独食客', 'EOIA-W': '一人食博主',
+        'EOIA-R': '精致独食客', 'EOIA-W': '一人食实践者',
         'EOHP-R': '社交厨神', 'EOHP-W': '私宴主理人',
         'EOHA-R': '热闹生活家', 'EOHA-W': '生活导演',
         'EFIP-R': '创意独行者', 'EFIP-W': '深夜创作者',
         'EFIA-R': '随性体验家', 'EFIA-W': '流动生活家',
-        'EFHP-R': '派对料理人', 'EFHP-W': '快闪发起人',
+        'EFHP-R': '社交料理人', 'EFHP-W': '灵活组织者',
         'EFHA-R': '全能生活家', 'EFHA-W': '多面体验官'
     };
 
@@ -3401,7 +4071,7 @@ function generateInsights(result, code) {
             text: pickOne([
                 '你一年有超过 300 天在自家厨房度过。对你来说，厨房不只是功能区，它是家的灵魂所在，是烟火气升起的地方。',
                 '你的冰箱永远有新鲜食材，灶台几乎没凉过。家对你来说，味道比颜值更重要。',
-                '别人回家是休息，你回家是换了个战场继续烹饪。厨房是你的主舞台，其他房间都是观众席。'
+                '别人回家是休息，你回家后常常还要认真做一顿饭。厨房是你家使用频率最高、也最值得优化的空间。'
             ])
         });
     } else if (s.s_partner === '我浅眠' || (s.s_noise && s.s_noise !== '无')) {
@@ -3410,7 +4080,7 @@ function generateInsights(result, code) {
             text: pickOne([
                 '睡眠是你生活的重启键。一个能彻底隔绝噪音和光线的卧室，比任何装饰品都更能治愈你。',
                 '你对声音和光线的敏感，让你比大多数人更需要一个"黑匣子"般的卧室。窗帘、隔音、遮光，缺一不可。',
-                '别人的卧室用来睡觉，你的卧室用来"重启系统"。每一次深度睡眠，都是第二天能量的来源。'
+                '卧室对你来说不只是睡觉的地方，也是恢复精力和稳定状态的核心空间。'
             ])
         });
     } else if (st.s_mess === '是' || st.s_misc === '找不到') {
@@ -3418,15 +4088,15 @@ function generateInsights(result, code) {
             title: '生活方式',
             text: pickOne([
                 '你的家正在和你玩捉迷藏——钥匙、遥控器、数据线，每天都在变着花样消失。你需要一个"万物有归处"的秩序系统。',
-                '打开抽屉像开盲盒，找东西全凭运气。不是你不爱整理，是收纳系统根本没有跟上你的生活节奏。',
-                '你家的台面是战场，沙发是仓库，椅子是衣架。东西不是没有，只是都长在了不该在的位置。'
+                '找东西常常依赖记忆和运气，并不是你不爱整理，而是收纳系统没有跟上生活节奏。',
+                '你家的台面、沙发和椅背经常承担临时收纳功能。东西不是没有地方放，而是缺少顺手的归位路径。'
             ])
         });
     } else if (e.e_freq && e.e_freq.includes('每天')) {
         insights.push({
             title: '生活方式',
             text: pickOne([
-                '客厅是你下班后的充电站。瘫在沙发上追剧、打游戏，是你最珍视的独处仪式。',
+                '客厅是你下班后的充电站。追剧、游戏或安静放空，都是你很看重的恢复方式。',
                 '你的客厅使用率可能比卧室还高。它是影院、游戏厅、咖啡馆，唯独不是传统的"会客室"。',
                 '别人问"今天去哪儿玩"，你的答案是"回家"。因为你的客厅已经装下了所有你想玩的。'
             ])
@@ -3446,7 +4116,7 @@ function generateInsights(result, code) {
             text: pickOne([
                 '你有足够的预算和空间来实现理想家。问题不是"能不能"，而是"怎么选"——选择太多，反而需要更清晰的优先级。',
                 '大房子+充足预算，听起来是完美开局。但更大的空间意味着更复杂的动线，设计难度反而更高。',
-                '你站在装修食物链的顶端。别让"什么都想要"变成"什么都不出彩"，精准投放预算才是高手。'
+                '你的预算和面积条件相对宽裕，但更需要避免平均用力。把预算投向高频生活场景，效果会更明显。'
             ])
         });
     } else if (b.budget && b.budget.includes('10万以下') && b.area && b.area.includes('60以下')) {
@@ -3455,7 +4125,7 @@ function generateInsights(result, code) {
             text: pickOne([
                 '小空间+有限预算，反而能逼出最精巧的设计。每一寸都要算账，每一分钱都要花在刀刃上。',
                 '你的家不大，但野心不小。在小空间里做大生活，需要的不是钱，是巧思。',
-                '麻雀虽小五脏俱全——这句话就是为你写的。用设计弥补面积，用巧思替代预算。'
+                '小户型也能住得完整。关键是用设计弥补面积，用精确取舍替代无效投入。'
             ])
         });
     } else {
@@ -3463,8 +4133,8 @@ function generateInsights(result, code) {
             title: '生活方式',
             text: pickOne([
                 '你对家的期待很朴素：舒服、顺手、不添堵。但把"简单"做到极致，本身就是一门学问。',
-                '你没有特别极端的居住偏好，这恰恰说明你是一个"均衡型"选手。好设计不是补短板，是让长处更舒服。',
-                '家对你来说，是_background_不是_highlight_。它不需要惊艳所有人，只需要在每天的使用中让你会心一笑。'
+                '你没有特别极端的居住偏好，这恰恰说明你更需要均衡、耐用、好维护的方案。',
+                '家对你来说，不必时时抢眼，但要在每天的使用中足够顺手、舒服、少添麻烦。'
             ])
         });
     }
@@ -3481,22 +4151,22 @@ function generateInsights(result, code) {
             '卫浴漱妆': [
                 `每天从「${topPain.text}」开始，难怪你急着改造。一个顺畅的早晨，值得被设计。`,
                 `「${topPain.text}」——这个问题已经影响你每天的出门心情了。卫浴不顺，全天不爽。`,
-                `如果早晨的第一件事是「${topPain.text}」，那这一天开局就输了。卫浴改造是性价比最高的幸福感投资。`
+                `如果早晨的第一件事是「${topPain.text}」，一天的节奏很容易被打乱。卫浴改造往往是幸福感提升最快的入口。`
             ],
             '健康睡眠': [
                 `「${topPain.text}」正在悄悄吃掉你的精力。睡眠不是小事，是生活的地基。`,
-                `你以为是白天太累，其实是「${topPain.text}」。修好睡眠环境，比喝十杯咖啡都管用。`,
-                `「${topPain.text}」这个问题不解决，再贵的床垫也救不了你。卧室设计，先从痛点开刀。`
+                `你以为只是白天太累，其实「${topPain.text}」也在持续消耗精力。睡眠环境修好了，恢复感会明显不同。`,
+                `「${topPain.text}」这个问题不解决，单靠更换床品很难彻底改善。卧室设计要先处理根因。`
             ],
             '智慧收纳': [
                 `「${topPain.text}」——你不是东西多，是缺少一套懂你习惯的收纳逻辑。`,
                 `东西越买越多，空间越来越小，因为「${topPain.text}」。好的收纳不是藏东西，是让东西各得其所。`,
-                `「${topPain.text}」的本质是"找东西的时间成本"太高了。一个聪明的收纳系统，每天能帮你省半小时。`
+                `「${topPain.text}」的本质是找东西的时间成本太高。一个清晰的收纳系统，会让每天的动作更省心。`
             ],
             '衣物洗护': [
                 `「${topPain.text}」——洗护动线不顺，每天重复消耗你的耐心。`,
                 `洗衣服不该是马拉松，但因为「${topPain.text}」，它变成了耐力赛。`,
-                `「${topPain.text}」说明你的洗护区缺少"闭环设计"。从脱到洗到晾到收，应该一气呵成。`
+                `「${topPain.text}」说明你的洗护区缺少闭环设计。从脱到洗到晾到收，动线应该尽量连贯。`
             ],
             '环境优化': [
                 `「${topPain.text}」——你对环境的敏感不是挑剔，是身体在诚实投票。`,
@@ -3505,13 +4175,13 @@ function generateInsights(result, code) {
             ],
             '家庭健身': [
                 `「${topPain.text}」——健身习惯已经有了，缺的是一块专属领地。`,
-                `办卡无数次，不如在家建一个小型健身角。「${topPain.text}」就是缺了这块地盘。`,
-                `「${topPain.text}」不是你的毅力问题，是空间问题。把健身区设计得顺手，坚持率能翻倍。`
+                `与其总依赖外部健身房，不如在家预留一个小型运动角。「${topPain.text}」就是空间没有跟上习惯。`,
+                `「${topPain.text}」不一定是自律问题，也可能是空间问题。健身区越顺手，越容易坚持。`
             ],
             '居家娱乐': [
                 `「${topPain.text}」——娱乐不该将就，家是最好的私人影院/游戏厅。`,
                 `周末想好好放松，却被「${topPain.text}」打断。娱乐区的设计，决定了你充电的效率。`,
-                `「${topPain.text}」说明你的客厅还在用"会客模式"，而该切换到"自嗨模式"了。`
+                `「${topPain.text}」说明你的客厅不该只按会客模式设计，也要服务日常放松和个人娱乐。`
             ],
             '学习成长': [
                 `「${topPain.text}」——学习区不只是桌子，是专注力的容器。`,
@@ -3558,7 +4228,7 @@ function generateInsights(result, code) {
         insights.push({
             title: '理想家预言',
             text: pickOne([
-                '你的理想家，是一个能让烟火气不散、又能随时变身 Party 现场的空间。厨房和客厅之间，不该有墙。',
+                '你的理想家，是一个烟火气和社交感可以自然连接的空间。厨房和客厅之间，不该被生硬切开。',
                 '开放式厨房是为你发明的。你在灶台边忙碌，朋友在岛台边聊天——这才是你想要的生活画面。',
                 '你的厨房是家的中央舞台。做饭不是幕后工作，是社交的一部分。'
             ])
@@ -3586,11 +4256,11 @@ function generateInsights(result, code) {
             '餐厨茶饮': [
                 '能让烟火气不散、又能随时变身的厨房',
                 '一个让你想走进去、而不是硬着头皮进去的烹饪空间',
-                '厨房是家的灵魂，你的灵魂需要更好的栖息地'
+                '厨房是家的生活重心，值得拥有更顺手的动线和更完整的收纳'
             ],
             '卫浴漱妆': [
                 '早晨不再排队、晚上能泡个澡的卫浴空间',
-                '一个让你每天愿意多待十分钟的私人SPA区',
+                '一个让你每天愿意多待十分钟的私人放松区',
                 '卫浴不该是战场，应该是你一天中最放松的过渡带'
             ],
             '健康睡眠': [
@@ -3600,7 +4270,7 @@ function generateInsights(result, code) {
             ],
             '智慧收纳': [
                 '所有物品都知道自己该在哪的秩序空间',
-                '一个东西不会突然消失的魔法空间',
+                '一个东西不会频繁失踪的清晰收纳系统',
                 '打开任何抽屉都不会让你心跳加速的安心之家'
             ],
             '衣物洗护': [
@@ -3615,7 +4285,7 @@ function generateInsights(result, code) {
             ],
             '学习成长': [
                 '能让人一坐就是三小时的专注角落',
-                '一个进去就想读书、出来就变强的空间',
+                '一个坐下后更容易进入状态的学习空间',
                 '你的学习区不只是桌子，是注意力的护城河'
             ],
             '家庭健身': [
@@ -3658,7 +4328,7 @@ function calculateFunFacts(result, code) {
         'SOHA': { name: '春分', emoji: '🌸', desc: '昼夜均分，社交与独处平衡得刚好' },
         'SFIP': { name: '寒露', emoji: '🍂', desc: '敏感于温度变化，第一时间感知季节' },
         'SFIA': { name: '立冬', emoji: '☃️', desc: '万物收藏，宅家是最舒服的事' },
-        'SFHP': { name: '夏至', emoji: '☀️', desc: '白昼最长，派对永不落幕' },
+        'SFHP': { name: '夏至', emoji: '☀️', desc: '白昼最长，适合承载热闹的家庭活动' },
         'SFHA': { name: '立夏', emoji: '🌿', desc: '万物生长，热闹从清晨到深夜' },
         'EOIP': { name: '秋分', emoji: '🍁', desc: '收获的季节，厨房里满是成熟的气息' },
         'EOIA': { name: '雨水', emoji: '🌧️', desc: '润物无声，一个人的餐桌也有诗意' },
@@ -3666,23 +4336,23 @@ function calculateFunFacts(result, code) {
         'EOHA': { name: '大暑', emoji: '🔥', desc: '热浪滚滚，家里是最热闹的避暑地' },
         'EFIP': { name: '冬至', emoji: '🌙', desc: '夜最长，灵感在黑暗中发光' },
         'EFIA': { name: '惊蛰', emoji: '⚡', desc: '春雷乍动，随性中藏着突然的灵感' },
-        'EFHP': { name: '谷雨', emoji: '🌦️', desc: '雨生百谷，派对是播种快乐的方式' },
+        'EFHP': { name: '谷雨', emoji: '🌦️', desc: '雨生百谷，适合灵活变化的生活节奏' },
         'EFHA': { name: '立春', emoji: '🌱', desc: '万物复苏，家的每一个角落都充满可能' }
     };
     const season = seasonMap[baseCode] || { name: '春分', emoji: '🌸', desc: '万物生长，家也在酝酿变化' };
 
     // 灵魂动物（16种 + R/W 动态描述变体）
     const animalDescMap = {
-        'SOIP': { R: '勤劳筑巢，每一格都有精确用途', W: '不断重构空间，家是你永远的Beta版' },
+        'SOIP': { R: '勤劳筑巢，每一格都有精确用途', W: '不断重构空间，家会跟着习惯持续调整' },
         'SOIA': { R: '优雅独处，不沾染一丝多余', W: '云端游牧，极简装备走哪都能安家' },
         'SOHP': { R: '把家打理得井井有条，还爱招待朋友', W: '每场聚会都是策展，主题从不重复' },
         'SOHA': { R: '既爱整洁，也爱热闹的聚会', W: '氛围制造机，家里的灯光音乐永远在线' },
         'SFIP': { R: '敏感纤细，对环境变化极度警觉', W: '旷野中也能嗅到风的形状' },
         'SFIA': { R: '慢慢来，家是放松的栖息地', W: '拖家带口也能随时出发' },
-        'SFHP': { R: '热情好客，家里永远欢迎朋友', W: '派对永动机，今晚的DJ就是你' },
+        'SFHP': { R: '热情好客，家里永远欢迎朋友', W: '喜欢组织活动，家是你的社交场域' },
         'SFHA': { R: '活泼外向，家里从不缺笑声', W: '社交变色龙，任何圈子都能融入' },
         'EOIP': { R: '精明地守护着生活的烟火气', W: '味觉猎手，总在寻找新的风味边疆' },
-        'EOIA': { R: '精致、挑剔、享受一个人的盛宴', W: '一人食博主，孤独也能吃出仪式感' },
+        'EOIA': { R: '精致、挑剔、享受一个人的盛宴', W: '独处用餐也保留完整的仪式感' },
         'EOHP': { R: '厨房是领地，聚餐是仪式', W: '私宴主理人，菜单从不受限' },
         'EOHA': { R: '热爱展示，家就是生活舞台', W: '生活导演，每一幕都精心设计' },
         'EFIP': { R: '深夜创作，在黑暗中灵感最盛', W: '凌晨三点的灵感比白天更锋利' },
@@ -3714,20 +4384,20 @@ function calculateFunFacts(result, code) {
     // 理想城市 + 灵魂街区（16城 + R/W 动态描述）
     const cityDescMap = {
         'SOIP': { R: '秩序、效率与精致的代名词', W: '在秩序中寻找下一个突破点' },
-        'SOIA': { R: '园林之间，极简即雅致', W: '数字游民的江南据点' },
+        'SOIA': { R: '园林之间，极简即雅致', W: '灵活生活的江南据点' },
         'SOHP': { R: '会吃会招待，烟火气里见人情', W: '私房菜馆的下一个选址地' },
-        'SOHA': { R: '干净文艺，社交友好型海滨', W: '周末popup的绝佳场地' },
+        'SOHA': { R: '干净文艺，社交友好型海滨', W: '适合周末小聚的轻松场地' },
         'SFIP': { R: '山水之间，敏感而细腻', W: '在西湖边发现没人注意过的角落' },
         'SFIA': { R: '佛系慢节奏，宅家也舒服', W: '带宠物去玉林路散步' },
         'SFHP': { R: '自由热闹，火锅里煮着江湖', W: '凌晨两点的防空洞火锅' },
-        'SFHA': { R: '快乐社交，茶颜里藏着热情', W: '解放西的下一场livehouse' },
+        'SFHA': { R: '快乐社交，茶颜里藏着热情', W: '夜晚也有热闹生活的街区' },
         'EOIP': { R: '烟火气最浓，小吃即生活', W: '在巷子里发现还没人排队的粿条' },
         'EOIA': { R: '精致早茶，独处也是美学', W: '一人食早茶的隐藏菜单' },
         'EOHP': { R: '厨神之城，聚餐是最高仪式', W: '今晚的食材从鱼档直接到餐桌' },
-        'EOHA': { R: '热闹厚重，生活就是历史剧', W: '在城墙根办一场复古派对' },
+        'EOHA': { R: '热闹厚重，生活有强烈的场景感', W: '在城墙根组织一场复古聚会' },
         'EFIP': { R: '创意陶瓷，独行者的灵感地', W: '在凌晨的窑口等一炉意外' },
         'EFIA': { R: '随性自由，跟着心情过日子', W: '今天的风向决定明天的住处' },
-        'EFHP': { R: '热情派对，冰雪也能沸腾', W: '冰雕酒吧的即兴afterparty' },
+        'EFHP': { R: '热情外向，冰雪也能沸腾', W: '冰雪城市里的即兴聚会' },
         'EFHA': { R: '全能高效，现代生活的样板间', W: '在前海试验区租一个未来空间' }
     };
     const cityMap = {
@@ -3759,7 +4429,7 @@ function calculateFunFacts(result, code) {
         'SOHA': { name: '沙坡尾', emoji: '⛵', desc: '渔村变艺术区，新旧交融刚刚好' },
         'SFIP': { name: '满觉陇', emoji: '🍃', desc: '桂花深处的隐世小院' },
         'SFIA': { name: '宽窄巷子', emoji: '🏮', desc: '茶馆里一下午，时光慢下来' },
-        'SFHP': { name: '鹅岭二厂', emoji: '🏭', desc: '废弃工厂里的天台派对' },
+        'SFHP': { name: '鹅岭二厂', emoji: '🏭', desc: '旧厂区里的开放天台与社交空间' },
         'SFHA': { name: '潮宗街', emoji: '🎸', desc: '老街里的新酒吧，越夜越热闹' },
         'EOIP': { name: '牌坊街', emoji: '🥮', desc: '一条巷子吃遍潮汕三百年' },
         'EOIA': { name: '皮市街', emoji: '📚', desc: '独立书店与早茶馆为邻' },
@@ -3799,7 +4469,7 @@ function calculateFunFacts(result, code) {
         'SOHA': { name: '海洋', emoji: '🌊', desc: '清爽、开阔、像刚开窗的海风' },
         'SFIP': { name: '薰衣草', emoji: '💐', desc: '安抚神经，睡前最温柔的陪伴' },
         'SFIA': { name: '檀香', emoji: '🪵', desc: '沉静、温暖、宅家时的安全感' },
-        'SFHP': { name: '柚子', emoji: '🍋', desc: '酸甜跳跃，和派对一样有活力' },
+        'SFHP': { name: '柚子', emoji: '🍋', desc: '酸甜明快，适合热闹的生活节奏' },
         'SFHA': { name: '茉莉', emoji: '🌼', desc: '甜美、外向、让人想靠近' },
         'EOIP': { name: '肉桂', emoji: '🥧', desc: '烘焙的温暖，厨房里的拥抱' },
         'EOIA': { name: '玫瑰', emoji: '🌹', desc: '精致、浪漫、一个人也要仪式感' },
@@ -3817,7 +4487,7 @@ function calculateFunFacts(result, code) {
         'SOIA': { name: '文竹', emoji: '🎋', desc: '纤细优雅，不需要太多照顾' },
         'SOHP': { name: '龟背竹', emoji: '🌿', desc: '大气好养，客厅的焦点' },
         'SOHA': { name: '绿萝', emoji: '☘️', desc: '生命力顽强，给点阳光就灿烂' },
-        'SFIP': { name: '铃兰', emoji: '🌷', desc: ' delicate 而芬芳，需要细心呵护' },
+        'SFIP': { name: '铃兰', emoji: '🌷', desc: '细腻而芬芳，需要细心呵护' },
         'SFIA': { name: '吊兰', emoji: '🍃', desc: '垂落生长，随遇而安' },
         'SFHP': { name: '向日葵', emoji: '🌻', desc: '追着光转，永远充满活力' },
         'SFHA': { name: '三角梅', emoji: '🌺', desc: '热烈奔放，阳台上的瀑布' },
@@ -3825,7 +4495,7 @@ function calculateFunFacts(result, code) {
         'EOIA': { name: '山茶花', emoji: '🌸', desc: '独自绽放，不与群芳争艳' },
         'EOHP': { name: '迷迭香', emoji: '🌿', desc: '煎牛排时随手摘一把' },
         'EOHA': { name: '牡丹', emoji: '🏵️', desc: '花开富贵，宴客时的体面' },
-        'EFIP': { name: '蓝雪花', emoji: '❄️', desc: ' unusual 的颜色，灵感触发器' },
+        'EFIP': { name: '蓝雪花', emoji: '❄️', desc: '独特的颜色，适合作为灵感触发器' },
         'EFIA': { name: '蒲公英', emoji: '🌬️', desc: '随风而行，落在哪都是家' },
         'EFHP': { name: '郁金香', emoji: '🌷', desc: '季节限定，每次都不同色' },
         'EFHA': { name: '琴叶榕', emoji: '🌳', desc: '百变造型，每个空间都能驾驭' }
@@ -3866,7 +4536,7 @@ function renderPersonaCard(p) {
     return `
         <div class="persona-book" id="personaBook" style="background-image: url('${p.image}'); box-shadow: 0 20px 60px ${p.theme.shadow};">
             <div class="persona-page active" data-page="0">
-                <div class="p1-badge">SBTI 居住人格</div>
+                <div class="p1-badge">家居需求人格</div>
                 <div class="p1-code">${p.code}</div>
                 <div class="p1-name">${p.name}</div>
                 <div class="p1-desc" id="p1Desc"></div>
@@ -3891,25 +4561,25 @@ function renderPersonaCard(p) {
                 <div class="fun-grid" style="grid-template-columns: repeat(4, 1fr);">
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.season.emoji}</div>
-                        <div class="fun-label">灵魂季节</div>
+                        <div class="fun-label">气质季节</div>
                         <div class="fun-value">${p.funFacts.season.name}</div>
                         <div class="fun-desc">${p.funFacts.season.desc}</div>
                     </div>
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.city.emoji}</div>
-                        <div class="fun-label">理想城市</div>
+                        <div class="fun-label">城市气质</div>
                         <div class="fun-value">${p.funFacts.city.name}</div>
                         <div class="fun-desc">${p.funFacts.city.desc}</div>
                     </div>
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.color.emoji}</div>
-                        <div class="fun-label">灵魂色彩</div>
+                        <div class="fun-label">情绪色彩</div>
                         <div class="fun-value">${p.funFacts.color.name}</div>
                         <div class="fun-desc">你对家的第一层情绪色调</div>
                     </div>
                     <div class="fun-card">
                         <div class="fun-icon">${p.funFacts.scent.emoji}</div>
-                        <div class="fun-label">灵魂香气</div>
+                        <div class="fun-label">回家气味</div>
                         <div class="fun-value">${p.funFacts.scent.name}</div>
                         <div class="fun-desc">${p.funFacts.scent.desc}</div>
                     </div>
