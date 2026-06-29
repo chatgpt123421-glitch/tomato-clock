@@ -9,6 +9,16 @@ services:
         value: 3.11.0
       - key: FEISHU_WEBHOOK
         sync: false
+      - key: FEISHU_APP_ID
+        sync: false
+      - key: FEISHU_APP_SECRET
+        sync: false
+      - key: FEISHU_SUMMARY_SPREADSHEET_TOKEN
+        sync: false
+      - key: FEISHU_SUMMARY_SHEET_ID
+        sync: false
+      - key: FEISHU_SUMMARY_SYNC_ROWS
+        value: 200
       - key: BASE_URL
         sync: false
       - key: DATABASE_URL

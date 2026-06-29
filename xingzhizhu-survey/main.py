@@ -17,6 +17,11 @@ app = FastAPI(title="幸之住需求洞察系统")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "")
+FEISHU_APP_ID = os.getenv("FEISHU_APP_ID", "")
+FEISHU_APP_SECRET = os.getenv("FEISHU_APP_SECRET", "")
+FEISHU_SUMMARY_SPREADSHEET_TOKEN = os.getenv("FEISHU_SUMMARY_SPREADSHEET_TOKEN", "")
+FEISHU_SUMMARY_SHEET_ID = os.getenv("FEISHU_SUMMARY_SHEET_ID", "")
+FEISHU_SUMMARY_SYNC_ROWS = int(os.getenv("FEISHU_SUMMARY_SYNC_ROWS", "200"))
 BASE_URL = os.getenv("BASE_URL", "")
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
@@ -368,8 +373,68 @@ def _admin_status_payload():
         "latest": latest,
         "database": "PostgreSQL" if DATABASE_URL else "SQLite",
         "feishu": "已配置" if FEISHU_WEBHOOK else "未配置",
+        "feishu_sheet": "已配置" if _feishu_sheet_configured() else "未配置",
         "admin_auth": "已开启" if ADMIN_PASSWORD else "未开启",
     }
+
+
+def _feishu_sheet_configured():
+    return all(
+        [
+            FEISHU_APP_ID,
+            FEISHU_APP_SECRET,
+            FEISHU_SUMMARY_SPREADSHEET_TOKEN,
+            FEISHU_SUMMARY_SHEET_ID,
+        ]
+    )
+
+
+def _summary_sheet_values(max_rows=None):
+    summaries = _all_survey_summaries()
+    values = [[title for _, title in SUMMARY_COLUMNS]]
+    values.extend(
+        [[summary.get(key, "") for key, _ in SUMMARY_COLUMNS] for summary in summaries]
+    )
+
+    target_rows = max(max_rows or FEISHU_SUMMARY_SYNC_ROWS, len(values))
+    blank_row = [""] * len(SUMMARY_COLUMNS)
+    while len(values) < target_rows:
+        values.append(blank_row.copy())
+    return values
+
+
+def _feishu_tenant_access_token():
+    resp = requests.post(
+        "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+        json={"app_id": FEISHU_APP_ID, "app_secret": FEISHU_APP_SECRET},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    payload = resp.json()
+    if payload.get("code") != 0:
+        raise RuntimeError(payload.get("msg") or "获取飞书 tenant_access_token 失败")
+    return payload["tenant_access_token"]
+
+
+def sync_feishu_summary_sheet():
+    if not _feishu_sheet_configured():
+        return {"ok": False, "status": "未配置"}
+
+    values = _summary_sheet_values()
+    end_col = _xlsx_col_name(len(SUMMARY_COLUMNS))
+    target_range = f"{FEISHU_SUMMARY_SHEET_ID}!A1:{end_col}{len(values)}"
+    token = _feishu_tenant_access_token()
+    resp = requests.post(
+        f"https://open.feishu.cn/open-apis/sheets/v2/spreadsheets/{FEISHU_SUMMARY_SPREADSHEET_TOKEN}/values_batch_update",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"valueRanges": [{"range": target_range, "values": values}]},
+        timeout=15,
+    )
+    resp.raise_for_status()
+    payload = resp.json()
+    if payload.get("code") != 0:
+        raise RuntimeError(payload.get("msg") or "同步飞书表格失败")
+    return {"ok": True, "status": "同步成功", "range": target_range, "rows": len(values)}
 
 
 def _xlsx_col_name(index):
@@ -472,6 +537,7 @@ async def healthz():
         "status": "ok",
         "database": "postgres" if DATABASE_URL else "sqlite",
         "feishu": "configured" if FEISHU_WEBHOOK else "missing",
+        "feishu_sheet": "configured" if _feishu_sheet_configured() else "missing",
         "admin_auth": "enabled" if ADMIN_PASSWORD else "disabled",
     }
 
@@ -642,7 +708,21 @@ async def submit_survey(request: Request):
         except Exception as e:
             feishu_status = f"推送失败: {str(e)}"
 
-    return {"code": 0, "id": survey_id, "message": "提交成功", "feishu_status": feishu_status}
+    feishu_sheet_status = "未配置"
+    if _feishu_sheet_configured():
+        try:
+            sync_feishu_summary_sheet()
+            feishu_sheet_status = "同步成功"
+        except Exception as e:
+            feishu_sheet_status = f"同步失败: {str(e)}"
+
+    return {
+        "code": 0,
+        "id": survey_id,
+        "message": "提交成功",
+        "feishu_status": feishu_status,
+        "feishu_sheet_status": feishu_sheet_status,
+    }
 
 
 @app.get("/api/surveys")
@@ -777,6 +857,18 @@ async def export_survey_summary_xlsx(request: Request):
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": "attachment; filename=jiabao-survey-summary.xlsx"},
     )
+
+
+@app.post("/api/admin/sync-summary-sheet")
+async def sync_summary_sheet(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+    try:
+        result = sync_feishu_summary_sheet()
+    except Exception as e:
+        return JSONResponse({"code": 500, "message": str(e)}, status_code=500)
+    status_code = 200 if result.get("ok") else 400
+    return JSONResponse({"code": 0 if result.get("ok") else 400, **result}, status_code=status_code)
 
 
 @app.get("/api/surveys/{survey_id}")
@@ -978,7 +1070,7 @@ async def admin_page(request: Request):
                 <div class="status-card">
                     <div class="status-label">系统状态</div>
                     <div class="status-value">-</div>
-                    <div class="status-note">数据库 / 飞书 / 后台保护</div>
+                    <div class="status-note">数据库 / 飞书 / 飞书表格 / 后台保护</div>
                 </div>
             </div>
             <table>
@@ -1034,7 +1126,7 @@ async def admin_page(request: Request):
                     <div class="status-card">
                         <div class="status-label">系统状态</div>
                         <div class="status-value">${escapeHtml(status.database || '-')}</div>
-                        <div class="status-note">飞书：${escapeHtml(status.feishu || '-')}；后台：${escapeHtml(status.admin_auth || '-')}</div>
+                        <div class="status-note">飞书群：${escapeHtml(status.feishu || '-')}；飞书表格：${escapeHtml(status.feishu_sheet || '-')}；后台：${escapeHtml(status.admin_auth || '-')}</div>
                     </div>
                 `;
             }

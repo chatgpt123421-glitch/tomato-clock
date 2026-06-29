@@ -109,6 +109,17 @@ Render是免费的Python托管平台，只需要一个Git仓库。
    - 点击 **Environment** → **Add Environment Variable**
    - Key: `FEISHU_WEBHOOK`
    - Value: 你刚才复制的飞书Webhook地址
+   - 如需自动同步客户摘要到飞书表格，再添加：
+     - Key: `FEISHU_APP_ID`
+     - Value: 飞书开放平台应用的 App ID
+     - Key: `FEISHU_APP_SECRET`
+     - Value: 飞书开放平台应用的 App Secret
+     - Key: `FEISHU_SUMMARY_SPREADSHEET_TOKEN`
+     - Value: 客户摘要飞书表格链接中的 spreadsheet token，例如当前表 `I2TcszNIhhiaFXtky4ZcUgPMnqd`
+     - Key: `FEISHU_SUMMARY_SHEET_ID`
+     - Value: 客户摘要工作表 ID，例如当前 `客户摘要` 工作表为 `0gqQBu`
+     - Key: `FEISHU_SUMMARY_SYNC_ROWS`
+     - Value: `200`
    - 再添加一条：
      - Key: `BASE_URL`
      - Value: 你的 Render 域名，如 `https://xingzhizhu-survey.onrender.com`（**不带尾部斜杠**）
@@ -119,7 +130,7 @@ Render是免费的Python托管平台，只需要一个Git仓库。
      - Key: `ADMIN_PASSWORD`
      - Value: 自行设置一串不容易猜到的密码
 
-本地调试可参考 `.env.example`，但真实 `FEISHU_WEBHOOK`、`DATABASE_URL` 和 `ADMIN_PASSWORD` 不要提交到仓库。
+本地调试可参考 `.env.example`，但真实 `FEISHU_WEBHOOK`、`FEISHU_APP_SECRET`、`DATABASE_URL` 和 `ADMIN_PASSWORD` 不要提交到仓库。
 
 5. **点击 Create Web Service**
    - 等待3-5分钟部署完成
@@ -155,6 +166,7 @@ https://xingzhizhu-survey.onrender.com
 | `https://你的链接/admin` | 查看所有客户问卷列表 |
 | `https://你的链接/api/admin/status` | 查看后台只读运维状态 |
 | `https://你的链接/api/surveys/summary.xlsx` | 导出客户摘要 Excel，可上传飞书表格 |
+| `https://你的链接/api/admin/sync-summary-sheet` | 手动补同步客户摘要到飞书表格，正常情况下提交问卷会自动同步 |
 | `https://你的链接/api/surveys/export.csv` | 导出客户问卷 CSV 备份 |
 | `https://你的链接/report/1` | 查看编号#1的完整报告（可打印） |
 
