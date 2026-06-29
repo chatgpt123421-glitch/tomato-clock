@@ -157,7 +157,6 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report):
     scenes = report.get("scenes", {}) if isinstance(report.get("scenes", {}), dict) else {}
     core_scenes = _as_list(scenes.get("core"))
     minor_scenes = _as_list(scenes.get("minor"))
-    none_scenes = _as_list(scenes.get("none"))
     focus_scenes = core_scenes or minor_scenes
 
     return {
@@ -173,8 +172,6 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report):
         "lifestyle_focus": _join_values(focus_scenes),
         "core_scenes": _join_values(core_scenes),
         "minor_scenes": _join_values(minor_scenes),
-        "none_scenes": _join_values(none_scenes),
-        "priority_structure": f"核心：{_join_values(core_scenes)}；次要：{_join_values(minor_scenes)}；暂无：{_join_values(none_scenes)}",
     }
 
 
@@ -191,8 +188,6 @@ SUMMARY_COLUMNS = [
     ("lifestyle_focus", "生活方式重点"),
     ("core_scenes", "核心场景"),
     ("minor_scenes", "次要场景"),
-    ("none_scenes", "暂无需求场景"),
-    ("priority_structure", "优先结构"),
 ]
 
 
@@ -304,7 +299,7 @@ def _build_summary_xlsx(summaries):
 
     col_defs = "".join(
         f'<col min="{idx}" max="{idx}" width="{width}" customWidth="1"/>'
-        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 12, 24, 14, 30, 30, 30, 30, 52], start=1)
+        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 12, 24, 14, 30, 30, 30], start=1)
     )
     dimension = f"A1:{_xlsx_col_name(len(SUMMARY_COLUMNS))}{max(len(summaries) + 1, 1)}"
     sheet_xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
