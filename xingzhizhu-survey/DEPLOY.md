@@ -153,6 +153,7 @@ https://xingzhizhu-survey.onrender.com
 | 地址 | 用途 |
 |------|------|
 | `https://你的链接/admin` | 查看所有客户问卷列表 |
+| `https://你的链接/api/surveys/summary.xlsx` | 导出客户摘要 Excel，可上传飞书表格 |
 | `https://你的链接/api/surveys/export.csv` | 导出客户问卷 CSV 备份 |
 | `https://你的链接/report/1` | 查看编号#1的完整报告（可打印） |
 

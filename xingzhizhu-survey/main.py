@@ -9,6 +9,8 @@ import os
 import re
 import requests
 from urllib.parse import parse_qs
+import zipfile
+from html import escape
 
 app = FastAPI(title="幸之住需求洞察系统")
 
@@ -124,6 +126,180 @@ def _admin_authorized(request: Request) -> bool:
 
 def _admin_unauthorized_response():
     return JSONResponse({"code": 401, "message": "需要后台密码"}, status_code=401)
+
+
+def _safe_json(value):
+    if isinstance(value, dict):
+        return value
+    if not value:
+        return {}
+    try:
+        return json.loads(value)
+    except Exception:
+        return {}
+
+
+def _as_list(value):
+    if isinstance(value, list):
+        return value
+    if value:
+        return [value]
+    return []
+
+
+def _join_values(value):
+    return "、".join([str(item) for item in _as_list(value) if item]) or "-"
+
+
+def _summary_from_payload(row_id, created_at, name, phone, basic, report):
+    basic = _safe_json(basic)
+    report = _safe_json(report)
+    scenes = report.get("scenes", {}) if isinstance(report.get("scenes", {}), dict) else {}
+    core_scenes = _as_list(scenes.get("core"))
+    minor_scenes = _as_list(scenes.get("minor"))
+    none_scenes = _as_list(scenes.get("none"))
+    focus_scenes = core_scenes or minor_scenes
+
+    return {
+        "id": row_id,
+        "created_at": str(created_at),
+        "name": basic.get("wechat_name") or name or basic.get("name", "-"),
+        "phone": phone or basic.get("phone", "-"),
+        "house_type": basic.get("type", "-"),
+        "area": basic.get("area", "-"),
+        "people": basic.get("people", "-"),
+        "population_structure": _join_values(basic.get("structure")),
+        "budget": basic.get("budget", "-"),
+        "lifestyle_focus": _join_values(focus_scenes),
+        "core_scenes": _join_values(core_scenes),
+        "minor_scenes": _join_values(minor_scenes),
+        "none_scenes": _join_values(none_scenes),
+        "priority_structure": f"核心：{_join_values(core_scenes)}；次要：{_join_values(minor_scenes)}；暂无：{_join_values(none_scenes)}",
+    }
+
+
+SUMMARY_COLUMNS = [
+    ("id", "客户ID"),
+    ("created_at", "提交时间"),
+    ("name", "微信/姓名"),
+    ("phone", "手机号"),
+    ("house_type", "房屋类型"),
+    ("area", "房屋面积"),
+    ("people", "常住人口"),
+    ("population_structure", "人口结构"),
+    ("budget", "预算"),
+    ("lifestyle_focus", "生活方式重点"),
+    ("core_scenes", "核心场景"),
+    ("minor_scenes", "次要场景"),
+    ("none_scenes", "暂无需求场景"),
+    ("priority_structure", "优先结构"),
+]
+
+
+def _all_survey_summaries():
+    query = """
+        SELECT id, created_at, name, phone, basic, report
+        FROM surveys
+        ORDER BY id DESC
+    """
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(query)
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(query)
+        rows = c.fetchall()
+        conn.close()
+
+    return [
+        _summary_from_payload(row[0], row[1], row[2], row[3], row[4], row[5])
+        for row in rows
+    ]
+
+
+def _xlsx_col_name(index):
+    name = ""
+    while index:
+        index, remainder = divmod(index - 1, 26)
+        name = chr(65 + remainder) + name
+    return name
+
+
+def _xlsx_cell(cell_ref, value, style=None):
+    style_attr = f' s="{style}"' if style else ""
+    text = escape(str(value if value is not None else ""))
+    return f'<c r="{cell_ref}" t="inlineStr"{style_attr}><is><t>{text}</t></is></c>'
+
+
+def _build_summary_xlsx(summaries):
+    rows = []
+    header_cells = [
+        _xlsx_cell(f"{_xlsx_col_name(col_index)}1", title, "1")
+        for col_index, (_, title) in enumerate(SUMMARY_COLUMNS, start=1)
+    ]
+    rows.append(f'<row r="1">{"".join(header_cells)}</row>')
+
+    for row_index, summary in enumerate(summaries, start=2):
+        cells = []
+        for col_index, (key, _) in enumerate(SUMMARY_COLUMNS, start=1):
+            cells.append(_xlsx_cell(f"{_xlsx_col_name(col_index)}{row_index}", summary.get(key, "")))
+        rows.append(f'<row r="{row_index}">{"".join(cells)}</row>')
+
+    col_defs = "".join(
+        f'<col min="{idx}" max="{idx}" width="{width}" customWidth="1"/>'
+        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 12, 24, 14, 30, 30, 30, 30, 52], start=1)
+    )
+    dimension = f"A1:{_xlsx_col_name(len(SUMMARY_COLUMNS))}{max(len(summaries) + 1, 1)}"
+    sheet_xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <dimension ref="{dimension}"/>
+  <sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews>
+  <cols>{col_defs}</cols>
+  <sheetData>{"".join(rows)}</sheetData>
+  <autoFilter ref="{dimension}"/>
+</worksheet>'''
+    workbook_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets><sheet name="客户摘要" sheetId="1" r:id="rId1"/></sheets>
+</workbook>'''
+    styles_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="2"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial"/></font></fonts>
+  <fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>
+  <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+  <cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0"/></cellXfs>
+</styleSheet>'''
+    rels_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>'''
+    workbook_rels_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>'''
+    content_types_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>'''
+
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("[Content_Types].xml", content_types_xml)
+        zf.writestr("_rels/.rels", rels_xml)
+        zf.writestr("xl/workbook.xml", workbook_xml)
+        zf.writestr("xl/_rels/workbook.xml.rels", workbook_rels_xml)
+        zf.writestr("xl/styles.xml", styles_xml)
+        zf.writestr("xl/worksheets/sheet1.xml", sheet_xml)
+    return output.getvalue()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -430,6 +606,20 @@ async def export_surveys_csv(request: Request):
     )
 
 
+@app.get("/api/surveys/summary.xlsx")
+async def export_survey_summary_xlsx(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+
+    summaries = _all_survey_summaries()
+    xlsx_bytes = _build_summary_xlsx(summaries)
+    return Response(
+        content=xlsx_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=jiabao-survey-summary.xlsx"},
+    )
+
+
 @app.get("/api/surveys/{survey_id}")
 async def get_survey(survey_id: int):
     if DATABASE_URL:
@@ -576,6 +766,7 @@ async def admin_page(request: Request):
             .toolbar h1 { margin-bottom: 0; }
             .actions { display: flex; gap: 8px; align-items: center; }
             .btn { display: inline-block; padding: 10px 14px; border-radius: 8px; background: #0071e3; color: #fff; font-size: 14px; font-weight: 600; }
+            .btn.green { background: #248a3d; }
             .btn.secondary { background: #f5f5f7; color: #1d1d1f; }
             table { width: 100%; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
             th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
@@ -596,6 +787,7 @@ async def admin_page(request: Request):
             <div class="toolbar">
                 <h1>客户档案列表</h1>
                 <div class="actions">
+                    <a class="btn green" href="/api/surveys/summary.xlsx">导出摘要Excel</a>
                     <a class="btn" href="/api/surveys/export.csv">导出CSV</a>
                     <a class="btn secondary" href="/admin/logout">退出</a>
                 </div>
@@ -745,6 +937,7 @@ async def report_page(survey_id: int):
                     const safeJoin = (v, sep) => safeArray(v).join(sep) || '无';
 
                     const scenes = r.scenes || {};
+                    const focusScenes = safeArray(scenes.core).length ? safeArray(scenes.core) : safeArray(scenes.minor);
                     const pains = safeArray(r.pains);
                     const params = safeArray(r.params);
                     const constraints = safeArray(r.constraints);
@@ -766,6 +959,18 @@ async def report_page(survey_id: int):
                             <p style="color:#86868b; margin-top:8px;">编号 #${d.id || %s} · ${d.created_at || '-'}</p>
                         </div>
                         ${personaHtml}
+                        <div class="report-section">
+                            <h3>客户摘要</h3>
+                            <table class="report-table">
+                                <tr><td>房屋类型</td><td>${b.type || '-'}</td></tr>
+                                <tr><td>房屋面积</td><td>${b.area || '-'}</td></tr>
+                                <tr><td>常住人口</td><td>${b.people || '-'} 人</td></tr>
+                                <tr><td>人口结构</td><td>${safeJoin(b.structure, '、')}</td></tr>
+                                <tr><td>预算区间</td><td>${b.budget || '-'}</td></tr>
+                                <tr><td>生活方式重点</td><td>${safeJoin(focusScenes, '、')}</td></tr>
+                                <tr><td>优先结构</td><td>核心：${safeJoin(scenes.core, '、')}；次要：${safeJoin(scenes.minor, '、')}；暂无：${safeJoin(scenes.none, '、')}</td></tr>
+                            </table>
+                        </div>
                         <div class="report-section">
                             <h3>基础锚点</h3>
                             <table class="report-table">
