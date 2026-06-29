@@ -177,9 +177,9 @@ def _summary_population(people, structure):
     if people_text == "3":
         return "三口之家"
     if people_text.startswith("4") or people_text.startswith("5") or "5+" in people_text:
-        return "四世同堂"
+        return "四口之家"
     if any(keyword in structure_text for keyword in ["老人", "长辈"]) and any(keyword in structure_text for keyword in ["婴儿", "儿童", "青少年"]):
-        return "四世同堂"
+        return "四口之家"
     if "夫妻" in structure_text:
         return "二人世界"
     return "-"
@@ -190,33 +190,68 @@ def _summary_budget(value):
     if not text or text == "-":
         return "-"
     if "以上" in text and any(mark in text for mark in ["20", "30", "二十", "三十"]):
-        return "二十万以上"
+        return "20万以上"
     if "10万以下" in text or "10 万以下" in text or "八" in text or "8" in text:
-        return "八万"
+        return "8万"
     if "10-15" in text or "10 - 15" in text or "10到15" in text:
-        return "十万"
+        return "10万"
     if "15-20" in text or "15 - 20" in text or "15到20" in text:
-        return "十五万"
+        return "15万"
     if "20-30" in text or "20 - 30" in text or "20到30" in text:
-        return "二十万"
+        return "20万"
     if "12" in text or "十二" in text:
-        return "十二万"
+        return "12万"
     if "15" in text or "十五" in text:
-        return "十五万"
+        return "15万"
     if "20" in text or "二十" in text:
-        return "二十万"
+        return "20万"
     if "10" in text or "十" in text:
-        return "十万"
+        return "10万"
     return text
 
 
-def _summary_from_payload(row_id, created_at, name, phone, basic, report):
-    basic = _safe_json(basic)
-    report = _safe_json(report)
+def _summary_lifestyle_categories(basic, report, payloads=None):
+    payloads = payloads or {}
     scenes = report.get("scenes", {}) if isinstance(report.get("scenes", {}), dict) else {}
     core_scenes = _as_list(scenes.get("core"))
     minor_scenes = _as_list(scenes.get("minor"))
-    focus_scenes = core_scenes or minor_scenes
+    source_scenes = core_scenes or minor_scenes
+    scene_text = "、".join([str(item) for item in source_scenes])
+    all_scene_text = "、".join([str(item) for item in core_scenes + minor_scenes])
+
+    structure_text = "、".join([str(item) for item in _as_list(basic.get("structure"))])
+    tags_text = "、".join([str(item) for item in _as_list(basic.get("tags"))])
+    kitchen_text = json.dumps(payloads.get("kitchen", {}), ensure_ascii=False)
+    learning_text = json.dumps(payloads.get("learning", {}), ensure_ascii=False)
+    fitness_text = json.dumps(payloads.get("fitness", {}), ensure_ascii=False)
+    entertainment_text = json.dumps(payloads.get("entertainment", {}), ensure_ascii=False)
+    environment_text = json.dumps(payloads.get("environment", {}), ensure_ascii=False)
+    special_text = json.dumps(payloads.get("special", {}), ensure_ascii=False)
+    combined = "、".join([scene_text, all_scene_text, structure_text, tags_text, kitchen_text, learning_text, fitness_text, entertainment_text, environment_text, special_text])
+
+    has_child = any(keyword in structure_text or keyword in tags_text for keyword in ["婴儿", "儿童", "青少年", "孩子"])
+    categories = []
+
+    def add(category, condition):
+        if condition and category not in categories:
+            categories.append(category)
+
+    add("亲子伴读", "学习成长" in combined and has_child)
+    add("健身运动", "家庭健身" in combined or "健身" in fitness_text or "瑜伽" in fitness_text or "跑步" in fitness_text)
+    add("宠物生活", "宠物" in combined or "猫" in special_text or "狗" in special_text)
+    add("影音娱乐", "居家娱乐" in combined or "休闲娱乐" in combined or "电影" in entertainment_text or "游戏" in entertainment_text)
+    add("艺术收藏", "二次元" in combined or "手办" in combined or "藏品" in combined or "展示柜" in special_text)
+    add("茗酒叙事", "酒" in kitchen_text or "聚会" in entertainment_text or "招待" in kitchen_text or "6人以上" in kitchen_text or "4-6人" in kitchen_text)
+    add("办公学习", "学习成长" in combined and not has_child or "办公" in learning_text or "书房" in learning_text)
+    add("美食烘焙", "餐厨茶饮" in combined or "烘焙" in kitchen_text or "做饭" in kitchen_text)
+    add("智慧生活", "智慧收纳" in combined or "环境优化" in combined or "智能" in environment_text or "全屋智能" in environment_text)
+
+    return "、".join(categories) or "-"
+
+
+def _summary_from_payload(row_id, created_at, name, phone, basic, report, payloads=None):
+    basic = _safe_json(basic)
+    report = _safe_json(report)
 
     return {
         "id": row_id,
@@ -225,12 +260,9 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report):
         "phone": phone or basic.get("phone", "-"),
         "house_type": _summary_house_type(basic.get("type")),
         "area": basic.get("area", "-"),
-        "people": basic.get("people", "-"),
         "population_structure": _summary_population(basic.get("people"), basic.get("structure")),
         "budget": _summary_budget(basic.get("budget")),
-        "lifestyle_focus": _join_values(focus_scenes),
-        "core_scenes": _join_values(core_scenes),
-        "minor_scenes": _join_values(minor_scenes),
+        "lifestyle_focus": _summary_lifestyle_categories(basic, report, payloads),
     }
 
 
@@ -241,18 +273,15 @@ SUMMARY_COLUMNS = [
     ("phone", "手机号"),
     ("house_type", "房屋类型"),
     ("area", "房屋面积"),
-    ("people", "常住人口"),
     ("population_structure", "人口结构"),
     ("budget", "预算"),
     ("lifestyle_focus", "生活方式重点"),
-    ("core_scenes", "核心场景"),
-    ("minor_scenes", "次要场景"),
 ]
 
 
 def _all_survey_summaries():
     query = """
-        SELECT id, created_at, name, phone, basic, report
+        SELECT id, created_at, name, phone, basic, kitchen, learning, fitness, entertainment, environment, special, report
         FROM surveys
         ORDER BY id DESC
     """
@@ -269,7 +298,22 @@ def _all_survey_summaries():
         conn.close()
 
     return [
-        _summary_from_payload(row[0], row[1], row[2], row[3], row[4], row[5])
+        _summary_from_payload(
+            row[0],
+            row[1],
+            row[2],
+            row[3],
+            row[4],
+            row[11],
+            {
+                "kitchen": _safe_json(row[5]),
+                "learning": _safe_json(row[6]),
+                "fitness": _safe_json(row[7]),
+                "entertainment": _safe_json(row[8]),
+                "environment": _safe_json(row[9]),
+                "special": _safe_json(row[10]),
+            },
+        )
         for row in rows
     ]
 
@@ -358,7 +402,7 @@ def _build_summary_xlsx(summaries):
 
     col_defs = "".join(
         f'<col min="{idx}" max="{idx}" width="{width}" customWidth="1"/>'
-        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 12, 24, 14, 30, 30, 30], start=1)
+        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 24, 14, 42], start=1)
     )
     dimension = f"A1:{_xlsx_col_name(len(SUMMARY_COLUMNS))}{max(len(summaries) + 1, 1)}"
     sheet_xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
