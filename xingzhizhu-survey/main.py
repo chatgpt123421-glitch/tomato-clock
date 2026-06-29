@@ -220,6 +220,60 @@ def _all_survey_summaries():
     ]
 
 
+def _admin_status_payload():
+    if DATABASE_URL:
+        conn = _pg_conn()
+        total_rows = conn.run("SELECT COUNT(*) FROM surveys")
+        unique_rows = conn.run("SELECT COUNT(DISTINCT phone) FROM surveys WHERE phone IS NOT NULL AND phone != ''")
+        latest_rows = conn.run(
+            """
+            SELECT id, created_at, name, phone, basic
+            FROM surveys
+            ORDER BY id DESC
+            LIMIT 1
+            """
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM surveys")
+        total_rows = c.fetchall()
+        c.execute("SELECT COUNT(DISTINCT phone) FROM surveys WHERE phone IS NOT NULL AND phone != ''")
+        unique_rows = c.fetchall()
+        c.execute(
+            """
+            SELECT id, created_at, name, phone, basic
+            FROM surveys
+            ORDER BY id DESC
+            LIMIT 1
+            """
+        )
+        latest_rows = c.fetchall()
+        conn.close()
+
+    latest = None
+    if latest_rows:
+        row = latest_rows[0]
+        basic = _safe_json(row[4])
+        latest = {
+            "id": row[0],
+            "created_at": str(row[1]),
+            "name": basic.get("wechat_name") or row[2] or basic.get("name", "-"),
+            "phone": row[3] or basic.get("phone", "-"),
+        }
+
+    return {
+        "total_submissions": total_rows[0][0] if total_rows else 0,
+        "unique_customers": unique_rows[0][0] if unique_rows else 0,
+        "latest": latest,
+        "database": "PostgreSQL" if DATABASE_URL else "SQLite",
+        "feishu": "已配置" if FEISHU_WEBHOOK else "未配置",
+        "admin_auth": "已开启" if ADMIN_PASSWORD else "未开启",
+    }
+
+
 def _xlsx_col_name(index):
     name = ""
     while index:
@@ -544,6 +598,13 @@ async def list_surveys(request: Request):
     return result
 
 
+@app.get("/api/admin/status")
+async def admin_status(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+    return _admin_status_payload()
+
+
 @app.get("/api/surveys/export.csv")
 async def export_surveys_csv(request: Request):
     if not _admin_authorized(request):
@@ -768,6 +829,11 @@ async def admin_page(request: Request):
             .btn { display: inline-block; padding: 10px 14px; border-radius: 8px; background: #0071e3; color: #fff; font-size: 14px; font-weight: 600; }
             .btn.green { background: #248a3d; }
             .btn.secondary { background: #f5f5f7; color: #1d1d1f; }
+            .status-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+            .status-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); min-height: 92px; }
+            .status-label { color: #6e6e73; font-size: 13px; margin-bottom: 8px; }
+            .status-value { color: #1d1d1f; font-size: 22px; font-weight: 700; line-height: 1.2; }
+            .status-note { color: #86868b; font-size: 12px; margin-top: 8px; line-height: 1.4; word-break: break-all; }
             table { width: 100%; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
             th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
             th { background: #fafafa; font-weight: 600; font-size: 14px; color: #666; }
@@ -777,6 +843,9 @@ async def admin_page(request: Request):
             .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; background: #ffe5e5; color: #d32f2f; }
             @media (max-width: 640px) {
                 body { padding: 20px 12px; }
+                .toolbar { align-items: flex-start; flex-direction: column; }
+                .actions { flex-wrap: wrap; }
+                .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
                 table { font-size: 12px; }
                 th, td { padding: 10px 8px; }
             }
@@ -790,6 +859,28 @@ async def admin_page(request: Request):
                     <a class="btn green" href="/api/surveys/summary.xlsx">导出摘要Excel</a>
                     <a class="btn" href="/api/surveys/export.csv">导出CSV</a>
                     <a class="btn secondary" href="/admin/logout">退出</a>
+                </div>
+            </div>
+            <div class="status-grid" id="status-grid">
+                <div class="status-card">
+                    <div class="status-label">总提交数</div>
+                    <div class="status-value">-</div>
+                    <div class="status-note">全部问卷提交记录</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-label">去重客户数</div>
+                    <div class="status-value">-</div>
+                    <div class="status-note">按手机号去重</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-label">最近提交</div>
+                    <div class="status-value">-</div>
+                    <div class="status-note">暂无记录</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-label">系统状态</div>
+                    <div class="status-value">-</div>
+                    <div class="status-note">数据库 / 飞书 / 后台保护</div>
                 </div>
             </div>
             <table>
@@ -811,6 +902,50 @@ async def admin_page(request: Request):
             </table>
         </div>
         <script>
+            function escapeHtml(value) {
+                return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[ch]));
+            }
+
+            function renderStatus(status) {
+                const latest = status.latest;
+                const latestNote = latest
+                    ? `${escapeHtml(latest.created_at)} · ${escapeHtml(latest.name)} · ${escapeHtml(latest.phone)}`
+                    : '暂无记录';
+                document.getElementById('status-grid').innerHTML = `
+                    <div class="status-card">
+                        <div class="status-label">总提交数</div>
+                        <div class="status-value">${escapeHtml(status.total_submissions ?? 0)}</div>
+                        <div class="status-note">全部问卷提交记录</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">去重客户数</div>
+                        <div class="status-value">${escapeHtml(status.unique_customers ?? 0)}</div>
+                        <div class="status-note">按手机号去重</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">最近提交</div>
+                        <div class="status-value">${latest ? '#' + escapeHtml(latest.id) : '-'}</div>
+                        <div class="status-note">${latestNote}</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">系统状态</div>
+                        <div class="status-value">${escapeHtml(status.database || '-')}</div>
+                        <div class="status-note">飞书：${escapeHtml(status.feishu || '-')}；后台：${escapeHtml(status.admin_auth || '-')}</div>
+                    </div>
+                `;
+            }
+
+            fetch('/api/admin/status')
+                .then(r => r.json())
+                .then(renderStatus)
+                .catch(() => {});
+
             fetch('/api/surveys')
                 .then(r => r.json())
                 .then(data => {
