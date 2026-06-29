@@ -1,11 +1,14 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from typing import Dict, Any
+import csv
+import io
 import json
 import os
 import re
 import requests
+from urllib.parse import parse_qs
 
 app = FastAPI(title="幸之住需求洞察系统")
 
@@ -14,7 +17,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "")
 BASE_URL = os.getenv("BASE_URL", "")
 DATABASE_URL = os.getenv("DATABASE_URL", "")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
 DB_PATH = "survey.db"
+ADMIN_COOKIE = "jiabao_admin"
 
 
 def _pg_conn():
@@ -109,10 +114,38 @@ def init_db():
 init_db()
 
 
+def _admin_authorized(request: Request) -> bool:
+    if not ADMIN_PASSWORD:
+        return True
+    cookie_value = request.cookies.get(ADMIN_COOKIE, "")
+    header_value = request.headers.get("x-admin-password", "")
+    return cookie_value == ADMIN_PASSWORD or header_value == ADMIN_PASSWORD
+
+
+def _admin_unauthorized_response():
+    return JSONResponse({"code": 401, "message": "需要后台密码"}, status_code=401)
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
     with open("static/index.html", "r", encoding="utf-8") as f:
         return f.read()
+
+
+@app.get("/jiabao-ai", response_class=HTMLResponse)
+async def jiabao_ai():
+    with open("static/jiabao-ai.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@app.get("/healthz")
+async def healthz():
+    return {
+        "status": "ok",
+        "database": "postgres" if DATABASE_URL else "sqlite",
+        "feishu": "configured" if FEISHU_WEBHOOK else "missing",
+        "admin_auth": "enabled" if ADMIN_PASSWORD else "disabled",
+    }
 
 
 @app.post("/api/submit")
@@ -285,7 +318,10 @@ async def submit_survey(request: Request):
 
 
 @app.get("/api/surveys")
-async def list_surveys():
+async def list_surveys(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+
     if DATABASE_URL:
         conn = _pg_conn()
         rows = conn.run(
@@ -330,6 +366,68 @@ async def list_surveys():
             }
         )
     return result
+
+
+@app.get("/api/surveys/export.csv")
+async def export_surveys_csv(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+
+    columns = [
+        "id",
+        "created_at",
+        "name",
+        "phone",
+        "basic",
+        "kitchen",
+        "bathroom",
+        "sleep",
+        "living",
+        "entryway",
+        "kids",
+        "study",
+        "balcony",
+        "laundry",
+        "storage",
+        "learning",
+        "fitness",
+        "entertainment",
+        "environment",
+        "special",
+        "report",
+    ]
+    query = """
+        SELECT id, created_at, name, phone, basic, kitchen, bathroom, sleep,
+               living, entryway, kids, study, balcony, laundry, storage,
+               learning, fitness, entertainment, environment, special, report
+        FROM surveys
+        ORDER BY id DESC
+    """
+
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(query)
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(query)
+        rows = c.fetchall()
+        conn.close()
+
+    output = io.StringIO()
+    output.write("\ufeff")
+    writer = csv.writer(output)
+    writer.writerow(columns)
+    for row in rows:
+        writer.writerow([str(value) if value is not None else "" for value in row])
+
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=jiabao-surveys.csv"},
+    )
 
 
 @app.get("/api/surveys/{survey_id}")
@@ -432,7 +530,36 @@ async def get_survey_by_phone(phone: str):
 
 
 @app.get("/admin", response_class=HTMLResponse)
-async def admin_page():
+async def admin_page(request: Request):
+    if not _admin_authorized(request):
+        return """
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>幸之住 · 后台登录</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f7; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+                form { width: min(360px, 100%); background: #fff; padding: 28px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+                h1 { font-size: 22px; margin-bottom: 18px; }
+                input { width: 100%; padding: 12px 14px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 16px; margin-bottom: 14px; }
+                button { width: 100%; padding: 12px 14px; border: 0; border-radius: 8px; background: #0071e3; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+                p { margin-top: 12px; color: #86868b; font-size: 13px; line-height: 1.5; }
+            </style>
+        </head>
+        <body>
+            <form method="post" action="/admin/login">
+                <h1>后台登录</h1>
+                <input type="password" name="password" placeholder="后台密码" autocomplete="current-password" autofocus>
+                <button type="submit">进入后台</button>
+                <p>密码由环境变量 ADMIN_PASSWORD 控制。</p>
+            </form>
+        </body>
+        </html>
+        """
+
     return """
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -445,6 +572,11 @@ async def admin_page():
             body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f7; padding: 40px 20px; }
             .container { max-width: 960px; margin: 0 auto; }
             h1 { font-size: 28px; margin-bottom: 24px; }
+            .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; }
+            .toolbar h1 { margin-bottom: 0; }
+            .actions { display: flex; gap: 8px; align-items: center; }
+            .btn { display: inline-block; padding: 10px 14px; border-radius: 8px; background: #0071e3; color: #fff; font-size: 14px; font-weight: 600; }
+            .btn.secondary { background: #f5f5f7; color: #1d1d1f; }
             table { width: 100%; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
             th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
             th { background: #fafafa; font-weight: 600; font-size: 14px; color: #666; }
@@ -461,7 +593,13 @@ async def admin_page():
     </head>
     <body>
         <div class="container">
-            <h1>客户档案列表</h1>
+            <div class="toolbar">
+                <h1>客户档案列表</h1>
+                <div class="actions">
+                    <a class="btn" href="/api/surveys/export.csv">导出CSV</a>
+                    <a class="btn secondary" href="/admin/logout">退出</a>
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -504,6 +642,42 @@ async def admin_page():
     </body>
     </html>
     """
+
+
+@app.post("/admin/login")
+async def admin_login(request: Request):
+    body = (await request.body()).decode("utf-8")
+    password = parse_qs(body).get("password", [""])[0]
+    if not ADMIN_PASSWORD or password != ADMIN_PASSWORD:
+        return HTMLResponse(
+            """
+            <!DOCTYPE html>
+            <html lang="zh-CN">
+            <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>登录失败</title></head>
+            <body style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:40px;">
+                <p>后台密码错误。</p>
+                <p><a href="/admin">返回登录</a></p>
+            </body>
+            </html>
+            """,
+            status_code=401,
+        )
+    response = RedirectResponse("/admin", status_code=303)
+    response.set_cookie(
+        ADMIN_COOKIE,
+        password,
+        httponly=True,
+        samesite="lax",
+        secure=BASE_URL.startswith("https://"),
+    )
+    return response
+
+
+@app.get("/admin/logout")
+async def admin_logout():
+    response = RedirectResponse("/admin", status_code=303)
+    response.delete_cookie(ADMIN_COOKIE)
+    return response
 
 
 @app.get("/report/{survey_id}", response_class=HTMLResponse)

@@ -23,6 +23,8 @@ xingzhizhu-survey/
 
 ```bash
 cd xingzhizhu-survey
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -110,6 +112,14 @@ Render是免费的Python托管平台，只需要一个Git仓库。
    - 再添加一条：
      - Key: `BASE_URL`
      - Value: 你的 Render 域名，如 `https://xingzhizhu-survey.onrender.com`（**不带尾部斜杠**）
+   - 如使用线上数据库，再添加：
+     - Key: `DATABASE_URL`
+     - Value: PostgreSQL 连接地址
+   - 建议再添加后台密码：
+     - Key: `ADMIN_PASSWORD`
+     - Value: 自行设置一串不容易猜到的密码
+
+本地调试可参考 `.env.example`，但真实 `FEISHU_WEBHOOK`、`DATABASE_URL` 和 `ADMIN_PASSWORD` 不要提交到仓库。
 
 5. **点击 Create Web Service**
    - 等待3-5分钟部署完成
@@ -143,7 +153,10 @@ https://xingzhizhu-survey.onrender.com
 | 地址 | 用途 |
 |------|------|
 | `https://你的链接/admin` | 查看所有客户问卷列表 |
+| `https://你的链接/api/surveys/export.csv` | 导出客户问卷 CSV 备份 |
 | `https://你的链接/report/1` | 查看编号#1的完整报告（可打印） |
+
+如果配置了 `ADMIN_PASSWORD`，访问 `/admin` 时会先进入后台登录页；CSV 导出和客户列表 API 也会被保护。
 
 ---
 
@@ -153,10 +166,10 @@ https://xingzhizhu-survey.onrender.com
 A: 会。15分钟无访问会休眠，下次访问唤醒需要10-30秒。如果客户反应慢，解释"首次加载稍慢"即可。如需持续在线，升级到$7/月。
 
 **Q: 数据存在哪？会丢吗？**
-A: 存在SQLite文件（`survey.db`）。Render免费版每次部署会重置文件系统，**数据会丢失**。如需持久化：
-- 方案1：升级到Render Paid Plan，挂载磁盘
-- 方案2：定期导出 `/admin` 页面数据备份
-- 方案3：后续接入PostgreSQL（Render免费赠送）
+A: 程序会优先使用 `DATABASE_URL` 指向的 PostgreSQL。未配置 `DATABASE_URL` 时，才回退到本地 SQLite 文件（`survey.db`）。Render 环境不应长期依赖 SQLite，因为重部署或文件系统重置可能造成数据丢失。建议：
+- 方案1：配置 PostgreSQL，并在 Render 环境变量中填写 `DATABASE_URL`
+- 方案2：短期测试可使用 SQLite，但要定期导出 `/admin` 页面数据备份
+- 方案3：如必须使用文件数据库，升级到支持持久磁盘的方案
 
 **Q: 可以绑定自己的域名吗？**
 A: 可以。Render支持自定义域名，在Dashboard → Settings → Custom Domains 里配置。
@@ -170,7 +183,7 @@ A: 可以。在 `main.py` 的 `send_feishu` 函数里，把 `"tag": "a"` 改成 
 
 当前是MVP（最小可行产品）。跑通后建议按顺序升级：
 
-1. **数据库持久化**：SQLite → PostgreSQL（Render免费支持）
+1. **数据库持久化**：确认线上已配置 PostgreSQL，并把 `DATABASE_URL` 写入 Render 环境变量
 2. **客户身份识别**：链接带参数 `?client=张三`，后台知道是谁填的
 3. **报告PDF生成**：用Python库自动生成PDF报告，比网页打印更专业
 4. **企微直接集成**：客户不用点链接，在企微对话框里直接答题（需要开发企微小程序/网页授权）
