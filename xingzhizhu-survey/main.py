@@ -151,6 +151,19 @@ def _join_values(value):
     return "、".join([str(item) for item in _as_list(value) if item]) or "-"
 
 
+def _summary_house_type(value):
+    text = str(value or "").strip()
+    if not text or text == "-":
+        return "-"
+    if "精装" in text:
+        return "精装房"
+    if "毛坯" in text:
+        return "毛坯"
+    if any(keyword in text for keyword in ["二手", "旧房", "旧改", "局部", "翻新", "改造"]):
+        return "旧改"
+    return text
+
+
 def _summary_from_payload(row_id, created_at, name, phone, basic, report):
     basic = _safe_json(basic)
     report = _safe_json(report)
@@ -164,7 +177,7 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report):
         "created_at": str(created_at),
         "name": basic.get("wechat_name") or name or basic.get("name", "-"),
         "phone": phone or basic.get("phone", "-"),
-        "house_type": basic.get("type", "-"),
+        "house_type": _summary_house_type(basic.get("type")),
         "area": basic.get("area", "-"),
         "people": basic.get("people", "-"),
         "population_structure": _join_values(basic.get("structure")),
