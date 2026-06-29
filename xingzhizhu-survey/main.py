@@ -164,6 +164,52 @@ def _summary_house_type(value):
     return text
 
 
+def _summary_population(people, structure):
+    people_text = str(people or "").strip()
+    structure_values = _as_list(structure)
+    structure_text = "、".join([str(item) for item in structure_values])
+    combined = f"{people_text} {structure_text}"
+
+    if "独居" in combined or people_text == "1":
+        return "单身贵族"
+    if people_text == "2":
+        return "二人世界"
+    if people_text == "3":
+        return "三口之家"
+    if people_text.startswith("4") or people_text.startswith("5") or "5+" in people_text:
+        return "四世同堂"
+    if any(keyword in structure_text for keyword in ["老人", "长辈"]) and any(keyword in structure_text for keyword in ["婴儿", "儿童", "青少年"]):
+        return "四世同堂"
+    if "夫妻" in structure_text:
+        return "二人世界"
+    return "-"
+
+
+def _summary_budget(value):
+    text = str(value or "").strip()
+    if not text or text == "-":
+        return "-"
+    if "以上" in text and any(mark in text for mark in ["20", "30", "二十", "三十"]):
+        return "二十万以上"
+    if "10万以下" in text or "10 万以下" in text or "八" in text or "8" in text:
+        return "八万"
+    if "10-15" in text or "10 - 15" in text or "10到15" in text:
+        return "十万"
+    if "15-20" in text or "15 - 20" in text or "15到20" in text:
+        return "十五万"
+    if "20-30" in text or "20 - 30" in text or "20到30" in text:
+        return "二十万"
+    if "12" in text or "十二" in text:
+        return "十二万"
+    if "15" in text or "十五" in text:
+        return "十五万"
+    if "20" in text or "二十" in text:
+        return "二十万"
+    if "10" in text or "十" in text:
+        return "十万"
+    return text
+
+
 def _summary_from_payload(row_id, created_at, name, phone, basic, report):
     basic = _safe_json(basic)
     report = _safe_json(report)
@@ -180,8 +226,8 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report):
         "house_type": _summary_house_type(basic.get("type")),
         "area": basic.get("area", "-"),
         "people": basic.get("people", "-"),
-        "population_structure": _join_values(basic.get("structure")),
-        "budget": basic.get("budget", "-"),
+        "population_structure": _summary_population(basic.get("people"), basic.get("structure")),
+        "budget": _summary_budget(basic.get("budget")),
         "lifestyle_focus": _join_values(focus_scenes),
         "core_scenes": _join_values(core_scenes),
         "minor_scenes": _join_values(minor_scenes),
