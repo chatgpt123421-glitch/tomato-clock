@@ -430,10 +430,13 @@ def sync_feishu_summary_sheet():
         json={"valueRanges": [{"range": target_range, "values": values}]},
         timeout=15,
     )
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        raise RuntimeError(f"飞书表格写入失败: HTTP {resp.status_code} {resp.text[:500]}") from exc
     payload = resp.json()
     if payload.get("code") != 0:
-        raise RuntimeError(payload.get("msg") or "同步飞书表格失败")
+        raise RuntimeError(f"飞书表格写入失败: {json.dumps(payload, ensure_ascii=False)[:500]}")
     return {"ok": True, "status": "同步成功", "range": target_range, "rows": len(values)}
 
 
