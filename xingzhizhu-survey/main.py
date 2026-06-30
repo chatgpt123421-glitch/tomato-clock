@@ -15,6 +15,7 @@ from html import escape
 app = FastAPI(title="幸之住需求洞察系统")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/style-images", StaticFiles(directory="static/style-images"), name="style-images")
 
 FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "")
 FEISHU_APP_ID = os.getenv("FEISHU_APP_ID", "")
@@ -267,6 +268,8 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report, payloa
         "area": basic.get("area", "-"),
         "population_structure": _summary_population(basic.get("people"), basic.get("structure")),
         "budget": _summary_budget(basic.get("budget")),
+        "style_preferences": _join_values(basic.get("style_preferences")),
+        "primary_style": basic.get("primary_style") or "-",
         "lifestyle_focus": _summary_lifestyle_categories(basic, report, payloads),
     }
 
@@ -280,6 +283,8 @@ SUMMARY_COLUMNS = [
     ("area", "房屋面积"),
     ("population_structure", "人口结构"),
     ("budget", "预算"),
+    ("style_preferences", "风格偏好"),
+    ("primary_style", "主风格"),
     ("lifestyle_focus", "生活方式重点"),
 ]
 
