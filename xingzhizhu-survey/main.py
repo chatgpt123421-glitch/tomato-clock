@@ -255,6 +255,13 @@ def _summary_lifestyle_categories(basic, report, payloads=None):
     return "、".join(categories) or "-"
 
 
+def _summary_style(basic):
+    primary_style = str(basic.get("primary_style") or "").strip()
+    if primary_style and primary_style != "-":
+        return primary_style
+    return _join_values(basic.get("style_preferences"))
+
+
 def _summary_from_payload(row_id, created_at, name, phone, basic, report, payloads=None):
     basic = _safe_json(basic)
     report = _safe_json(report)
@@ -268,8 +275,7 @@ def _summary_from_payload(row_id, created_at, name, phone, basic, report, payloa
         "area": basic.get("area", "-"),
         "population_structure": _summary_population(basic.get("people"), basic.get("structure")),
         "budget": _summary_budget(basic.get("budget")),
-        "style_preferences": _join_values(basic.get("style_preferences")),
-        "primary_style": basic.get("primary_style") or "-",
+        "style": _summary_style(basic),
         "lifestyle_focus": _summary_lifestyle_categories(basic, report, payloads),
     }
 
@@ -283,8 +289,7 @@ SUMMARY_COLUMNS = [
     ("area", "房屋面积"),
     ("population_structure", "人口结构"),
     ("budget", "预算"),
-    ("style_preferences", "风格偏好"),
-    ("primary_style", "主风格"),
+    ("style", "风格"),
     ("lifestyle_focus", "生活方式重点"),
 ]
 
@@ -475,7 +480,7 @@ def _build_summary_xlsx(summaries):
 
     col_defs = "".join(
         f'<col min="{idx}" max="{idx}" width="{width}" customWidth="1"/>'
-        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 24, 14, 42], start=1)
+        for idx, width in enumerate([10, 20, 18, 16, 14, 14, 24, 14, 20, 42], start=1)
     )
     dimension = f"A1:{_xlsx_col_name(len(SUMMARY_COLUMNS))}{max(len(summaries) + 1, 1)}"
     sheet_xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
