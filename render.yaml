@@ -14,9 +14,9 @@ services:
       - key: FEISHU_APP_SECRET
         sync: false
       - key: FEISHU_SUMMARY_SPREADSHEET_TOKEN
-        sync: false
+        value: I2TcszNIhhiaFXtky4ZcUgPMnqd
       - key: FEISHU_SUMMARY_SHEET_ID
-        sync: false
+        value: 0gqQBu
       - key: FEISHU_SUMMARY_SYNC_ROWS
         value: 200
       - key: BASE_URL
