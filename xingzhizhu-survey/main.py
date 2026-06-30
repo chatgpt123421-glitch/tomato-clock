@@ -21,7 +21,7 @@ FEISHU_APP_ID = os.getenv("FEISHU_APP_ID", "")
 FEISHU_APP_SECRET = os.getenv("FEISHU_APP_SECRET", "")
 FEISHU_SUMMARY_SPREADSHEET_TOKEN = os.getenv("FEISHU_SUMMARY_SPREADSHEET_TOKEN", "")
 FEISHU_SUMMARY_SHEET_ID = os.getenv("FEISHU_SUMMARY_SHEET_ID", "")
-FEISHU_SUMMARY_SYNC_ROWS = int(os.getenv("FEISHU_SUMMARY_SYNC_ROWS", "200"))
+FEISHU_SUMMARY_SYNC_ROWS = int(os.getenv("FEISHU_SUMMARY_SYNC_ROWS", "0"))
 BASE_URL = os.getenv("BASE_URL", "")
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
@@ -182,9 +182,9 @@ def _summary_population(people, structure):
     if people_text == "3":
         return "三口之家"
     if people_text.startswith("4") or people_text.startswith("5") or "5+" in people_text:
-        return "四口之家"
+        return "四世同堂"
     if any(keyword in structure_text for keyword in ["老人", "长辈"]) and any(keyword in structure_text for keyword in ["婴儿", "儿童", "青少年"]):
-        return "四口之家"
+        return "四世同堂"
     if "夫妻" in structure_text:
         return "二人世界"
     return "-"
@@ -246,7 +246,7 @@ def _summary_lifestyle_categories(basic, report, payloads=None):
     add("宠物生活", "宠物" in combined or "猫" in special_text or "狗" in special_text)
     add("影音娱乐", "居家娱乐" in combined or "休闲娱乐" in combined or "电影" in entertainment_text or "游戏" in entertainment_text)
     add("艺术收藏", "二次元" in combined or "手办" in combined or "藏品" in combined or "展示柜" in special_text)
-    add("茗酒叙事", "酒" in kitchen_text or "聚会" in entertainment_text or "招待" in kitchen_text or "6人以上" in kitchen_text or "4-6人" in kitchen_text)
+    add("名酒聚事", "酒" in kitchen_text or "聚会" in entertainment_text or "招待" in kitchen_text or "6人以上" in kitchen_text or "4-6人" in kitchen_text)
     add("办公学习", "学习成长" in combined and not has_child or "办公" in learning_text or "书房" in learning_text)
     add("美食烘焙", "餐厨茶饮" in combined or "烘焙" in kitchen_text or "做饭" in kitchen_text)
     add("智慧生活", "智慧收纳" in combined or "环境优化" in combined or "智能" in environment_text or "全屋智能" in environment_text)
@@ -396,7 +396,7 @@ def _summary_sheet_values(max_rows=None):
         [[summary.get(key, "") for key, _ in SUMMARY_COLUMNS] for summary in summaries]
     )
 
-    target_rows = max(max_rows or FEISHU_SUMMARY_SYNC_ROWS, len(values))
+    target_rows = max(max_rows or FEISHU_SUMMARY_SYNC_ROWS or 0, len(values))
     blank_row = [""] * len(SUMMARY_COLUMNS)
     while len(values) < target_rows:
         values.append(blank_row.copy())
