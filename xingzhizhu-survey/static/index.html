@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>幸之住 · 家居需求洞察</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2323523f'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' fill='white'%3E%E5%B9%B8%3C/text%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -1063,40 +1064,83 @@
 
         /* --- Commercial UI refresh --- */
         :root {
-            --ink: #20231f;
-            --muted: #72766f;
-            --line: #e6e1d8;
-            --paper: #fffdf8;
+            --ink: #1f2722;
+            --muted: #687068;
+            --line: #dde3dc;
+            --paper: #fbfcf8;
             --paper-strong: #ffffff;
-            --mist: #f3f7f1;
-            --green: #274236;
-            --green-strong: #19352b;
-            --blue: #1767b1;
-            --amber: #b97623;
-            --shadow-soft: 0 12px 34px rgba(39,66,54,0.08);
-            --shadow-lift: 0 18px 46px rgba(39,66,54,0.14);
+            --mist: #edf4ef;
+            --green: #23523f;
+            --green-strong: #173b2d;
+            --blue: #2e6f95;
+            --amber: #bd7a2c;
+            --shadow-soft: 0 10px 30px rgba(31,39,34,0.07);
+            --shadow-lift: 0 20px 50px rgba(31,39,34,0.13);
         }
         body {
-            background:
-                radial-gradient(circle at 16% 0%, rgba(183,118,35,0.14) 0, rgba(183,118,35,0) 28%),
-                radial-gradient(circle at 88% 18%, rgba(23,103,177,0.12) 0, rgba(23,103,177,0) 26%),
-                linear-gradient(180deg, #f7f4ee 0%, #eef4ef 48%, #f7f7f3 100%);
+            background: linear-gradient(180deg, #f4f1ea 0%, #f4f7f3 44%, #f7f8f5 100%);
             color: var(--ink);
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
         }
         .container {
-            max-width: 820px;
-            padding: 32px 18px 56px;
+            max-width: 860px;
+            padding: 24px 20px 64px;
             position: relative;
             z-index: 1;
         }
+        .survey-chrome {
+            margin-bottom: 22px;
+        }
+        .survey-topbar {
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 10px;
+        }
+        .survey-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--green);
+            color: #fff;
+            font-family: "Songti SC", "STSong", serif;
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(35,82,63,0.2);
+        }
+        .brand-copy {
+            min-width: 0;
+            line-height: 1.25;
+        }
+        .brand-copy strong {
+            display: block;
+            font-size: 15px;
+            color: var(--ink);
+        }
+        .brand-copy span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11px;
+        }
         .progress-bar {
-            height: 7px;
+            height: 5px;
             background: rgba(255,255,255,0.72);
             border: 1px solid rgba(230,225,216,0.95);
             border-radius: 999px;
-            margin: 0 0 22px;
+            margin: 0;
             box-shadow: inset 0 1px 2px rgba(32,35,31,0.04);
         }
         .progress-fill {
@@ -1104,11 +1148,12 @@
             border-radius: inherit;
         }
         #progressText {
-            margin: 0 0 14px !important;
+            margin: 0 !important;
             color: var(--muted) !important;
-            font-size: 13px !important;
+            font-size: 12px !important;
             font-weight: 700;
             letter-spacing: 0;
+            white-space: nowrap;
         }
         h1, h2 {
             color: var(--ink);
@@ -1127,34 +1172,23 @@
             margin-bottom: 22px;
         }
         .step:not(#step-welcome):not(#step-report) {
-            background: rgba(255,253,248,0.82);
-            border: 1px solid rgba(230,225,216,0.78);
-            border-radius: 12px;
-            padding: 26px;
-            box-shadow: var(--shadow-soft);
-            backdrop-filter: blur(18px);
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            backdrop-filter: none;
         }
         .step:not(#step-welcome):not(#step-report)::before {
-            content: "幸之住 · 需求洞察";
-            display: inline-flex;
-            align-items: center;
-            height: 26px;
-            padding: 0 10px;
-            border-radius: 999px;
-            background: #edf5ef;
-            color: #315c48;
-            border: 1px solid #d8e8dc;
-            font-size: 12px;
-            font-weight: 760;
-            margin-bottom: 14px;
+            display: none;
         }
         .question {
             background: var(--paper-strong);
-            border: 1px solid rgba(230,225,216,0.9);
-            border-radius: 10px;
-            padding: 22px;
-            margin-bottom: 14px;
-            box-shadow: 0 8px 24px rgba(32,35,31,0.045);
+            border: 1px solid rgba(221,227,220,0.96);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-soft);
         }
         .question-label {
             font-size: 17px;
@@ -1182,9 +1216,9 @@
         .option {
             min-height: 52px;
             padding: 13px 14px;
-            border: 1px solid #e0ddd5;
+            border: 1px solid #dfe4de;
             border-radius: 8px;
-            background: #fbfaf6;
+            background: #fbfcf9;
             color: #2a2d29;
             box-shadow: 0 1px 0 rgba(255,255,255,0.88) inset;
             -webkit-tap-highlight-color: transparent;
@@ -1195,9 +1229,9 @@
             transform: translateY(-1px);
         }
         .option.selected {
-            border-color: rgba(39,66,54,0.88);
-            background: linear-gradient(180deg, #f0f7f2 0%, #f9fbf7 100%);
-            box-shadow: 0 0 0 3px rgba(39,66,54,0.08);
+            border-color: var(--green);
+            background: #eff7f2;
+            box-shadow: 0 0 0 3px rgba(35,82,63,0.09);
         }
         .option span:last-child {
             min-width: 0;
@@ -1228,7 +1262,7 @@
             margin-top: 24px;
         }
         .btn {
-            border-radius: 9px;
+            border-radius: 8px;
             font-weight: 760;
             letter-spacing: 0;
             min-height: 50px;
@@ -1243,11 +1277,11 @@
             outline-offset: 2px;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--green) 0%, #315c48 100%);
-            box-shadow: 0 12px 28px rgba(39,66,54,0.22);
+            background: var(--green);
+            box-shadow: 0 12px 28px rgba(35,82,63,0.2);
         }
         .btn-primary:hover {
-            background: linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+            background: var(--green-strong);
             transform: translateY(-1px);
         }
         .btn-secondary {
@@ -1260,8 +1294,8 @@
             background: #fff;
         }
         .hero-cover {
-            min-height: 520px;
-            border-radius: 14px;
+            min-height: 500px;
+            border-radius: 10px;
             box-shadow: var(--shadow-lift);
         }
         .hero-cover::after {
@@ -1275,7 +1309,7 @@
             bottom: 36px;
         }
         .hero-copy h1 {
-            font-size: 42px;
+            font-size: 40px;
             line-height: 1.12;
             font-weight: 800;
             max-width: 560px;
@@ -1288,10 +1322,40 @@
             text-shadow: 0 2px 12px rgba(0,0,0,0.28);
         }
         .hero-pill {
-            border-radius: 999px;
+            border-radius: 8px;
             background: rgba(255,255,255,0.12);
             border-color: rgba(255,255,255,0.22);
             box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset;
+        }
+        .style-option {
+            border: 1px solid #dfe4de;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(31,39,34,0.05);
+        }
+        .style-option:hover {
+            border-color: rgba(35,82,63,0.58);
+            box-shadow: 0 14px 30px rgba(31,39,34,0.09);
+        }
+        .style-option.selected {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(35,82,63,0.1), 0 14px 30px rgba(31,39,34,0.09);
+        }
+        .style-thumb img {
+            transition: transform 0.35s ease;
+        }
+        .style-option:hover .style-thumb img {
+            transform: scale(1.025);
+        }
+        .style-option.selected .style-name::after {
+            content: "已选";
+            display: inline-flex;
+            margin-left: 8px;
+            padding: 2px 6px;
+            border-radius: 5px;
+            background: #e8f3ec;
+            color: var(--green);
+            font-size: 11px;
+            vertical-align: 2px;
         }
         .flow-badge {
             border-radius: 999px;
@@ -1554,14 +1618,38 @@
         }
         @media (max-width: 640px) {
             .container {
-                padding: 18px 12px 36px;
+                padding: 10px 12px 36px;
+            }
+            .survey-chrome {
+                position: sticky;
+                top: 0;
+                z-index: 40;
+                margin: 0 -4px 18px;
+                padding: 8px 6px 10px;
+                background: rgba(244,246,241,0.9);
+                border-bottom: 1px solid rgba(221,227,220,0.9);
+                backdrop-filter: blur(18px);
+            }
+            .container.is-welcome .survey-chrome {
+                position: static;
+                background: transparent;
+                border-bottom: 0;
+            }
+            .survey-topbar {
+                min-height: 44px;
+                margin-bottom: 7px;
+            }
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+                flex-basis: 34px;
+                font-size: 18px;
+            }
+            .brand-copy span {
+                display: none;
             }
             .step:not(#step-welcome):not(#step-report) {
-                padding: 18px 14px;
-                border-radius: 12px;
-            }
-            .step:not(#step-welcome):not(#step-report)::before {
-                margin-bottom: 12px;
+                padding: 0;
             }
             h2 {
                 font-size: 24px;
@@ -1571,7 +1659,7 @@
             }
             .question {
                 padding: 18px 14px;
-                border-radius: 9px;
+                border-radius: 8px;
             }
             .option {
                 min-height: 50px;
@@ -1584,14 +1672,15 @@
                 padding: 8px;
                 margin-left: -8px;
                 margin-right: -8px;
-                background: rgba(247,244,238,0.78);
-                border: 1px solid rgba(230,225,216,0.8);
-                border-radius: 12px;
+                background: rgba(247,248,245,0.9);
+                border: 1px solid rgba(221,227,220,0.9);
+                border-radius: 10px;
                 backdrop-filter: blur(16px);
+                box-shadow: 0 12px 32px rgba(31,39,34,0.12);
             }
             .hero-cover {
-                min-height: 560px;
-                border-radius: 14px;
+                min-height: 540px;
+                border-radius: 10px;
             }
             .hero-cover::after {
                 background:
@@ -1604,7 +1693,7 @@
                 bottom: 24px;
             }
             .hero-copy h1 {
-                font-size: 32px;
+                font-size: 30px;
             }
             .hero-copy p {
                 font-size: 15px;
@@ -1662,11 +1751,19 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" onerror="window.loadHtml2CanvasFallback(this)"></script>
 </head>
 <body>
-<div class="container">
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+<div class="container is-welcome">
+    <div class="survey-chrome">
+        <div class="survey-topbar">
+            <div class="survey-brand">
+                <span class="brand-mark" aria-hidden="true">幸</span>
+                <span class="brand-copy"><strong>幸之住</strong><span>家居需求洞察</span></span>
+            </div>
+            <div id="progressText" role="status" aria-live="polite"></div>
+        </div>
+        <div class="progress-bar" style="display:none">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
     </div>
-    <div id="progressText" style="text-align:center;font-size:12px;color:#86868b;margin-bottom:16px;margin-top:-28px;"></div>
 
     <!-- 欢迎页 -->
     <div class="step active" id="step-welcome">
@@ -1820,7 +1917,7 @@
 
     <!-- 餐厨茶饮 -->
     <div class="step" id="step-kitchen">
-        <h2>🍳 你在厨房里是什么角色？</h2>
+        <h2>你在厨房里是什么角色？</h2>
         <p class="subtitle">是烟火气的主理人，还是外卖软件的重度使用者？</p>
 
         <div class="question" id="q-k-freq">
@@ -2046,7 +2143,7 @@
 
     <!-- 卫浴漱妆 -->
     <div class="step" id="step-bathroom">
-        <h2>🚿 早晨的卫生间，是拥挤还是顺手？</h2>
+        <h2>早晨的卫生间，是拥挤还是顺手？</h2>
         <p class="subtitle">从抢厕所到吹头发，聊聊你真实的洗漱体验。</p>
 
         <div class="question" id="q-b-count">
@@ -2211,7 +2308,7 @@
 
     <!-- 健康睡眠 -->
     <div class="step" id="step-sleep">
-        <h2>🌙 你的卧室，能让你秒睡吗？</h2>
+        <h2>你的卧室，能让你秒睡吗？</h2>
         <p class="subtitle">光线、声音、温度……是什么在偷走你的睡眠？</p>
 
         <div class="question" id="q-s-light">
@@ -2308,7 +2405,7 @@
 
     <!-- 衣物洗护 -->
     <div class="step" id="step-laundry">
-        <h2>👕 洗衣服这件事，让你烦吗？</h2>
+        <h2>洗衣服这件事，让你烦吗？</h2>
         <p class="subtitle">从脏衣篮到晾衣架，哪里最让你想罢工？</p>
 
         <div class="question" id="q-l-dirty">
@@ -2379,7 +2476,7 @@
 
     <!-- 智慧收纳 -->
     <div class="step" id="step-storage">
-        <h2>📦 你家东西，是不是总在捉迷藏？</h2>
+        <h2>你家东西，是不是总在捉迷藏？</h2>
         <p class="subtitle">找钥匙、翻换季、理杂物——哪个是你的日常？</p>
 
         <div class="question" id="q-s-hoard">
@@ -2444,7 +2541,7 @@
 
     <!-- 学习成长 -->
     <div class="step" id="step-learning">
-        <h2>📚 在家学习/办公，你能专注多久？</h2>
+        <h2>在家学习/办公，你能专注多久？</h2>
         <p class="subtitle">孩子的作业角、你的工作台，现在顺手吗？</p>
 
         <div class="question" id="q-w-home">
@@ -2501,7 +2598,7 @@
 
     <!-- 家庭健身 -->
     <div class="step" id="step-fitness">
-        <h2>💪 在家运动，你有专属角落吗？</h2>
+        <h2>在家运动，你有专属角落吗？</h2>
         <p class="subtitle">瑜伽垫往哪铺？跑步机最后是不是变成了衣架？</p>
 
         <div class="question" id="q-f-habit">
@@ -2548,7 +2645,7 @@
 
     <!-- 居家娱乐 -->
     <div class="step" id="step-entertainment">
-        <h2>🎮 不上班的时候，你宅家怎么玩？</h2>
+        <h2>不上班的时候，你宅家怎么玩？</h2>
         <p class="subtitle">追剧、打游戏、约朋友——客厅是谁的主场？</p>
 
         <div class="question" id="q-e-living">
@@ -2605,7 +2702,7 @@
 
     <!-- 环境优化 -->
     <div class="step" id="step-environment">
-        <h2>🌬️ 你对家里的空气敏感吗？</h2>
+        <h2>你对家里的空气敏感吗？</h2>
         <p class="subtitle">雾霾天、花粉季、回南天——你的身体比天气预报准。</p>
 
         <div class="question" id="q-env-water">
@@ -2654,7 +2751,7 @@
 
     <!-- 特殊生活 -->
     <div class="step" id="step-special">
-        <h2>🐾 家里有「特殊成员」吗？</h2>
+        <h2>家里有「特殊成员」吗？</h2>
         <p class="subtitle">宠物、宝宝、长辈、兴趣收藏——谁需要被提前考虑？</p>
 
         <div id="special-pregnancy" class="hidden">
@@ -2912,8 +3009,10 @@ function updateStylePreferenceUI() {
 function updateProgress(step) {
     const idx = steps.indexOf(step);
     const pct = (idx / (steps.length - 1)) * 100;
+    const container = document.querySelector('.container');
     const bar = document.querySelector('.progress-bar');
     const fill = document.getElementById('progressFill');
+    if (container) container.classList.toggle('is-welcome', step === 'welcome');
     if (bar) bar.style.display = step === 'welcome' ? 'none' : 'block';
     if (fill) fill.style.width = pct + '%';
     const textEl = document.getElementById('progressText');
