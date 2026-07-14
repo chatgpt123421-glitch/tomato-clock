@@ -187,7 +187,7 @@
                     <h1 id="welcomeTitle">说说您希望未来的家怎么住</h1>
                     <div class="project-label" id="projectLabel"></div>
                     <p>不需要懂设计，也不需要替全家统一答案。只要说说自己的生活习惯、期待和不能接受的事，设计师会结合家人的回答继续梳理。</p>
-                    <button class="btn primary wide" type="button" onclick="goNext()">开始填写</button>
+                    <button class="btn primary wide" id="startButton" type="button" onclick="goNext()">开始填写</button>
                 </div>
             </div>
         </section>
@@ -220,6 +220,7 @@
             <p class="section-lead">这部分只由第一位成员补充一次，后续家人不会重复填写。不确定的专业信息可以留空。</p>
             <div class="question">
                 <div class="grid-2">
+                    <div class="field"><label>这套住宅怎么称呼</label><input type="text" id="homeName" maxlength="40" placeholder="例如：广州新家、站南路；不填也可以"></div>
                     <div class="field"><label>房屋类型 <span class="required">必填</span></label><select id="houseType"><option value="">请选择</option><option>大平层</option><option>复式或跃层</option><option>联排别墅</option><option>独栋别墅</option><option>叠墅</option><option>其他</option></select></div>
                     <div class="field"><label>所在城市</label><input type="text" id="city" maxlength="30" placeholder="例如：深圳"></div>
                     <div class="field"><label>建筑面积（㎡）</label><input type="number" id="area" min="1" max="9999" placeholder="不清楚可留空"></div>
@@ -330,10 +331,10 @@
     </main>
 
     <script>
-        const projectToken = location.pathname.split('/').filter(Boolean)[1] || '';
-        const draftKey = `family_survey_${projectToken}`;
-        const memberKey = `family_member_${projectToken}`;
-        const completedKey = `family_completed_${projectToken}`;
+        let projectToken = location.pathname.startsWith('/family/') ? location.pathname.split('/').filter(Boolean)[1] || '' : '';
+        let draftKey = `family_survey_${projectToken || 'pending'}`;
+        let memberKey = `family_member_${projectToken || 'pending'}`;
+        let completedKey = `family_completed_${projectToken || 'pending'}`;
         const steps = ['welcome','identity','home','vision','scan','details','professional','style','final','done'];
         let currentStep = 'loading';
         let project = null;
@@ -443,7 +444,17 @@
         const stepLabels = {identity:'家庭成员',home:'这套住宅',vision:'未来生活',scan:'生活扫描',details:'重点追问',professional:'设计偏好',style:'视觉感受',final:'提交确认'};
 
         async function init() {
-            if (!projectToken) return showError('缺少家庭项目编号。请使用后台生成的家庭需求链接进入。');
+            if (!projectToken) {
+                project = {home_name:'官网自主填写',home_profile:{},needs_home_profile:true,member_count:0,status:'active',self_start:true};
+                includeHomeStep = true;
+                renderStaticOptions();
+                renderProject();
+                renderScan();
+                renderStyles();
+                attachVoiceInputs(document);
+                showStep('welcome');
+                return;
+            }
             try {
                 const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}`);
                 const data = await response.json();
@@ -482,7 +493,7 @@
 
         function renderProject() {
             document.getElementById('welcomeTitle').textContent = '说说您希望未来的家怎么住';
-            document.getElementById('projectLabel').textContent = `本次填写：${project.home_name}`;
+            document.getElementById('projectLabel').textContent = project.self_start ? '从官网开始填写后，会生成这套住宅的独立家庭链接' : `本次填写：${project.home_name}`;
             if (!includeHomeStep && project.home_profile) {
                 const p = project.home_profile;
                 const summary = [p.house_type,p.city,p.area ? `${p.area}㎡` : '',p.levels ? `${p.levels}层` : ''].filter(Boolean).join(' · ');
@@ -737,7 +748,8 @@
             state.styles.lasting_preference = document.getElementById('lastingPreference').value;
             state.styles.avoid_details = document.getElementById('styleAvoidDetails').value.trim();
             if (includeHomeStep) state.home_profile = {
-                ...state.home_profile, house_type:document.getElementById('houseType').value, city:document.getElementById('city').value.trim(),
+                ...state.home_profile, home_name:document.getElementById('homeName').value.trim(),
+                house_type:document.getElementById('houseType').value, city:document.getElementById('city').value.trim(),
                 area:document.getElementById('area').value, levels:document.getElementById('levels').value, stage:document.getElementById('houseStage').value,
                 move_in:document.getElementById('moveIn').value.trim(), future_changes:document.getElementById('futureChanges').value.trim(),
                 household_use:document.getElementById('householdUse').value.trim(), home_rhythm:document.getElementById('homeRhythm').value,
@@ -762,6 +774,7 @@
             document.getElementById('styleAvoidDetails').value = state.styles.avoid_details || '';
             if (includeHomeStep) {
                 const p = state.home_profile;
+                document.getElementById('homeName').value = p.home_name || (project?.self_start ? '' : project?.home_name || '');
                 document.getElementById('houseType').value = p.house_type || ''; document.getElementById('city').value = p.city || '';
                 document.getElementById('area').value = p.area || ''; document.getElementById('levels').value = p.levels || '';
                 document.getElementById('houseStage').value = p.stage || ''; document.getElementById('moveIn').value = p.move_in || '';
@@ -835,7 +848,37 @@
             showStep(step);
         }
 
-        function goNext() {
+        async function createSelfStartProject() {
+            const button = document.getElementById('startButton');
+            button.disabled = true;
+            button.textContent = '正在准备独立问卷...';
+            try {
+                const response = await fetch('/api/family-projects', {
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '问卷准备失败');
+                projectToken = data.token;
+                draftKey = `family_survey_${projectToken}`;
+                memberKey = `family_member_${projectToken}`;
+                completedKey = `family_completed_${projectToken}`;
+                project = data.project;
+                includeHomeStep = true;
+                history.replaceState({}, '', new URL(data.invite_url).pathname);
+                renderProject();
+                restoreInputs();
+                return true;
+            } catch (error) {
+                alert(error.message);
+                return false;
+            } finally {
+                button.disabled = false;
+                button.textContent = '开始填写';
+            }
+        }
+
+        async function goNext() {
+            if (currentStep === 'welcome' && !projectToken && !(await createSelfStartProject())) return;
             if (!validate(currentStep)) return;
             const list = activeStepList();
             const index = list.indexOf(currentStep);

@@ -1473,10 +1473,59 @@ def _build_family_summary(project, members):
     }
 
 
+def _create_family_project_record(home_name, home_profile=None):
+    requested_name = str(home_name or "").strip()
+    stored_name = requested_name or "我的新家"
+    token = secrets.token_urlsafe(18)
+    profile_json = json.dumps(home_profile or {}, ensure_ascii=False)
+    if DATABASE_URL:
+        conn = _pg_conn()
+        project_id = conn.run(
+            """
+            INSERT INTO family_projects (token, home_name, home_profile)
+            VALUES (:token, :home_name, :home_profile) RETURNING id
+            """,
+            token=token,
+            home_name=stored_name,
+            home_profile=profile_json,
+        )[0][0]
+        if not requested_name:
+            stored_name = f"我的新家 #{project_id}"
+            conn.run(
+                "UPDATE family_projects SET home_name=:home_name WHERE id=:id",
+                home_name=stored_name,
+                id=project_id,
+            )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.execute(
+            "INSERT INTO family_projects (token, home_name, home_profile) VALUES (?, ?, ?)",
+            (token, stored_name, profile_json),
+        )
+        project_id = cursor.lastrowid
+        if not requested_name:
+            stored_name = f"我的新家 #{project_id}"
+            conn.execute(
+                "UPDATE family_projects SET home_name=? WHERE id=?",
+                (stored_name, project_id),
+            )
+        conn.commit()
+        conn.close()
+    return project_id, token, stored_name
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
+    with open("static/family.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read(), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/legacy-survey", response_class=HTMLResponse)
+async def legacy_survey():
     with open("static/index.html", "r", encoding="utf-8") as f:
-        return f.read()
+        return HTMLResponse(f.read(), headers={"Cache-Control": "no-store"})
 
 
 @app.get("/jiabao-ai", response_class=HTMLResponse)
@@ -1508,36 +1557,37 @@ async def create_family_project(request: Request):
     home_name = str(data.get("home_name", "")).strip()
     if not home_name:
         return JSONResponse({"code": 400, "message": "请填写住宅称呼"}, status_code=400)
-    token = secrets.token_urlsafe(18)
-    profile_json = json.dumps(data.get("home_profile", {}), ensure_ascii=False)
-    if DATABASE_URL:
-        conn = _pg_conn()
-        project_id = conn.run(
-            """
-            INSERT INTO family_projects (token, home_name, home_profile)
-            VALUES (:token, :home_name, :home_profile) RETURNING id
-            """,
-            token=token,
-            home_name=home_name,
-            home_profile=profile_json,
-        )[0][0]
-        conn.close()
-    else:
-        import sqlite3
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.execute(
-            "INSERT INTO family_projects (token, home_name, home_profile) VALUES (?, ?, ?)",
-            (token, home_name, profile_json),
-        )
-        project_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
+    project_id, token, _ = _create_family_project_record(home_name, data.get("home_profile", {}))
     base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
     return {
         "code": 0,
         "id": project_id,
         "token": token,
         "invite_url": f"{base_url}/family/{token}",
+    }
+
+
+@app.post("/api/family-projects")
+async def create_public_family_project(request: Request):
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+    home_name = str(data.get("home_name", "")).strip() if isinstance(data, dict) else ""
+    project_id, token, stored_name = _create_family_project_record(home_name)
+    base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
+    return {
+        "code": 0,
+        "id": project_id,
+        "token": token,
+        "invite_url": f"{base_url}/family/{token}",
+        "project": {
+            "home_name": stored_name,
+            "home_profile": {},
+            "needs_home_profile": True,
+            "member_count": 0,
+            "status": "active",
+        },
     }
 
 
@@ -1694,8 +1744,10 @@ async def submit_family_member(project_token: str, request: Request):
                 report=report_json,
             )[0][0]
         if home_profile and not project["home_profile"]:
+            submitted_home_name = str(home_profile.get("home_name", "")).strip() or project["home_name"]
             conn.run(
-                "UPDATE family_projects SET home_profile=:profile, updated_at=CURRENT_TIMESTAMP WHERE id=:id",
+                "UPDATE family_projects SET home_name=:home_name, home_profile=:profile, updated_at=CURRENT_TIMESTAMP WHERE id=:id",
+                home_name=submitted_home_name,
                 profile=json.dumps(home_profile, ensure_ascii=False),
                 id=project["id"],
             )
@@ -1730,9 +1782,10 @@ async def submit_family_member(project_token: str, request: Request):
             )
             member_id = cursor.lastrowid
         if home_profile and not project["home_profile"]:
+            submitted_home_name = str(home_profile.get("home_name", "")).strip() or project["home_name"]
             conn.execute(
-                "UPDATE family_projects SET home_profile=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
-                (json.dumps(home_profile, ensure_ascii=False), project["id"]),
+                "UPDATE family_projects SET home_name=?, home_profile=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+                (submitted_home_name, json.dumps(home_profile, ensure_ascii=False), project["id"]),
             )
         conn.commit()
         conn.close()
