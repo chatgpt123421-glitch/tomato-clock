@@ -48,10 +48,12 @@
         input[type="text"], input[type="number"], select { min-height: 46px; padding: 10px 12px; }
         textarea { min-height: 108px; padding: 11px 12px; resize: vertical; }
         input:focus, textarea:focus, select:focus { outline: 3px solid rgba(40,95,73,.16); border-color: var(--green); }
-        .voice-tools { display: flex; justify-content: flex-end; margin-top: 7px; }
+        .voice-tools { display: flex; justify-content: flex-end; align-items: center; gap: 9px; margin-top: 7px; }
         .voice-btn { min-height: 34px; padding: 6px 10px; border: 1px solid #aeb9b1; border-radius: 5px; background: #fff; color: #315b49; font-size: 12px; font-weight: 700; }
         .voice-btn:hover { border-color: var(--green); }
         .voice-btn.listening { border-color: var(--clay); background: #f8ece8; color: #853f2f; }
+        .voice-status { color: var(--muted); font-size: 12px; text-align: right; }
+        .voice-status.error { color: var(--clay); }
         .choices { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
         .choices.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
         .choice { position: relative; display: flex; min-height: 46px; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #c7cdc7; border-radius: 6px; background: #fff; cursor: pointer; transition: border-color .15s, background .15s; }
@@ -606,7 +608,6 @@
 
         function attachVoiceInputs(root) {
             const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!Recognition) return;
             root.querySelectorAll('textarea:not([data-voice-ready])').forEach(textarea => {
                 textarea.dataset.voiceReady = '1';
                 const tools = document.createElement('div');
@@ -616,42 +617,104 @@
                 button.className = 'voice-btn';
                 button.textContent = '语音输入';
                 button.setAttribute('aria-label', '开始语音输入');
-                button.addEventListener('click', () => toggleVoiceInput(textarea, button, Recognition));
+                const status = document.createElement('span');
+                status.className = 'voice-status';
+                status.setAttribute('aria-live', 'polite');
+                button.addEventListener('click', () => toggleVoiceInput(textarea, button, status, Recognition));
+                tools.appendChild(status);
                 tools.appendChild(button);
                 textarea.insertAdjacentElement('afterend', tools);
             });
         }
 
-        function toggleVoiceInput(textarea, button, Recognition) {
+        function setVoiceStatus(status, message, isError=false) {
+            status.textContent = message;
+            status.classList.toggle('error', isError);
+        }
+
+        function voiceErrorMessage(error) {
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            const messages = {
+                'not-allowed':'麦克风未获授权，请在浏览器或系统设置中允许访问。',
+                'service-not-allowed':isSafari ? '请启用系统 Siri，并确认本网站允许使用麦克风。' : '当前浏览器未允许语音识别服务。',
+                'audio-capture':'没有检测到可用麦克风，请检查系统输入设备。',
+                'network':'语音识别服务连接失败，请检查网络后重试。',
+                'language-not-supported':'当前浏览器不支持中文语音识别。',
+                'no-speech':'没有听清，请靠近麦克风后再试一次。'
+            };
+            return messages[error] || '语音输入未能启动，请检查麦克风权限后重试。';
+        }
+
+        async function requestMicrophonePermission() {
+            if (!window.isSecureContext) throw new Error('insecure-context');
+            if (!navigator.mediaDevices?.getUserMedia) return;
+            const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        async function toggleVoiceInput(textarea, button, status, Recognition) {
             if (activeRecognition) {
                 activeRecognition.stop();
                 return;
             }
+            if (!Recognition) {
+                setVoiceStatus(status, '当前浏览器不支持网页语音输入，请改用 Safari 或 Chrome。', true);
+                textarea.focus();
+                return;
+            }
+            button.disabled = true;
+            button.textContent = '正在申请麦克风...';
+            setVoiceStatus(status, '首次使用时请选择“允许”。');
+            try {
+                await requestMicrophonePermission();
+            } catch (error) {
+                const message = error.message === 'insecure-context'
+                    ? '语音输入只能在 HTTPS 安全页面使用。'
+                    : voiceErrorMessage(error.name === 'NotAllowedError' ? 'not-allowed' : 'audio-capture');
+                setVoiceStatus(status, message, true);
+                button.disabled = false;
+                button.textContent = '语音输入';
+                return;
+            }
             const recognition = new Recognition();
             const original = textarea.value.trim();
+            let finalTranscript = '';
             recognition.lang = 'zh-CN';
             recognition.interimResults = true;
             recognition.continuous = false;
             activeRecognition = recognition;
+            button.disabled = false;
             button.classList.add('listening');
-            button.textContent = '正在听，再点一次结束';
+            button.textContent = '结束语音';
+            recognition.onstart = () => setVoiceStatus(status, '正在听，请直接说。');
             recognition.onresult = event => {
-                let transcript = '';
-                for (let index = event.resultIndex; index < event.results.length; index += 1) {
-                    transcript += event.results[index][0].transcript;
+                let interimTranscript = '';
+                for (let index = 0; index < event.results.length; index += 1) {
+                    const transcript = event.results[index][0].transcript;
+                    if (event.results[index].isFinal) finalTranscript += transcript;
+                    else interimTranscript += transcript;
                 }
-                textarea.value = [original, transcript.trim()].filter(Boolean).join(original ? '\n' : '');
+                const spoken = `${finalTranscript}${interimTranscript}`.trim();
+                textarea.value = [original, spoken].filter(Boolean).join(original && spoken ? '\n' : '');
                 textarea.dispatchEvent(new Event('input', {bubbles: true}));
             };
             recognition.onerror = event => {
-                if (!['aborted', 'no-speech'].includes(event.error)) alert('当前语音输入未能启动，请检查麦克风权限，或使用系统键盘语音。');
+                if (event.error !== 'aborted') setVoiceStatus(status, voiceErrorMessage(event.error), true);
             };
             recognition.onend = () => {
                 activeRecognition = null;
                 button.classList.remove('listening');
                 button.textContent = '语音输入';
+                if (!status.classList.contains('error')) setVoiceStatus(status, textarea.value.trim() === original ? '语音已结束，未新增文字。' : '语音内容已写入。');
             };
-            recognition.start();
+            try {
+                recognition.start();
+            } catch (error) {
+                activeRecognition = null;
+                button.classList.remove('listening');
+                button.textContent = '语音输入';
+                setVoiceStatus(status, voiceErrorMessage(error.name === 'NotAllowedError' ? 'not-allowed' : ''), true);
+            }
         }
 
         function renderProfessional() {
