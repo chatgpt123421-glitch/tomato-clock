@@ -7,6 +7,7 @@ import io
 import json
 import os
 import re
+import secrets
 import requests
 from urllib.parse import parse_qs
 import zipfile
@@ -78,6 +79,37 @@ def init_db():
                 conn.run(f'ALTER TABLE surveys ADD COLUMN IF NOT EXISTS {col} TEXT')
             except Exception:
                 pass
+        conn.run(
+            """
+            CREATE TABLE IF NOT EXISTS family_projects (
+                id SERIAL PRIMARY KEY,
+                token TEXT UNIQUE NOT NULL,
+                home_name TEXT NOT NULL,
+                home_profile TEXT,
+                status TEXT DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        conn.run(
+            """
+            CREATE TABLE IF NOT EXISTS family_members (
+                id SERIAL PRIMARY KEY,
+                project_id INTEGER NOT NULL,
+                member_token TEXT UNIQUE NOT NULL,
+                display_name TEXT NOT NULL,
+                role TEXT,
+                age_group TEXT,
+                answer_source TEXT,
+                answers TEXT,
+                report TEXT,
+                status TEXT DEFAULT 'submitted',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
         conn.close()
     else:
         import sqlite3
@@ -115,6 +147,38 @@ def init_db():
                 c.execute(f'ALTER TABLE surveys ADD COLUMN {col} TEXT')
             except Exception:
                 pass
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS family_projects (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                token TEXT UNIQUE NOT NULL,
+                home_name TEXT NOT NULL,
+                home_profile TEXT,
+                status TEXT DEFAULT 'active',
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS family_members (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id INTEGER NOT NULL,
+                member_token TEXT UNIQUE NOT NULL,
+                display_name TEXT NOT NULL,
+                role TEXT,
+                age_group TEXT,
+                answer_source TEXT,
+                answers TEXT,
+                report TEXT,
+                status TEXT DEFAULT 'submitted',
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(project_id) REFERENCES family_projects(id)
+            )
+            """
+        )
         conn.commit()
         conn.close()
 
@@ -532,6 +596,883 @@ def _build_summary_xlsx(summaries):
     return output.getvalue()
 
 
+FAMILY_SCENE_LABELS = {
+    "kitchen": "餐厨茶饮",
+    "bathroom": "卫浴漱妆",
+    "sleep": "健康睡眠",
+    "laundry": "衣物洗护",
+    "storage": "智慧收纳",
+    "learning": "学习成长",
+    "fitness": "家庭健身",
+    "entertainment": "居家娱乐",
+    "environment": "环境优化",
+    "special": "特殊生活",
+}
+
+FAMILY_SCENE_DESCRIPTIONS = {
+    "kitchen": "做饭、吃饭、茶饮和家庭聚会",
+    "bathroom": "洗漱、如厕、沐浴和梳妆",
+    "sleep": "睡眠、夜间起居和个人放松",
+    "laundry": "洗、烘、晾、熨、整理和换季",
+    "storage": "进门、日用品、个人物品和全屋秩序",
+    "learning": "办公、学习、阅读和孩子成长",
+    "fitness": "日常运动、器械和运动后整理",
+    "entertainment": "观影、游戏、会客和兴趣展示",
+    "environment": "空气、水、温度、灯光、智能和安防",
+    "special": "婴幼儿、老人、宠物、庭院、车库等扩展生活",
+}
+
+FAMILY_SCENE_DESIGN_CHECKLISTS = {
+    "kitchen": ["高频做饭、简餐或外卖及同时操作人数", "开放式、半开放、可开可合或中西双厨", "岛台、水吧、早餐台及餐边柜一体化", "蒸烤箱、洗碗机、直饮机、制冰机等厨电清单与内嵌方式", "长桌、圆桌、日常用餐与最大聚餐人数", "台面杂乱、插座、食品囤货及餐后清洁路线", "油烟、声音和餐厨互动边界"],
+    "bathroom": ["早晚高峰和多人并行使用", "双台盆、加长台盆或分开洗漱位置", "洗漱、如厕、淋浴、浴缸和梳妆分区", "智能马桶、镜柜、吹风和护肤设备", "防滑、扶手、坐浴、夜间照明及老人儿童安全", "水压、热水等待、潮湿、异味和卫浴收纳"],
+    "sleep": ["各成员作息、浅眠、噪声和互相干扰", "主卧套房、独立衣帽、梳妆、休息角和主卧水吧", "双人衣物、包袋、首饰及被褥收纳结构", "遮光、隔音、温湿度、空调直吹和睡眠照明", "夜间起身、饮水和就近卫浴路线", "儿童房、老人房、客房及未来成长转换"],
+    "laundry": ["洗、烘、晾、熨和收衣责任人", "洗烘套装、护理机、手洗池及设备尺寸", "脏衣分类、净衣暂存、折叠和分发路线", "阳台并入、独立家政房、隐藏家政柜或隐形晾衣架", "自然晾晒、床品晾晒、采光和通风", "家政协作、清洁工具和耗材收纳"],
+    "storage": ["玄关是否过小、是否需要落尘区和独立换鞋位置", "超大鞋柜、雨季杂物、钥匙包袋随手台和消杀区", "隐藏全身镜、坐换鞋凳及入户视线是否见杂乱", "全屋通顶高柜、食品囤货和独立储藏间", "扫地机器人基站、清洁工具和设备隐藏", "行李箱、运动户外、儿童物品和换季收纳", "展示与隐藏比例及外露电线设备控制"],
+    "learning": ["独立书房、共享学习区或一房多用", "居家办公、视频会议、直播、阅读、电竞和创作", "儿童成长型书桌、陪伴学习和逐步独立", "隐形床、临时客房及茶室等多功能切换", "大量书籍、手办、藏品和资料展示收纳", "网络、插座、照明、会议背景、隔音和隐私"],
+    "fitness": ["运动人、项目、频率和器械尺寸", "净高、承重、地面、减震和隔音", "通风、温控、镜面和照明", "器械收纳及安全边界", "运动前后更衣、饮水和沐浴路线"],
+    "entertainment": ["横厅大通透、传统竖厅或分区公共空间", "会客商务感、居家慵懒感或亲子互动感", "是否拒绝笨重茶几、复杂吊顶和复杂造型", "电视背景、无电视柜、整墙收纳、电视或投影方向", "观影、游戏、K歌、背景音乐及专业影音", "声学、遮光、座位人数及对睡眠学习的影响", "收藏展示、防尘、避光和儿童安全"],
+    "environment": ["纯白明亮、中性高级或暖深氛围", "主灯、无主灯、磁吸轨道、线性灯及防眩照明接受度", "中央空调、分区空调、地暖、新风和除湿", "前置、中央净水、软水、末端直饮和生活热水", "回家、离家、观影、睡眠、就餐等智能场景", "全屋网络、背景音乐、门禁、监控和报警", "冷热、湿度、空气、噪音及老人儿童易用性"],
+    "special": ["老人房是否同层、无障碍、高差、扶手和夜间照明", "儿童成长、保姆房、家政专属收纳和佣人动线", "宠物喂养、活动、收纳、清洁和洗护", "地下室影音、KTV、茶室、酒窖、健身、储物及防潮声学", "庭院硬化、凉亭、水系、草坪、种植、户外水电和照明", "车库、车辆充电、工具收纳和大件搬运", "室内电梯、阁楼、露台、门窗和外立面", "结构、消防、物业、排水、通风及专业设备限制"],
+}
+
+FAMILY_SCENE_SEED_RULES = {
+    "kitchen": {
+        "中式爆炒": "讨论封闭中厨、半开放或可开可合餐厨，并核对排烟条件",
+        "多人一起准备": "讨论双人操作动线、双备餐位或岛台辅助",
+        "早餐与简餐": "讨论轻食区、早餐台或水吧方向",
+        "烘焙或西餐": "预核对蒸烤设备、操作台面和食材收纳",
+        "茶、咖啡或酒水": "讨论独立水吧、咖啡角或酒水收纳",
+        "经常聚餐": "核对最大聚餐人数、餐桌形式和通行尺度",
+        "采购囤货": "讨论食品储藏、冰箱冰柜和餐边高柜扩容",
+        "餐后清洁": "讨论洗碗、垃圾分类和餐后回收路线",
+    },
+    "bathroom": {
+        "早晚使用高峰": "讨论干湿分离或多功能并行使用",
+        "多人同时准备": "讨论双台盆、加长台盆或分开洗漱位置",
+        "洗漱与如厕分开": "讨论洗漱外置或功能分区",
+        "泡澡放松": "核对真实频率、浴缸尺度和清洁维护成本",
+        "护肤梳妆": "讨论独立梳妆、镜前照明和分类收纳",
+        "儿童或老人安全": "讨论防滑、扶手、坐浴和夜间感应照明",
+        "潮湿与异味": "核对通风、除湿、地漏和干区边界",
+    },
+    "sleep": {
+        "浅眠或易醒": "讨论安静侧布置、隔音和睡眠场景控制",
+        "作息时间不同": "讨论互不干扰的照明、盥洗和更衣路线",
+        "怕光": "讨论分层遮光和低位夜间照明",
+        "怕噪音": "核对门墙隔音、设备噪声和公共活动距离",
+        "对冷热敏感": "讨论分区温控和避免直吹",
+        "夜间起身": "讨论无高差路线、感应照明和就近使用",
+        "卧室饮水": "讨论卧室水吧、饮水点或小冰箱预留",
+    },
+    "laundry": {
+        "高频洗衣": "讨论集中洗护区及设备容量",
+        "烘干": "核对洗烘组合、散热和排水条件",
+        "自然晾晒": "保留日照通风合适的晾晒位置或隐形晾晒",
+        "床品和大件晾晒": "核对床品晾晒尺度、承重、通风和视觉遮挡",
+        "脏衣分类": "讨论分区脏衣收集和送洗路线",
+        "净衣暂存": "讨论净衣折叠、暂存和分发位置",
+        "熨烫护理": "讨论护理机、熨烫台和挂放位置",
+        "清洁工具与耗材": "讨论清洁高柜、耗材分类和设备充电上下水",
+        "家政协作": "区分家庭与家政操作、耗材和工具收纳",
+    },
+    "storage": {
+        "入户随手物品": "讨论落尘、坐换鞋、随手台和分类入户收纳",
+        "鞋子与雨季物品较多": "核对鞋量、雨具、湿物和雨季杂物收纳",
+        "家庭囤货": "核对囤货类别、数量和独立储藏需求",
+        "行李箱": "预留按尺寸可取放的大件收纳",
+        "清洁工具": "讨论家政柜、机器人基站和上下水电源",
+        "运动或户外装备": "讨论耐脏、通风和靠近出入口的装备收纳",
+        "收藏展示": "讨论展示与封闭收纳、防尘避光和安全",
+        "藏与露的平衡": "先确定展示比例，再规划柜体和开放格",
+    },
+    "learning": {
+        "居家办公": "讨论独立或共享办公位置及长期使用舒适度",
+        "视频会议": "核对网络、声学、照明和背景完整性",
+        "儿童学习": "讨论可成长桌面、亲子陪伴与独立性",
+        "乐器练习": "核对器械尺度、声学和对其他成员的影响",
+        "电竞": "核对设备散热、网络、电力和长时坐姿",
+        "大量书籍资料": "按藏书量核对书柜承重、防尘和取阅",
+        "安静与隐私": "讨论远离公共活动或可关闭的学习环境",
+    },
+    "fitness": {
+        "力量训练": "核对承重、地面保护和器械安全范围",
+        "有氧器械": "核对器械尺寸、用电、通风和观看需求",
+        "康复训练": "由专业人员核对动作尺度、扶持和安全条件",
+        "器械收纳": "讨论器械就近归位和展开尺度",
+        "减震隔音": "讨论结构条件下的减震地面和隔音处理",
+        "运动后沐浴": "优化健身、更衣、饮水和沐浴路线",
+    },
+    "entertainment": {
+        "家庭观影": "讨论电视或投影、座位、遮光和声场方向",
+        "游戏": "核对网络、设备、电力、散热和多人互动",
+        "K歌": "先核对声学、扰民和空间封闭条件",
+        "亲友会客": "核对来访人数、坐席、茶饮和公私分区",
+        "收藏展示": "讨论展示尺度、防尘避光和安防",
+        "声音不打扰他人": "讨论娱乐与卧室学习区的距离及隔音",
+    },
+    "environment": {
+        "空气质量": "请暖通专业人员比较新风、过滤和维护方案",
+        "除湿防潮": "结合城市、楼层和地下空间核对专项除湿",
+        "冬季采暖": "结合气候和使用习惯比较地暖、暖气或热泵",
+        "夏季制冷": "核对分区负荷、送回风和避免直吹",
+        "生活热水": "核对同时用水点、循环和等待时间",
+        "饮水品质": "讨论前置、净水、软水和分区直饮",
+        "灯光舒适": "讨论分层照明、防眩和生活场景控制",
+        "落地窗与视野": "核对窗框、窗帘盒、家具遮挡和主要观看视线",
+        "隐私与遮阳": "讨论分层窗帘、外遮阳和昼夜隐私",
+        "网络稳定": "预做全屋有线、无线覆盖和设备位规划",
+        "智能控制": "先定义真实场景，并保留断网断电基础操作",
+        "安全守护": "讨论门禁、监控、报警和异常提醒",
+        "安静环境": "核对外部噪声、设备噪声和房间相互影响",
+    },
+    "special": {
+        "备孕或婴幼儿": "讨论照护视线、夜间路线、成长变化和安全",
+        "儿童成长空间": "讨论常规床、书桌、榻榻米和未来功能转换",
+        "老人同住": "讨论同层起居、少高差、夜间照明和就近卫浴",
+        "行动不便": "请相关专业人员核对无障碍尺度和辅助设施",
+        "客人留宿": "核对固定客房或多功能临时留宿方式",
+        "保姆或家政人员同住": "讨论保姆房、家政收纳和相对独立的工作动线",
+        "家庭厅或亲子共处": "讨论卧室层家庭厅、亲子互动和阅读共处",
+        "宠物": "讨论喂养、清洁、洗护、收纳和活动边界",
+        "户外装备": "讨论靠近出入口的耐脏清洁和装备收纳",
+        "藏品或艺术创作": "核对展示、创作、照明、防尘避光和安全",
+        "庭院生活": "讨论户外水电、排水、照明、活动和养护",
+        "地下室使用": "先核对防潮、通风、采光、消防和疏散条件",
+        "阁楼或露台": "讨论储物、休闲、茶饮、种植及结构防水限制",
+        "车辆与充电": "核对车位、充电容量、安防和工具收纳",
+        "室内电梯": "核对使用必要性、结构井道、设备和维护条件",
+        "大件搬运": "核对入户、电梯、楼梯和转弯尺度",
+    },
+}
+
+# 生活信号到设计需求的确定性翻译。这里只产出“设计需求候选”，最终布局、尺寸、
+# 设备型号和结构做法仍需设计师结合现场、预算及对应专业条件确认。
+FAMILY_SCENE_DESIGN_REQUIREMENT_RULES = {
+    "kitchen": {
+        "日常做饭": ("餐厨功能", "配置完整且连续的清洗、备餐、烹饪和出餐操作链", "核对做饭频率、主要烹饪者和常用锅具"),
+        "中式爆炒": ("油烟控制", "餐厨必须具备可关闭或有效隔绝油烟的能力，并预留有效排烟路径", "核对烟道、补风、燃气和物业条件"),
+        "多人一起准备": ("操作动线", "操作通道和备餐台需支持至少两人并行且互不挡路", "核对同时操作人数及主要站位"),
+        "早餐与简餐": ("轻食功能", "在主烹饪区之外配置便捷的早餐或轻食操作点", "确认是否需要早餐台、水吧或小家电位"),
+        "烘焙或西餐": ("厨电与台面", "预留烘焙或西餐所需的连续台面、蒸烤设备位、电力和食材收纳", "列出确定使用的设备及尺寸"),
+        "茶、咖啡或酒水": ("饮品功能", "设置独立且就近取水取电的饮品操作与器具收纳位置", "确认茶、咖啡、酒水的使用频率和设备"),
+        "经常聚餐": ("餐厅容量", "餐厅及通行尺度需按家庭最大聚餐人数校核", "确认日常人数、最大人数、圆桌或长桌偏好"),
+        "采购囤货": ("食品收纳", "按实际囤货量配置食品高柜或储藏区，并预留冰箱、冰柜及补货动线", "核对囤货周期、品类和冷藏冷冻容量"),
+        "餐后清洁": ("清洁回收", "配置洗碗、沥水、垃圾分类和餐具回收的连续路线", "确认洗碗机、垃圾处理及清洁习惯"),
+    },
+    "bathroom": {
+        "早晚使用高峰": ("功能分区", "卫浴功能需允许高峰期洗漱、如厕或淋浴并行使用", "核对高峰时段、人数和使用冲突"),
+        "多人同时准备": ("洗漱容量", "配置双台盆、加长台盆或分设洗漱点中的一种多人方案", "确认同时使用人数及台面物品量"),
+        "洗漱与如厕分开": ("功能分区", "洗漱区与如厕区需物理或动线分离", "结合户型核对外置洗漱或三分离条件"),
+        "泡澡放松": ("沐浴设备", "为独立浴缸保留适配尺度、给排水和清洁维护条件", "确认真实频率、使用人和是否接受维护成本"),
+        "护肤梳妆": ("梳妆收纳", "配置镜前无阴影照明、护肤品分类收纳和可落座操作位置", "确认是在卫浴区还是独立梳妆区完成"),
+        "儿童或老人安全": ("适老适幼", "卫浴需采用防滑、少高差、可扶持和夜间可识别的安全设计", "由设计师核对扶手、坐浴和无障碍尺度"),
+        "水温水压": ("给排水机电", "热水系统需满足稳定水温、水压和多点同时用水", "核对入户水压、热源、回水和同时用水点"),
+        "潮湿与异味": ("通风防潮", "卫浴需具备有效排风、干湿边界、排水和防返味措施", "核对风道、地漏、门缝补风和除湿条件"),
+        "卫浴收纳": ("卫浴收纳", "按日常用品、备品和清洁用品配置干湿分区收纳", "核对各成员物品数量及取用高度"),
+    },
+    "sleep": {
+        "浅眠或易醒": ("安静睡眠", "睡眠区应远离高频公共活动和设备噪声，并加强门墙隔音", "核对主要噪声源和可接受程度"),
+        "作息时间不同": ("互不干扰", "更衣、洗漱、照明和进出路线需避免打扰同住者", "核对双方入睡起床时间及夜间活动"),
+        "怕光": ("遮光照明", "配置分层遮光系统和不刺激睡眠的低位夜间照明", "确认自然醒需求及遮光程度"),
+        "怕噪音": ("隔音", "门、墙、窗及设备选型需围绕睡眠噪声进行专项控制", "核对外部、楼板和室内活动噪声来源"),
+        "对冷热敏感": ("分区温控", "睡眠区需支持独立温控并避免空调直吹", "核对冷热偏好、送回风和采暖方式"),
+        "夜间起身": ("夜间动线", "床到卫生间及饮水点的路线应少高差、无障碍并设感应照明", "确认起夜频率和行动安全需求"),
+        "睡前阅读": ("床边功能", "配置不影响同住者的定向阅读照明、充电和书物收纳", "确认阅读位置和持续时间"),
+        "卧室饮水": ("卧室饮水", "在卧室层或套房内配置便捷取水及杯具、小电器收纳位置", "确认饮水点、小冰箱或水吧需求"),
+        "个人独处": ("私密放松", "卧室或邻近区域需提供可独处、阅读或短时休息的位置", "确认独处活动和与睡眠区的关系"),
+    },
+    "laundry": {
+        "高频洗衣": ("集中洗护", "设置容量匹配的集中洗护区，并组织洗、烘、晾、收连续路线", "核对每日衣量、分类方式和责任人"),
+        "烘干": ("洗烘设备", "预留烘干设备位、散热、排水、电力及维护空间", "确认洗烘套装或一体机及设备尺寸"),
+        "自然晾晒": ("晾晒", "保留采光通风合适且不破坏主要生活界面的自然晾晒位置", "确认晾晒量、床品和隐形晾衣接受度"),
+        "床品和大件晾晒": ("大件晾晒", "晾晒位置需满足床品展开、承重、通风和不遮挡主要生活界面", "核对最大床品尺寸、频率和晾晒方式"),
+        "手洗": ("手洗功能", "配置独立手洗池或适合手洗的深盆与临时沥水位置", "核对手洗衣物种类和频率"),
+        "熨烫护理": ("衣物护理", "配置护理机或熨烫台、挂放和电源位置", "确认设备、展开尺寸和使用频率"),
+        "脏衣分类": ("脏衣收集", "在更衣或卫浴附近设置分类脏衣收集，并形成送洗路线", "确认分类数量和收集位置"),
+        "净衣暂存": ("净衣整理", "设置折叠、挂放、暂存和分发净衣的操作位置", "确认净衣是否当天归位及责任人"),
+        "换季衣物": ("换季收纳", "设置防尘、可标识且便于周期取用的换季衣物收纳", "核对体量、箱包及被褥尺寸"),
+        "清洁工具与耗材": ("家政收纳", "设置清洁工具高柜、耗材分类、设备充电及必要的上下水条件", "列出吸尘器、洗地机、机器人和耗材体量"),
+        "家政协作": ("家政动线", "家庭与家政人员的洗护操作、耗材和工具收纳需清晰分区", "确认家政频率、工作边界和独立区域需求"),
+    },
+    "storage": {
+        "入户随手物品": ("玄关系统", "玄关需形成落尘、坐换鞋、鞋柜、钥匙包袋随手台、雨具及全身镜的一体化系统", "核对鞋量、雨季物品、消杀需求和入户宽度"),
+        "鞋子与雨季物品较多": ("玄关容量", "按家庭鞋量配置通风鞋柜，并为雨具、湿物和雨季杂物设置独立落位", "统计常用鞋、换季鞋、雨具及婴儿车等体量"),
+        "家庭囤货": ("高柜储藏", "按囤货量配置通顶高柜、食品储藏或独立储藏间", "核对囤货品类、补货周期和取用人"),
+        "个人衣物": ("衣物收纳", "衣柜内部需按挂衣、叠放、包袋、首饰和被褥比例定制", "分别统计每位成员的衣物结构"),
+        "行李箱": ("大件收纳", "预留按行李箱实际尺寸可直接取放的大件收纳位置", "核对数量、最大尺寸和取用频率"),
+        "清洁工具": ("家政收纳", "设置清洁工具高柜、耗材区及扫地机器人基站，并核对上下水和电源", "列出吸尘器、洗地机、机器人及工具尺寸"),
+        "运动或户外装备": ("装备收纳", "在靠近出入口处设置耐脏、通风、可清洁的运动户外装备收纳", "核对装备种类、尺寸和清洁路线"),
+        "收藏展示": ("展示系统", "展示柜需同时满足陈列、防尘、避光、承重和安全", "核对藏品尺寸、数量、价值和更新频率"),
+        "儿童物品": ("儿童收纳", "儿童物品需按年龄配置低位可自主取放和可成长收纳", "核对玩具、书籍、手作及未来变化"),
+        "藏与露的平衡": ("视觉秩序", "先确定隐藏收纳与开放展示比例，再规划柜体、开放格和设备遮蔽", "用图片确认可接受的外露程度"),
+    },
+    "learning": {
+        "居家办公": ("办公空间", "配置可长期使用的桌椅尺度、文件收纳、充电和独立照明", "核对使用频率、设备和是否需独立房间"),
+        "视频会议": ("会议条件", "办公位置需具备稳定网络、声学隐私、正面照明和整洁背景", "核对会议频率和保密要求"),
+        "儿童学习": ("成长学习", "学习位置需支持儿童成长、陪伴与逐步独立，并预留书物扩容", "核对年龄、学习方式和未来五年变化"),
+        "阅读": ("阅读功能", "配置舒适座位、定向照明和就近书籍收纳", "确认阅读人数、纸质书量和安静要求"),
+        "乐器练习": ("乐器空间", "按乐器尺度配置演奏、收纳、承重和声学边界", "核对乐器类型、频率和对家人的影响"),
+        "绘画手作": ("创作空间", "配置耐用工作台、材料分类收纳、清洁和作品晾放展示", "核对材料、用水和作品尺寸"),
+        "电竞": ("电竞设备", "配置稳定网络、足够电力、散热、设备位和长时坐姿条件", "核对设备数量、多人使用和声音影响"),
+        "大量书籍资料": ("书籍收纳", "按藏书量配置承重、防尘且便于检索的书柜系统", "统计藏书量、尺寸和新增速度"),
+        "安静与隐私": ("学习私密", "学习办公区需可关闭或远离高噪声公共活动", "核对声音来源和是否允许共享"),
+    },
+    "fitness": {
+        "瑜伽拉伸": ("轻运动", "预留完整垫面、伸展净空、镜面和器材就近收纳", "核对同时使用人数和课程设备"),
+        "力量训练": ("力量器械", "地面、承重、器械安全范围和减震需按力量训练核对", "列出器械重量、尺寸和动作范围"),
+        "有氧器械": ("有氧器械", "预留器械尺寸、用电、散热通风和观看条件", "确认跑步机、单车等设备型号"),
+        "球类练习": ("运动净空", "净高、墙面保护、地面和安全边界需满足球类动作", "核对项目、频率和室内可行性"),
+        "舞蹈": ("舞蹈训练", "配置连续净空、镜面、弹性地面、扶杆或音响条件", "核对舞种、人数和楼板影响"),
+        "康复训练": ("康复辅助", "按专业建议预留安全动作尺度、扶持和无障碍条件", "由康复或医疗专业人员复核"),
+        "器械收纳": ("健身收纳", "器械需就近归位且不占用主要通道", "统计器械尺寸、重量和取用频率"),
+        "减震隔音": ("减震声学", "健身区需结合楼板和相邻房间进行减震隔音设计", "由结构或声学专业人员核对"),
+        "运动后沐浴": ("运动后动线", "健身区到饮水、更衣、脏衣和沐浴需形成短而清晰的路线", "确认运动后的实际顺序"),
+    },
+    "entertainment": {
+        "家庭观影": ("观影系统", "按观看距离、座位人数和环境光确定电视或投影及声场条件", "确认电视、投影、幕布和音响偏好"),
+        "游戏": ("游戏设备", "配置稳定网络、设备电力、散热、显示和多人座位", "核对主机、电脑、体感及同时人数"),
+        "K歌": ("影音声学", "K歌区域需具备可控制声泄漏的空间边界和声学条件", "先核对邻里、楼层、消防和声学可行性"),
+        "亲友会客": ("会客客厅", "公共区需按来访人数组织沙发坐席、茶饮服务和公私分区", "确认商务会客、慵懒居家或亲子互动倾向"),
+        "儿童活动": ("亲子公共区", "公共区需保留可看护、安全且可快速收纳的儿童活动范围", "核对年龄、活动类型和与会客的切换"),
+        "个人娱乐": ("独立娱乐", "为个人娱乐提供不干扰家庭共处的设备、座位和声光边界", "核对活动类型、频率及私密程度"),
+        "收藏展示": ("兴趣展示", "展示系统需匹配藏品尺度并满足防尘、避光、承重和安全", "统计藏品及是否需要恒温安防"),
+        "家庭共处": ("公共空间", "客餐厅需支持家人同时进行不同活动并保持可交流的关系", "核对横厅、竖厅和活动组合偏好"),
+        "声音不打扰他人": ("声学分区", "娱乐区与睡眠学习区需拉开距离或建立可关闭的隔音边界", "核对使用时间、音量和受影响成员"),
+    },
+    "environment": {
+        "空气质量": ("新风空气", "按人数、房屋体量和污染源配置空气过滤与新风条件", "由暖通专业人员核对风量、管路和维护"),
+        "除湿防潮": ("除湿防潮", "潮湿区域或地下空间需配置连续防潮、除湿和排水策略", "结合城市、楼层和现场含水情况核对"),
+        "冬季采暖": ("采暖系统", "按城市气候和分区使用配置稳定且可控的采暖系统", "比较地暖、暖气片、热泵等方案及能耗"),
+        "夏季制冷": ("制冷系统", "空调需按分区负荷配置并避免对人直吹", "由暖通专业人员核对负荷、送回风和室外机"),
+        "生活热水": ("热水系统", "热水系统需满足多点同时使用、快速到水和稳定水温", "核对热源、循环、管径和用水峰值"),
+        "饮水品质": ("全屋用水", "按饮用、洗浴和设备保护需求配置前置、净水、软水或直饮", "结合水质检测和维护成本确认"),
+        "灯光舒适": ("照明系统", "采用分层、防眩、可调的生活场景照明，避免只依赖单一主灯", "核对明亮、中性或暖深氛围及无主灯接受度"),
+        "落地窗与视野": ("窗景界面", "主要公共区需减少窗框、家具和窗帘对核心视线的遮挡", "核对门窗条件、窗帘盒、物业限制和主要观看方向"),
+        "隐私与遮阳": ("遮阳隐私", "窗帘与遮阳系统需兼顾白天采光、夏季热负荷和夜间隐私", "核对朝向、周边视线和自动窗帘需求"),
+        "网络稳定": ("网络系统", "预做全屋有线骨干、无线覆盖、弱电机柜和关键设备点位", "核对带宽、设备数量和影音办公需求"),
+        "智能控制": ("全屋智能", "智能系统需围绕回家、离家、睡眠、观影等真实场景，并保留基础手动操作", "确认控制方式、家庭成员易用性和断网降级"),
+        "安全守护": ("安防系统", "配置与家庭风险匹配的门禁、监控、报警和异常提醒", "核对老人儿童宠物、庭院和隐私边界"),
+        "安静环境": ("全屋声学", "对外部噪声、设备噪声和房间相互干扰进行分区控制", "必要时由门窗或声学专业人员复核"),
+    },
+    "special": {
+        "备孕或婴幼儿": ("婴幼儿照护", "布局需支持照护视线、夜间喂养、成长变化和安全收纳", "核对阶段、照护人及未来房间转换"),
+        "儿童成长空间": ("儿童房", "儿童房需在常规床书桌、榻榻米多功能和成长转换之间保留可调整条件", "核对儿童年龄、学习方式、收纳和未来五年变化"),
+        "老人同住": ("适老居住", "优先同层起居、少高差、就近卫浴、夜间照明和可扶持条件", "核对长期或阶段性同住及身体情况"),
+        "行动不便": ("无障碍", "主要路线需满足通行、转身、扶持和无高差要求", "由相关专业人员按实际辅具尺寸复核"),
+        "客人留宿": ("客房留宿", "按留宿频率选择固定客房或可转换的临时留宿空间", "核对来访关系、人数、频率和独立卫浴需求"),
+        "保姆或家政人员同住": ("家政居住", "配置保姆休息、家政专属收纳及尽量不干扰家庭私密区的工作路线", "核对是否住家、工作内容和独立卫浴需求"),
+        "家庭厅或亲子共处": ("卧室层家庭厅", "卧室层宜设置支持亲子互动、阅读和短时共处的家庭公共位置", "核对使用成员、活动类型和对卧室安静的影响"),
+        "宠物": ("宠物系统", "设置喂养、清洁、洗护、用品收纳和人与宠物的活动边界", "核对宠物种类、数量和习惯"),
+        "户外装备": ("户外装备", "靠近出入口设置耐脏、通风、可清洗的装备存放和维护区", "统计装备尺寸、泥水和晾干需求"),
+        "藏品或艺术创作": ("收藏创作", "配置创作工作面、材料收纳、展示、防尘避光和安防条件", "核对作品材料、尺寸和更新频率"),
+        "高频出差": ("行李与归家", "入户、更衣和洗护路线需支持快速收放行李及出差物品", "核对频率、行李数量和常备物品"),
+        "庭院生活": ("庭院系统", "庭院需按活动配置硬化、排水、户外水电、照明、收纳和养护条件", "核对会客、种植、儿童宠物及物业边界"),
+        "地下室使用": ("地下空间", "地下室功能布局必须同时解决防潮、通风、采光、排水、消防和疏散", "明确影音、健身、储藏等用途后由专业人员复核"),
+        "阁楼或露台": ("顶层空间", "阁楼或露台需按储物、休闲、茶饮、种植等真实用途配置并控制荷载防水", "核对净高、结构、防水、排水、防坠和物业限制"),
+        "车辆与充电": ("车库充电", "车库需匹配车位、充电、电力容量、通风、安防和工具收纳", "核对车型、数量和充电功率"),
+        "室内电梯": ("垂直交通", "根据老人、大件搬运和楼层使用决定电梯或预留井道条件", "由结构、消防和设备专业人员核对"),
+        "大件搬运": ("搬运动线", "入户、电梯、楼梯、门洞和转弯需按最大物件校核", "列出钢琴、家具和设备最大尺寸"),
+    },
+}
+
+FAMILY_HOME_PROFESSIONAL_CHECKS = {
+    "地下室": "防潮、防水、排水、通风、采光、消防和疏散需结合现场核对",
+    "庭院": "边界、排水、户外水电、照明、绿化和物业限制需核对",
+    "露台": "荷载、防水、排水、防坠和物业限制需核对",
+    "阁楼": "净高、结构、保温、采光、消防和楼梯条件需核对",
+    "车库": "车位尺度、充电容量、通风、排水和安防需核对",
+    "室内电梯": "井道、结构、消防、电力、噪音和维护条件需核对",
+    "户外泳池或水景": "结构、防水、循环水、机房、用电和儿童安全需专业核对",
+    "独立家政区域": "上下水、电力、排风、设备尺寸和家政路线需核对",
+}
+
+
+def _family_project_by_token(token):
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(
+            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE token = :token",
+            token=token,
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        rows = conn.execute(
+            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE token = ?",
+            (token,),
+        ).fetchall()
+        conn.close()
+    if not rows:
+        return None
+    row = rows[0]
+    return {
+        "id": row[0],
+        "token": row[1],
+        "home_name": row[2],
+        "home_profile": _safe_json(row[3]),
+        "status": row[4],
+        "created_at": str(row[5]),
+    }
+
+
+def _family_project_by_id(project_id):
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(
+            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE id = :id",
+            id=project_id,
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        rows = conn.execute(
+            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE id = ?",
+            (project_id,),
+        ).fetchall()
+        conn.close()
+    if not rows:
+        return None
+    row = rows[0]
+    return {
+        "id": row[0],
+        "token": row[1],
+        "home_name": row[2],
+        "home_profile": _safe_json(row[3]),
+        "status": row[4],
+        "created_at": str(row[5]),
+    }
+
+
+def _family_members(project_id):
+    query = """
+        SELECT id, member_token, display_name, role, age_group, answer_source,
+               answers, report, status, created_at
+        FROM family_members WHERE project_id = {placeholder} ORDER BY id
+    """
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(query.format(placeholder=":project_id"), project_id=project_id)
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        rows = conn.execute(query.format(placeholder="?"), (project_id,)).fetchall()
+        conn.close()
+    return [
+        {
+            "id": row[0],
+            "member_token": row[1],
+            "display_name": row[2],
+            "role": row[3] or "家庭成员",
+            "age_group": row[4] or "-",
+            "answer_source": row[5] or "-",
+            "answers": _safe_json(row[6]),
+            "report": _safe_json(row[7]),
+            "status": row[8],
+            "created_at": str(row[9]),
+        }
+        for row in rows
+    ]
+
+
+def _family_project_list():
+    if DATABASE_URL:
+        conn = _pg_conn()
+        rows = conn.run(
+            """
+            SELECT p.id, p.token, p.home_name, p.home_profile, p.status, p.created_at,
+                   COUNT(m.id) AS member_count
+            FROM family_projects p
+            LEFT JOIN family_members m ON m.project_id = p.id
+            GROUP BY p.id, p.token, p.home_name, p.home_profile, p.status, p.created_at
+            ORDER BY p.id DESC
+            """
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        rows = conn.execute(
+            """
+            SELECT p.id, p.token, p.home_name, p.home_profile, p.status, p.created_at,
+                   COUNT(m.id) AS member_count
+            FROM family_projects p
+            LEFT JOIN family_members m ON m.project_id = p.id
+            GROUP BY p.id
+            ORDER BY p.id DESC
+            """
+        ).fetchall()
+        conn.close()
+    return [
+        {
+            "id": row[0],
+            "token": row[1],
+            "home_name": row[2],
+            "home_profile": _safe_json(row[3]),
+            "status": row[4],
+            "created_at": str(row[5]),
+            "member_count": row[6],
+        }
+        for row in rows
+    ]
+
+
+def _count_values(members, getter):
+    counts = {}
+    names = {}
+    for member in members:
+        for value in _as_list(getter(member)):
+            if not value:
+                continue
+            counts[value] = counts.get(value, 0) + 1
+            names.setdefault(value, []).append(member["display_name"])
+    return counts, names
+
+
+def _preference_detail(preference):
+    selections = [str(item) for item in _as_list(preference.get("selections")) if item]
+    detail = str(preference.get("detail", "")).strip()
+    return "、".join(selections + ([detail] if detail else []))
+
+
+def _build_family_scene_reports(members):
+    reports = []
+    for scene_id, scene_name in FAMILY_SCENE_LABELS.items():
+        member_views = []
+        need_members = {}
+        need_ratings = {}
+        confirmed_wants = []
+        confirmed_avoids = []
+        pending_questions = []
+        seed_candidates = {}
+        important_count = 0
+        affected_count = 0
+
+        for member in members:
+            answers = member["answers"]
+            rating = answers.get("scene_scan", {}).get(scene_id, "未回答")
+            detail = answers.get("scene_details", {}).get(scene_id, {})
+            if not isinstance(detail, dict):
+                detail = {}
+            needs = [str(item) for item in _as_list(detail.get("needs")) if item]
+            note = str(detail.get("note", "")).strip()
+            impact = str(detail.get("impact", "")).strip()
+            want = str(detail.get("want", "")).strip()
+            avoid = str(detail.get("avoid", "")).strip()
+            if rating == "经常参与，而且很重要":
+                important_count += 1
+            if rating in ["经常参与，而且很重要", "偶尔参与，但有明确想法", "不直接参与，但结果会影响我"]:
+                affected_count += 1
+            for need in needs:
+                need_members.setdefault(need, []).append(member["display_name"])
+                need_ratings.setdefault(need, []).append(rating)
+                seed = FAMILY_SCENE_SEED_RULES.get(scene_id, {}).get(need)
+                if seed:
+                    seed_candidates.setdefault(seed, {"source": need, "members": []})["members"].append(
+                        member["display_name"]
+                    )
+            if want:
+                confirmed_wants.append({"member": member["display_name"], "item": want, "source": "场景明确想要"})
+            if avoid:
+                confirmed_avoids.append({"member": member["display_name"], "item": avoid, "source": "场景明确不要"})
+
+            professional = []
+            for key, preference in answers.get("professional", {}).items():
+                if not key.startswith(f"{scene_id}_") or not isinstance(preference, dict):
+                    continue
+                status = str(preference.get("status", "")).strip()
+                label = str(preference.get("label", key)).strip()
+                detail_text = _preference_detail(preference)
+                item = {"label": label, "status": status, "detail": detail_text}
+                professional.append(item)
+                if status == "已经明确想要":
+                    if detail_text:
+                        confirmed_wants.append(
+                            {"member": member["display_name"], "item": f"{label}：{detail_text}", "source": "明确专业偏好"}
+                        )
+                    else:
+                        pending_questions.append(
+                            {"member": member["display_name"], "item": label, "status": "已选择明确想要，但具体形式未填写"}
+                        )
+                elif status == "明确不考虑":
+                    confirmed_avoids.append(
+                        {"member": member["display_name"], "item": label, "source": "明确专业偏好"}
+                    )
+                elif status in ["想了解，请设计师解释", "没有明确想法，请设计师判断"]:
+                    pending_questions.append(
+                        {"member": member["display_name"], "item": label, "status": status}
+                    )
+
+            if rating != "未回答" or needs or note or impact or want or avoid or professional:
+                member_views.append(
+                    {
+                        "name": member["display_name"],
+                        "role": member["role"],
+                        "rating": rating,
+                        "needs": needs,
+                        "note": note,
+                        "impact": impact,
+                        "want": want,
+                        "avoid": avoid,
+                        "professional": professional,
+                    }
+                )
+
+        if important_count >= 2:
+            priority = "家庭共同重点"
+        elif important_count == 1:
+            priority = "成员重点"
+        elif affected_count:
+            priority = "相关或受影响"
+        elif any(view["rating"] == "还没想过" for view in member_views):
+            priority = "待启发"
+        else:
+            priority = "低关联"
+
+        design_inputs = [
+            {
+                "level": "需要支持",
+                "item": need,
+                "members": names,
+                "evidence": "成员在生活场景中主动选择",
+            }
+            for need, names in need_members.items()
+        ]
+        design_inputs.extend(
+            {
+                "level": "明确想要",
+                "item": item["item"],
+                "members": [item["member"]],
+                "evidence": item["source"],
+            }
+            for item in confirmed_wants
+        )
+        design_requirements = []
+        seen_requirements = set()
+        for need, names in need_members.items():
+            rule = FAMILY_SCENE_DESIGN_REQUIREMENT_RULES.get(scene_id, {}).get(need)
+            if not rule:
+                continue
+            category, requirement, verify = rule
+            key = (category, requirement)
+            if key in seen_requirements:
+                continue
+            seen_requirements.add(key)
+            ratings_for_need = need_ratings.get(need, [])
+            if len(set(names)) >= 2:
+                status = "家庭共同需求"
+            elif "经常参与，而且很重要" in ratings_for_need:
+                status = "重点确认"
+            else:
+                status = "设计候选"
+            design_requirements.append(
+                {
+                    "category": category,
+                    "requirement": requirement,
+                    "status": status,
+                    "evidence": need,
+                    "members": list(dict.fromkeys(names)),
+                    "verify": verify,
+                }
+            )
+        for item in confirmed_wants:
+            key = ("客户明确要求", item["item"])
+            if key in seen_requirements:
+                continue
+            seen_requirements.add(key)
+            design_requirements.append(
+                {
+                    "category": "客户明确要求",
+                    "requirement": item["item"],
+                    "status": "客户明确提出",
+                    "evidence": item["source"],
+                    "members": [item["member"]],
+                    "verify": "确认具体落实方式、尺寸条件及与其他成员需求的关系",
+                }
+            )
+        missing = []
+        for view in member_views:
+            if view["rating"] == "经常参与，而且很重要" and not any(
+                [view["needs"], view["note"], view["want"], view["avoid"], view["professional"]]
+            ):
+                missing.append(f'{view["name"]}将此列为重要场景，但没有补充具体生活内容。')
+        reports.append(
+            {
+                "id": scene_id,
+                "name": scene_name,
+                "description": FAMILY_SCENE_DESCRIPTIONS[scene_id],
+                "priority": priority,
+                "important_count": important_count,
+                "affected_count": affected_count,
+                "member_views": member_views,
+                "design_inputs": design_inputs,
+                "design_requirements": design_requirements,
+                "confirmed_avoids": confirmed_avoids,
+                "pending_questions": pending_questions,
+                "seeds": [
+                    {
+                        "item": seed,
+                        "reason": data["source"],
+                        "members": list(dict.fromkeys(data["members"])),
+                        "status": "待设计师结合现场和预算确认",
+                    }
+                    for seed, data in seed_candidates.items()
+                ],
+                "design_checklist": FAMILY_SCENE_DESIGN_CHECKLISTS[scene_id],
+                "missing": missing,
+            }
+        )
+    return reports
+
+
+def _build_customer_family_summary(project, members, scene_reports=None):
+    scene_reports = scene_reports or _build_family_scene_reports(members)
+    feeling_counts, _ = _count_values(
+        members, lambda member: member["answers"].get("vision", {}).get("feelings", [])
+    )
+    activity_counts, _ = _count_values(
+        members, lambda member: member["answers"].get("vision", {}).get("future_activities", [])
+    )
+    boundary_counts, _ = _count_values(
+        members, lambda member: member["answers"].get("vision", {}).get("boundaries", [])
+    )
+    shared_feelings = [value for value, count in feeling_counts.items() if count >= 2]
+    shared_activities = [value for value, count in activity_counts.items() if count >= 2]
+    shared_boundaries = [
+        value
+        for value, count in boundary_counts.items()
+        if count >= 2 and value != "没有特别需要避免的体验"
+    ]
+    focus_scenes = [
+        {
+            "name": item["name"],
+            "description": item["description"],
+            "level": item["priority"],
+        }
+        for item in scene_reports
+        if item["priority"] in ["家庭共同重点", "成员重点"]
+    ]
+    profile = project.get("home_profile") or {}
+    headline_parts = []
+    if shared_feelings:
+        headline_parts.append(f'全家共同期待：{"、".join(shared_feelings[:3])}')
+    if focus_scenes:
+        headline_parts.append(f'重点生活：{"、".join(item["name"] for item in focus_scenes[:5])}')
+    return {
+        "home_name": project["home_name"],
+        "home_profile": {
+            key: profile.get(key)
+            for key in ["house_type", "city", "area", "levels", "stage", "move_in", "future_changes", "home_features"]
+            if profile.get(key)
+        },
+        "member_count": len(members),
+        "headline": "；".join(headline_parts) or "家庭成员的生活需求已经完成汇总",
+        "shared_feelings": shared_feelings,
+        "shared_activities": shared_activities,
+        "shared_boundaries": shared_boundaries,
+        "focus_scenes": focus_scenes,
+        "note": "这是一份家庭生活需求简报，不是户型布局、设备选型或最终设计方案。家庭成员的具体回答和分歧仅供设计师内部查看。",
+    }
+
+
+def _build_family_summary(project, members):
+    feeling_counts, feeling_names = _count_values(
+        members, lambda member: member["answers"].get("vision", {}).get("feelings", [])
+    )
+    boundary_counts, boundary_names = _count_values(
+        members, lambda member: member["answers"].get("vision", {}).get("boundaries", [])
+    )
+    consensus = []
+    if len(members) >= 2:
+        for value, count in feeling_counts.items():
+            if count >= 2:
+                consensus.append({"type": "共同期待", "value": value, "members": feeling_names[value]})
+        for value, count in boundary_counts.items():
+            if count >= 2 and value != "没有特别需要避免的体验":
+                consensus.append({"type": "共同边界", "value": value, "members": boundary_names[value]})
+        for scene_id, scene_label in FAMILY_SCENE_LABELS.items():
+            names = [
+                member["display_name"]
+                for member in members
+                if member["answers"].get("scene_scan", {}).get(scene_id) == "经常参与，而且很重要"
+            ]
+            if len(names) >= 2:
+                consensus.append({"type": "共同重点场景", "value": scene_label, "members": names})
+
+    personal = []
+    for member in members:
+        answers = member["answers"]
+        vision = answers.get("vision", {})
+        final = answers.get("final", {})
+        explicit_preferences = []
+        for preference in answers.get("professional", {}).values():
+            if not isinstance(preference, dict) or preference.get("status") != "已经明确想要":
+                continue
+            detail = _preference_detail(preference)
+            explicit_preferences.append(
+                f'{preference.get("label", "专业偏好")}：{detail or "尚未说明具体形式"}'
+            )
+        active_scenes = []
+        for scene_id, rating in answers.get("scene_scan", {}).items():
+            if rating in ["经常参与，而且很重要", "偶尔参与，但有明确想法", "不直接参与，但结果会影响我"]:
+                active_scenes.append(FAMILY_SCENE_LABELS.get(scene_id, scene_id))
+        personal.append(
+            {
+                "name": member["display_name"],
+                "role": member["role"],
+                "future_day": vision.get("future_day", ""),
+                "priorities": _as_list(final.get("priorities")),
+                "non_negotiable": final.get("non_negotiable", ""),
+                "active_scenes": active_scenes,
+                "explicit_preferences": explicit_preferences,
+                "designer_questions": final.get("designer_questions", ""),
+            }
+        )
+
+    professional_by_key = {}
+    designer_checks = []
+    for member in members:
+        for key, preference in member["answers"].get("professional", {}).items():
+            if not isinstance(preference, dict) or not preference.get("status"):
+                continue
+            professional_by_key.setdefault(key, []).append(
+                {
+                    "name": member["display_name"],
+                    "label": preference.get("label", key),
+                    "status": preference["status"],
+                    "selections": _as_list(preference.get("selections")),
+                    "detail": str(preference.get("detail", "")).strip(),
+                }
+            )
+            if preference["status"] in ["想了解，请设计师解释", "没有明确想法，请设计师判断"]:
+                designer_checks.append(
+                    {
+                        "member": member["display_name"],
+                        "item": preference.get("label", key),
+                        "status": preference["status"],
+                    }
+                )
+
+    conflicts = []
+    for preferences in professional_by_key.values():
+        statuses = {item["status"] for item in preferences}
+        if "已经明确想要" in statuses and "明确不考虑" in statuses:
+            conflicts.append(
+                {
+                    "type": "专业偏好冲突",
+                    "item": preferences[0]["label"],
+                    "views": preferences,
+                    "note": "只陈述分歧，请设计师结合生活原因与房屋条件组织讨论。",
+                }
+            )
+
+    insufficient = []
+    if len(members) < 2:
+        insufficient.append("目前只有一位成员提交，暂不判断家庭共识或成员冲突。")
+    if not project.get("home_profile"):
+        insufficient.append("住宅基础资料尚未补充完整。")
+    for member in members:
+        pending_scenes = [
+            FAMILY_SCENE_LABELS.get(scene_id, scene_id)
+            for scene_id, rating in member["answers"].get("scene_scan", {}).items()
+            if rating == "还没想过"
+        ]
+        if pending_scenes:
+            insufficient.append(f'{member["display_name"]}尚未考虑：{"、".join(pending_scenes)}。')
+
+    scene_reports = _build_family_scene_reports(members)
+    report_stats = {
+        "scene_count": len(scene_reports),
+        "focus_scene_count": sum(
+            1 for item in scene_reports if item["priority"] in ["家庭共同重点", "成员重点"]
+        ),
+        "design_requirement_count": sum(len(item["design_requirements"]) for item in scene_reports),
+        "confirmed_requirement_count": sum(
+            1
+            for item in scene_reports
+            for requirement in item["design_requirements"]
+            if requirement["status"] in ["客户明确提出", "家庭共同需求"]
+        ),
+        "pending_count": sum(
+            len(item["pending_questions"]) + len(item["missing"]) for item in scene_reports
+        ),
+    }
+    styles = []
+    for member in members:
+        style_answers = member["answers"].get("styles", {})
+        styles.append(
+            {
+                "member": member["display_name"],
+                "liked": _as_list(style_answers.get("liked")),
+                "avoid": str(style_answers.get("avoid", "")).strip(),
+                "surface_finish": str(style_answers.get("surface_finish", "")).strip(),
+                "wood_tone": str(style_answers.get("wood_tone", "")).strip(),
+                "lasting_preference": str(style_answers.get("lasting_preference", "")).strip(),
+                "avoid_details": str(style_answers.get("avoid_details", "")).strip(),
+            }
+        )
+    style_likes = {}
+    style_avoids = {}
+    for item in styles:
+        for style in item["liked"]:
+            style_likes.setdefault(style, []).append(item["member"])
+        if item["avoid"]:
+            style_avoids.setdefault(item["avoid"], []).append(item["member"])
+    for style in sorted(set(style_likes) & set(style_avoids)):
+        views = [
+            {"name": name, "status": "喜欢", "selections": [style], "detail": ""}
+            for name in style_likes[style]
+        ] + [
+            {"name": name, "status": "明确避免", "selections": [style], "detail": ""}
+            for name in style_avoids[style]
+        ]
+        conflicts.append(
+            {
+                "type": "视觉偏好冲突",
+                "item": style,
+                "views": views,
+                "note": "保留原始表达，不自动判断最终风格；请设计师通过图片和材质继续核对。",
+            }
+        )
+    home_profile = project.get("home_profile") or {}
+    home_professional_checks = [
+        {"item": feature, "check": FAMILY_HOME_PROFESSIONAL_CHECKS[feature]}
+        for feature in _as_list(home_profile.get("home_features"))
+        if feature in FAMILY_HOME_PROFESSIONAL_CHECKS
+    ]
+    if str(home_profile.get("known_limits", "")).strip():
+        home_professional_checks.append(
+            {"item": "已知限制", "check": str(home_profile["known_limits"]).strip()}
+        )
+
+    return {
+        "project": project,
+        "member_count": len(members),
+        "members": [
+            {
+                "id": member["id"],
+                "display_name": member["display_name"],
+                "role": member["role"],
+                "age_group": member["age_group"],
+                "created_at": member["created_at"],
+            }
+            for member in members
+        ],
+        "consensus": consensus,
+        "personal": personal,
+        "conflicts": conflicts,
+        "designer_checks": designer_checks,
+        "insufficient": insufficient,
+        "scene_reports": scene_reports,
+        "report_stats": report_stats,
+        "styles": styles,
+        "home_professional_checks": home_professional_checks,
+        "customer_summary": _build_customer_family_summary(project, members, scene_reports),
+    }
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
     with open("static/index.html", "r", encoding="utf-8") as f:
@@ -542,6 +1483,294 @@ async def index():
 async def jiabao_ai():
     with open("static/jiabao-ai.html", "r", encoding="utf-8") as f:
         return f.read()
+
+
+@app.get("/family", response_class=HTMLResponse)
+@app.get("/family/{project_token}", response_class=HTMLResponse)
+async def family_survey(project_token: str = ""):
+    with open("static/family.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read(), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/admin/families", response_class=HTMLResponse)
+async def family_admin_page(request: Request):
+    if not _admin_authorized(request):
+        return RedirectResponse("/admin")
+    with open("static/family-admin.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read(), headers={"Cache-Control": "no-store"})
+
+
+@app.post("/api/admin/family-projects")
+async def create_family_project(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+    data = await request.json()
+    home_name = str(data.get("home_name", "")).strip()
+    if not home_name:
+        return JSONResponse({"code": 400, "message": "请填写住宅称呼"}, status_code=400)
+    token = secrets.token_urlsafe(18)
+    profile_json = json.dumps(data.get("home_profile", {}), ensure_ascii=False)
+    if DATABASE_URL:
+        conn = _pg_conn()
+        project_id = conn.run(
+            """
+            INSERT INTO family_projects (token, home_name, home_profile)
+            VALUES (:token, :home_name, :home_profile) RETURNING id
+            """,
+            token=token,
+            home_name=home_name,
+            home_profile=profile_json,
+        )[0][0]
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.execute(
+            "INSERT INTO family_projects (token, home_name, home_profile) VALUES (?, ?, ?)",
+            (token, home_name, profile_json),
+        )
+        project_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+    base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
+    return {
+        "code": 0,
+        "id": project_id,
+        "token": token,
+        "invite_url": f"{base_url}/family/{token}",
+    }
+
+
+@app.get("/api/admin/family-projects")
+async def list_family_projects(request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+    return {"code": 0, "items": _family_project_list()}
+
+
+@app.get("/api/admin/family-projects/{project_id}")
+async def get_family_project_report(project_id: int, request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+    project = _family_project_by_id(project_id)
+    if not project:
+        return JSONResponse({"code": 404, "message": "家庭项目不存在"}, status_code=404)
+    members = _family_members(project_id)
+    return {"code": 0, "summary": _build_family_summary(project, members)}
+
+
+@app.get("/api/family-projects/{project_token}")
+async def get_family_project(project_token: str):
+    project = _family_project_by_token(project_token)
+    if not project or project["status"] not in ["active", "ready_for_review"]:
+        return JSONResponse({"code": 404, "message": "家庭需求链接无效或已关闭"}, status_code=404)
+    members = _family_members(project["id"])
+    public_profile = {
+        key: project["home_profile"].get(key)
+        for key in ["house_type", "city", "area", "levels", "stage"]
+        if project["home_profile"].get(key)
+    }
+    return {
+        "code": 0,
+        "project": {
+            "home_name": project["home_name"],
+            "home_profile": public_profile,
+            "needs_home_profile": not bool(project["home_profile"]),
+            "member_count": len(members),
+            "status": project["status"],
+        },
+    }
+
+
+@app.get("/api/family-projects/{project_token}/summary")
+async def get_customer_family_summary(project_token: str):
+    project = _family_project_by_token(project_token)
+    if not project or project["status"] != "ready_for_review":
+        return JSONResponse({"code": 404, "message": "家庭需求简报尚未生成"}, status_code=404)
+    members = _family_members(project["id"])
+    if not members:
+        return JSONResponse({"code": 404, "message": "暂无家庭成员答卷"}, status_code=404)
+    return {"code": 0, "summary": _build_customer_family_summary(project, members)}
+
+
+@app.post("/api/family-projects/{project_token}/complete")
+async def complete_family_project(project_token: str, request: Request):
+    project = _family_project_by_token(project_token)
+    if not project:
+        return JSONResponse({"code": 404, "message": "家庭需求链接无效"}, status_code=404)
+    members = _family_members(project["id"])
+    if not members:
+        return JSONResponse({"code": 400, "message": "至少需要一位家庭成员先提交"}, status_code=400)
+    if DATABASE_URL:
+        conn = _pg_conn()
+        conn.run(
+            "UPDATE family_projects SET status='ready_for_review', updated_at=CURRENT_TIMESTAMP WHERE id=:id",
+            id=project["id"],
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute(
+            "UPDATE family_projects SET status='ready_for_review', updated_at=CURRENT_TIMESTAMP WHERE id=?",
+            (project["id"],),
+        )
+        conn.commit()
+        conn.close()
+    base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
+    return {
+        "code": 0,
+        "status": "ready_for_review",
+        "member_count": len(members),
+        "admin_report_url": f"{base_url}/admin/families?project={project['id']}",
+        "message": "家庭填写已完成，汇总已进入设计师后台",
+    }
+
+
+@app.post("/api/family-projects/{project_token}/members")
+async def submit_family_member(project_token: str, request: Request):
+    project = _family_project_by_token(project_token)
+    if not project or project["status"] != "active":
+        return JSONResponse({"code": 404, "message": "家庭需求链接无效或已关闭"}, status_code=404)
+    data = await request.json()
+    identity = data.get("identity", {}) if isinstance(data.get("identity"), dict) else {}
+    display_name = str(identity.get("display_name", "")).strip()
+    role = str(identity.get("role", "")).strip()
+    age_group = str(identity.get("age_group", "")).strip()
+    answer_source = str(identity.get("answer_source", "")).strip() or "未单独询问"
+    answers = data.get("answers", {}) if isinstance(data.get("answers"), dict) else {}
+    if not role:
+        return JSONResponse({"code": 400, "message": "请选择家庭身份"}, status_code=400)
+    if not display_name:
+        display_name = role
+    if not answers.get("scene_scan"):
+        return JSONResponse({"code": 400, "message": "请完成生活场景快速扫描"}, status_code=400)
+
+    home_profile = data.get("home_profile") if isinstance(data.get("home_profile"), dict) else None
+    answers_json = json.dumps(answers, ensure_ascii=False)
+    report_json = json.dumps(data.get("report", {}), ensure_ascii=False)
+    member_token = str(data.get("member_token", "")).strip()
+    if DATABASE_URL:
+        conn = _pg_conn()
+        existing = []
+        if member_token:
+            existing = conn.run(
+                "SELECT id FROM family_members WHERE member_token = :member_token AND project_id = :project_id",
+                member_token=member_token,
+                project_id=project["id"],
+            )
+        if existing:
+            member_id = existing[0][0]
+            conn.run(
+                """
+                UPDATE family_members SET display_name=:display_name, role=:role, age_group=:age_group,
+                    answer_source=:answer_source, answers=:answers, report=:report,
+                    status='submitted', updated_at=CURRENT_TIMESTAMP WHERE id=:id
+                """,
+                display_name=display_name,
+                role=role,
+                age_group=age_group,
+                answer_source=answer_source,
+                answers=answers_json,
+                report=report_json,
+                id=member_id,
+            )
+        else:
+            member_token = secrets.token_urlsafe(18)
+            member_id = conn.run(
+                """
+                INSERT INTO family_members
+                    (project_id, member_token, display_name, role, age_group, answer_source, answers, report)
+                VALUES (:project_id, :member_token, :display_name, :role, :age_group, :answer_source, :answers, :report)
+                RETURNING id
+                """,
+                project_id=project["id"],
+                member_token=member_token,
+                display_name=display_name,
+                role=role,
+                age_group=age_group,
+                answer_source=answer_source,
+                answers=answers_json,
+                report=report_json,
+            )[0][0]
+        if home_profile and not project["home_profile"]:
+            conn.run(
+                "UPDATE family_projects SET home_profile=:profile, updated_at=CURRENT_TIMESTAMP WHERE id=:id",
+                profile=json.dumps(home_profile, ensure_ascii=False),
+                id=project["id"],
+            )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        existing = None
+        if member_token:
+            existing = conn.execute(
+                "SELECT id FROM family_members WHERE member_token = ? AND project_id = ?",
+                (member_token, project["id"]),
+            ).fetchone()
+        if existing:
+            member_id = existing[0]
+            conn.execute(
+                """
+                UPDATE family_members SET display_name=?, role=?, age_group=?, answer_source=?,
+                    answers=?, report=?, status='submitted', updated_at=CURRENT_TIMESTAMP WHERE id=?
+                """,
+                (display_name, role, age_group, answer_source, answers_json, report_json, member_id),
+            )
+        else:
+            member_token = secrets.token_urlsafe(18)
+            cursor = conn.execute(
+                """
+                INSERT INTO family_members
+                    (project_id, member_token, display_name, role, age_group, answer_source, answers, report)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (project["id"], member_token, display_name, role, age_group, answer_source, answers_json, report_json),
+            )
+            member_id = cursor.lastrowid
+        if home_profile and not project["home_profile"]:
+            conn.execute(
+                "UPDATE family_projects SET home_profile=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+                (json.dumps(home_profile, ensure_ascii=False), project["id"]),
+            )
+        conn.commit()
+        conn.close()
+
+    base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
+    return {
+        "code": 0,
+        "member_id": member_id,
+        "member_token": member_token,
+        "invite_url": f"{base_url}/family/{project_token}",
+        "message": "您的个人需求已加入家庭项目",
+    }
+
+
+@app.post("/api/admin/family-projects/{project_id}/reopen")
+async def reopen_family_project(project_id: int, request: Request):
+    if not _admin_authorized(request):
+        return _admin_unauthorized_response()
+    project = _family_project_by_id(project_id)
+    if not project:
+        return JSONResponse({"code": 404, "message": "家庭项目不存在"}, status_code=404)
+    if DATABASE_URL:
+        conn = _pg_conn()
+        conn.run(
+            "UPDATE family_projects SET status='active', updated_at=CURRENT_TIMESTAMP WHERE id=:id",
+            id=project_id,
+        )
+        conn.close()
+    else:
+        import sqlite3
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute(
+            "UPDATE family_projects SET status='active', updated_at=CURRENT_TIMESTAMP WHERE id=?",
+            (project_id,),
+        )
+        conn.commit()
+        conn.close()
+    return {"code": 0, "status": "active", "message": "家庭项目已重新开放填写"}
 
 
 @app.get("/healthz")
@@ -1059,6 +2288,7 @@ async def admin_page(request: Request):
             <div class="toolbar">
                 <h1>客户档案列表</h1>
                 <div class="actions">
+                    <a class="btn" href="/admin/families">家庭需求项目</a>
                     <a class="btn green" href="/api/surveys/summary.xlsx">导出摘要Excel</a>
                     <a class="btn" href="/api/surveys/export.csv">导出CSV</a>
                     <a class="btn secondary" href="/admin/logout">退出</a>

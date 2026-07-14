@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>说说您希望未来的家怎么住</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23285f49'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' fill='white'%3E%E5%AE%B6%3C/text%3E%3C/svg%3E">
+    <style>
+        :root { --ink:#20241f; --muted:#687068; --line:#d9ddd7; --paper:#fff; --bg:#f2f3ef; --green:#285f49; --green-soft:#e8f0eb; --clay:#9b503a; --gold:#a78035; }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; line-height: 1.55; }
+        button, input, textarea, select { font: inherit; }
+        button { cursor: pointer; }
+        .app-header { position: sticky; top: 0; z-index: 20; background: rgba(248,249,246,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+        .header-inner { max-width: 900px; min-height: 64px; margin: 0 auto; padding: 12px 22px; display: grid; grid-template-columns: 180px 1fr 110px; gap: 18px; align-items: center; }
+        .brand { font-weight: 760; color: #244235; }
+        .brand small { display: block; font-size: 11px; color: #778078; font-weight: 550; }
+        .progress-track { height: 5px; background: #dfe3dd; overflow: hidden; }
+        .progress-fill { width: 0; height: 100%; background: var(--green); transition: width .25s ease; }
+        .progress-text { text-align: right; color: #626a63; font-size: 12px; }
+        .step-nav { max-width: 900px; margin: 0 auto; padding: 0 22px 10px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; }
+        .step-nav button { flex: 0 0 auto; min-height: 32px; padding: 5px 9px; border: 1px solid #c9d0ca; border-radius: 5px; background: #fff; color: #586159; font-size: 12px; }
+        .step-nav button.active { border-color: var(--green); background: var(--green); color: #fff; }
+        .step-nav button:disabled { opacity: .42; cursor: not-allowed; }
+        main { max-width: 900px; margin: 0 auto; padding: 34px 22px 72px; }
+        .step { display: none; }
+        .step.active { display: block; animation: enter .22s ease; }
+        @keyframes enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+        h1 { margin: 0 0 12px; font-size: 32px; line-height: 1.22; letter-spacing: 0; }
+        h2 { margin: 0 0 8px; font-size: 25px; line-height: 1.25; letter-spacing: 0; }
+        h3 { margin: 0 0 10px; font-size: 17px; letter-spacing: 0; }
+        .section-lead { margin: 0 0 26px; color: var(--muted); font-size: 15px; }
+        .hero { min-height: min(660px, calc(100vh - 120px)); margin: -34px -22px 0; padding: clamp(36px, 8vw, 76px) 34px; display: flex; align-items: flex-end; color: #fff; background: linear-gradient(90deg, rgba(16,23,19,.84), rgba(16,23,19,.25)), url('/static/hero-home.png') center/cover no-repeat; }
+        .hero-content { max-width: 610px; padding-bottom: 24px; }
+        .hero-kicker { margin-bottom: 12px; font-size: 13px; font-weight: 750; letter-spacing: .08em; }
+        .hero h1 { font-size: clamp(34px, 6vw, 54px); }
+        .hero p { max-width: 560px; margin: 0 0 24px; color: #eef2ef; font-size: 17px; }
+        .project-label { display: inline-block; margin-bottom: 24px; padding: 8px 11px; border-left: 3px solid #d7b66a; background: rgba(21,34,27,.7); font-weight: 700; }
+        .question { padding: 23px 0; border-top: 1px solid var(--line); }
+        .question:first-of-type { border-top: 0; }
+        .question-title { margin-bottom: 7px; font-size: 17px; font-weight: 720; }
+        .question-tip { margin-bottom: 14px; color: var(--muted); font-size: 13px; }
+        .required { color: var(--clay); }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .field label { display: block; margin-bottom: 6px; color: #545c55; font-size: 13px; font-weight: 650; }
+        input[type="text"], input[type="number"], textarea, select { width: 100%; border: 1px solid #bfc6bf; border-radius: 6px; background: #fff; color: var(--ink); }
+        input[type="text"], input[type="number"], select { min-height: 46px; padding: 10px 12px; }
+        textarea { min-height: 108px; padding: 11px 12px; resize: vertical; }
+        input:focus, textarea:focus, select:focus { outline: 3px solid rgba(40,95,73,.16); border-color: var(--green); }
+        .voice-tools { display: flex; justify-content: flex-end; margin-top: 7px; }
+        .voice-btn { min-height: 34px; padding: 6px 10px; border: 1px solid #aeb9b1; border-radius: 5px; background: #fff; color: #315b49; font-size: 12px; font-weight: 700; }
+        .voice-btn:hover { border-color: var(--green); }
+        .voice-btn.listening { border-color: var(--clay); background: #f8ece8; color: #853f2f; }
+        .choices { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+        .choices.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+        .choice { position: relative; display: flex; min-height: 46px; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #c7cdc7; border-radius: 6px; background: #fff; cursor: pointer; transition: border-color .15s, background .15s; }
+        .choice:hover { border-color: #6b8d7c; }
+        .choice.selected { border-color: var(--green); background: var(--green-soft); box-shadow: inset 3px 0 var(--green); }
+        .choice input { position: absolute; opacity: 0; pointer-events: none; }
+        .choice-mark { width: 18px; height: 18px; flex: 0 0 18px; border: 1.5px solid #9ba49c; border-radius: 50%; background: #fff; }
+        .choice.checkbox .choice-mark { border-radius: 4px; }
+        .choice.selected .choice-mark { border: 5px solid var(--green); }
+        .choice.checkbox.selected .choice-mark { border: 0; background: var(--green); }
+        .choice.checkbox.selected .choice-mark::after { content:""; display:block; width:5px; height:9px; margin:3px 0 0 6px; border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg); }
+        .choice-copy { min-width: 0; font-size: 14px; }
+        .choice-copy small { display:block; margin-top:2px; color:var(--muted); font-size:12px; }
+        .callout { margin: 18px 0; padding: 14px 16px; border-left: 3px solid var(--gold); background: #f7f2e7; color: #555044; }
+        .home-summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; margin: 18px 0; background: var(--line); border: 1px solid var(--line); }
+        .home-summary div { min-height: 72px; padding: 12px; background: #fff; }
+        .home-summary span { display:block; color:var(--muted); font-size:12px; }
+        .home-summary strong { display:block; margin-top:4px; font-size:14px; }
+        .scan-list { border-top: 1px solid var(--line); }
+        .scan-row { display: grid; grid-template-columns: minmax(170px, .8fr) minmax(420px, 2fr); gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: center; }
+        .scene-name { font-weight: 750; }
+        .scene-desc { margin-top: 3px; color: var(--muted); font-size: 12px; }
+        .segments { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 5px; }
+        .segment { min-height: 54px; padding: 7px 6px; border: 1px solid #c8cec8; border-radius: 5px; background: #fff; color: #4c554e; font-size: 11px; line-height: 1.35; text-align: center; }
+        .segment.selected { border-color: var(--green); background: var(--green); color: #fff; }
+        .detail-section { margin-bottom: 32px; border-top: 3px solid var(--green); padding-top: 14px; }
+        .detail-head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:12px; }
+        .detail-mode { padding: 3px 7px; border-radius: 4px; background:#e9ede9; color:#596159; font-size:11px; font-weight:700; }
+        .professional-list { border-top: 1px solid var(--line); }
+        .professional-row { display:grid; grid-template-columns:minmax(220px,1fr) minmax(260px,.8fr); gap:16px; align-items:center; padding:14px 0; border-bottom:1px solid var(--line); }
+        .professional-row label { font-weight:650; }
+        .professional-row small { display:block; color:var(--muted); margin-top:3px; }
+        .professional-detail { grid-column: 1 / -1; padding: 14px; border-left: 3px solid var(--green); background: #edf2ee; }
+        .professional-detail-title { margin-bottom: 9px; font-size: 13px; font-weight: 750; }
+        .preference-options { display: flex; flex-wrap: wrap; gap: 7px; }
+        .preference-choice { min-height: 38px; padding: 7px 10px; border: 1px solid #b8c3bb; border-radius: 5px; background: #fff; color: #344039; font-size: 13px; }
+        .preference-choice.selected { border-color: var(--green); background: var(--green); color: #fff; }
+        .style-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .style-card { position:relative; overflow:hidden; border:2px solid transparent; border-radius:6px; background:#fff; cursor:pointer; }
+        .style-card img { display:block; width:100%; aspect-ratio:4/3; object-fit:cover; }
+        .style-card span { display:block; min-height:42px; padding:10px 11px; font-size:13px; font-weight:650; }
+        .style-card.selected { border-color:var(--green); }
+        .style-card.selected::after { content:"已选"; position:absolute; top:8px; right:8px; padding:3px 6px; border-radius:4px; background:var(--green); color:#fff; font-size:11px; font-weight:700; }
+        .summary-list { margin:0; padding:0; list-style:none; border-top:1px solid var(--line); }
+        .summary-list li { display:grid; grid-template-columns:130px 1fr; gap:16px; padding:12px 0; border-bottom:1px solid var(--line); }
+        .summary-list strong { color:#4f5750; }
+        .actions { display:flex; gap:12px; margin-top:30px; }
+        .btn { min-height:48px; padding:11px 18px; border:1px solid transparent; border-radius:6px; font-weight:720; }
+        .btn.primary { background:var(--green); color:#fff; }
+        .btn.primary:hover { background:#204d3b; }
+        .btn.secondary { background:#fff; border-color:#bfc6bf; color:#303832; }
+        .btn.secondary:hover { border-color:var(--green); color:var(--green); }
+        .btn.wide { min-width:180px; }
+        .btn:disabled { opacity:.5; cursor:not-allowed; }
+        .error-box { padding:24px; border-top:4px solid var(--clay); background:#fff; }
+        .done-band { padding:32px 0; border-top:4px solid var(--green); }
+        .done-code { display:inline-block; margin:10px 0 22px; padding:6px 9px; border-radius:5px; background:var(--green-soft); color:var(--green); font-weight:750; }
+        .invite-box { margin:22px 0; padding:18px; border:1px solid #bdc8c0; background:#fff; }
+        .invite-url { margin:10px 0; padding:10px; overflow-wrap:anywhere; background:#f1f3f0; color:#365042; font-size:13px; }
+        .finish-box { margin: 22px 0; padding: 18px; border-left: 3px solid var(--gold); background: #f7f2e7; }
+        .finish-box p { margin: 6px 0 14px; color: #635d50; }
+        .customer-report { margin: 38px 0 0; overflow: hidden; border: 1px solid #d5d9d4; border-radius: 6px; background: #fff; box-shadow: 0 12px 34px rgba(30,45,36,.08); }
+        .customer-report-cover { position: relative; padding: 34px 36px 30px; color: #fff; background: #203b31; }
+        .customer-report-cover::after { content:""; position:absolute; right:0; bottom:0; width:34%; height:5px; background:#c99b42; }
+        .customer-report-kicker { margin-bottom: 13px; color: #d8bd7d; font-size: 12px; font-weight: 760; }
+        .customer-report-cover h2 { max-width: 620px; margin: 0; font-size: 29px; color:#fff; }
+        .customer-report-cover p { max-width: 650px; margin: 12px 0 0; color: #dbe5df; }
+        .customer-report-meta { display:flex; gap:18px; flex-wrap:wrap; margin-top:23px; color:#b9cbc2; font-size:12px; }
+        .customer-report-body { padding: 30px 36px 34px; }
+        .customer-report-quote { display:grid; grid-template-columns:150px 1fr; gap:26px; align-items:start; padding: 4px 0 28px; border-bottom:1px solid #e0e4df; }
+        .customer-report-quote span { color:#757d76; font-size:12px; font-weight:700; }
+        .customer-report-quote strong { color:#294b3d; font-size:25px; line-height:1.45; }
+        .customer-report-section { padding: 28px 0; border-bottom: 1px solid #e0e4df; }
+        .customer-report-section:last-child { border-bottom:0; padding-bottom:0; }
+        .customer-report-section h3 { margin-bottom:15px; font-size:17px; }
+        .customer-scene-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap:30px; }
+        .customer-scene { display:grid; grid-template-columns:34px 1fr; gap:11px; min-height:76px; padding:13px 0; border-bottom:1px solid #edf0ed; }
+        .customer-scene-index { display:flex; width:30px; height:30px; align-items:center; justify-content:center; border-radius:50%; background:#e8efe9; color:#2b614b; font-size:12px; font-weight:800; }
+        .customer-scene strong { display: block; font-size: 14px; }
+        .customer-scene span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+        .customer-two-column { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; }
+        .customer-list-block { padding-left:14px; border-left:3px solid #b7863b; }
+        .customer-list-block.boundary { border-color:#a85b45; }
+        .customer-list-block h4 { margin:0 0 9px; font-size:14px; }
+        .customer-list-block ul { margin:0; padding-left:18px; }
+        .customer-list-block li { margin:5px 0; }
+        .report-disclaimer { margin:0; color: var(--muted); font-size: 12px; }
+        .hidden { display:none !important; }
+        @media (max-width: 760px) {
+            .header-inner { grid-template-columns:1fr 88px; padding:10px 15px; }
+            .brand small { display:none; }
+            .progress-track { grid-row:2; grid-column:1/-1; }
+            main { padding:26px 16px 56px; }
+            .hero { min-height:calc(100vh - 92px); margin:-26px -16px 0; padding:32px 20px; }
+            h1 { font-size:29px; }
+            h2 { font-size:23px; }
+            .grid-2, .choices, .choices.three, .style-grid { grid-template-columns:1fr; }
+            .home-summary { grid-template-columns:1fr; }
+            .scan-row { grid-template-columns:1fr; gap:10px; }
+            .segments { grid-template-columns:1fr; }
+            .segment { min-height:42px; text-align:left; padding:10px 12px; }
+            .professional-row { grid-template-columns:1fr; gap:8px; }
+            .style-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .summary-list li { grid-template-columns:1fr; gap:4px; }
+            .customer-report { margin-left:0; margin-right:0; }
+            .customer-report-cover, .customer-report-body { padding:25px 20px; }
+            .customer-report-cover h2 { font-size:24px; }
+            .customer-report-quote { grid-template-columns:1fr; gap:8px; }
+            .customer-report-quote strong { font-size:21px; }
+            .customer-scene-list, .customer-two-column { grid-template-columns:1fr; }
+            .actions { flex-direction:column-reverse; }
+            .btn { width:100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">新家生活需求<small>别墅大宅 · 家庭成员分别填写</small></div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="progress-text" id="progressText">准备开始</div>
+        </div>
+        <nav class="step-nav hidden" id="stepNav" aria-label="填写步骤"></nav>
+    </header>
+    <main>
+        <section class="step active" id="step-loading"><div class="callout">正在确认家庭项目...</div></section>
+        <section class="step" id="step-error"><div class="error-box"><h2>这个家庭需求链接无法使用</h2><p id="errorMessage" class="section-lead"></p></div></section>
+
+        <section class="step" id="step-welcome">
+            <div class="hero">
+                <div class="hero-content">
+                    <div class="hero-kicker">每个人的想法都值得被听见</div>
+                    <h1 id="welcomeTitle">说说您希望未来的家怎么住</h1>
+                    <div class="project-label" id="projectLabel"></div>
+                    <p>不需要懂设计，也不需要替全家统一答案。只要说说自己的生活习惯、期待和不能接受的事，设计师会结合家人的回答继续梳理。</p>
+                    <button class="btn primary wide" type="button" onclick="goNext()">开始填写</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="step" id="step-identity">
+            <h2>先认识一下您</h2>
+            <p class="section-lead">家人可以分别填写。如果儿童、长辈或其他家人不方便操作，也可以由家人陪同或代为填写。</p>
+            <div class="question">
+                <div class="question-title">希望设计师怎样称呼您？ <span class="question-tip">选填</span></div>
+                <input type="text" id="displayName" maxlength="30" placeholder="例如：陈先生、妈妈、小宇；不填也可以继续">
+            </div>
+            <div class="question">
+                <div class="question-title">您在家庭中的身份 <span class="required">必选</span></div>
+                <div class="choices" data-field="role" data-type="radio"></div>
+            </div>
+            <div class="question">
+                <div class="question-title">您的年龄段</div>
+                <div class="choices three" data-field="age_group" data-type="radio"></div>
+            </div>
+            <div class="question">
+                <div class="question-title">在家庭生活中，哪些事情与您有关？</div>
+                <div class="question-tip">用于决定后面重点追问什么，不会直接决定新家要有哪些房间。</div>
+                <div class="choices" data-field="participation" data-type="checkbox"></div>
+            </div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
+        </section>
+
+        <section class="step" id="step-home">
+            <h2>确认这套住宅</h2>
+            <p class="section-lead">这部分只由第一位成员补充一次，后续家人不会重复填写。不确定的专业信息可以留空。</p>
+            <div class="question">
+                <div class="grid-2">
+                    <div class="field"><label>房屋类型 <span class="required">必填</span></label><select id="houseType"><option value="">请选择</option><option>大平层</option><option>复式或跃层</option><option>联排别墅</option><option>独栋别墅</option><option>叠墅</option><option>其他</option></select></div>
+                    <div class="field"><label>所在城市</label><input type="text" id="city" maxlength="30" placeholder="例如：深圳"></div>
+                    <div class="field"><label>建筑面积（㎡）</label><input type="number" id="area" min="1" max="9999" placeholder="不清楚可留空"></div>
+                    <div class="field"><label>室内层数</label><input type="number" id="levels" min="1" max="20" placeholder="例如：3"></div>
+                    <div class="field"><label>目前阶段</label><select id="houseStage"><option value="">请选择</option><option>待交付</option><option>毛坯</option><option>精装调整</option><option>整体翻新</option><option>局部改造</option></select></div>
+                    <div class="field"><label>计划入住时间</label><input type="text" id="moveIn" maxlength="40" placeholder="例如：2027年春节前"></div>
+                </div>
+            </div>
+            <div class="question"><div class="question-title">这套住宅还包含哪些部分？</div><div class="choices three" data-field="home_features" data-type="checkbox"></div></div>
+            <div class="question"><div class="question-title">这套住宅通常会有哪些人住、哪些人偶尔来住？</div><textarea id="householdUse" placeholder="例如：夫妻和两个孩子常住，父母每年来住两个月，有住家保姆，亲友偶尔留宿"></textarea></div>
+            <div class="question"><div class="grid-2">
+                <div class="field"><label>平时在家更接近哪种状态？</label><select id="homeRhythm"><option value="">暂不确定</option><option>大多数时间居家，偏安静</option><option>工作日在家较少</option><option>经常有亲友来访或聚餐</option><option>居家办公或学习时间较多</option><option>家庭成员作息差异较大</option></select></div>
+                <div class="field"><label>客人留宿通常怎么安排？</label><select id="guestStay"><option value="">暂不确定</option><option>基本不留宿</option><option>偶尔留宿，可用多功能空间</option><option>经常留宿，希望有固定客房</option><option>父母或长辈会阶段性长住</option></select></div>
+            </div></div>
+            <div class="question"><div class="question-title">未来3至5年，家庭可能发生哪些变化？</div><textarea id="futureChanges" placeholder="例如：孩子进入中学、老人可能阶段性同住、计划增加家政人员"></textarea></div>
+            <div class="question"><div class="question-title">目前怎样考虑整体投入？</div><div class="choices" data-field="budget_status" data-type="radio"></div><input type="text" id="budgetRange" style="margin-top:12px;" placeholder="已明确范围时可补充，选填"></div>
+            <div class="question"><div class="grid-2">
+                <div class="field"><label>有没有必须赶上的入住或工期节点？</label><input type="text" id="scheduleConstraints" placeholder="例如：孩子开学前、春节前；没有可留空"></div>
+                <div class="field"><label>家庭里谁更关注审美、投入和设备？</label><input type="text" id="decisionRoles" placeholder="例如：两人共同决定，先生关注设备，女士关注审美"></div>
+                <div class="field"><label>对装修推进方式有什么倾向？</label><select id="processPreference"><option value="">暂不确定</option><option>先完成整体设计，再进入施工落地</option><option>先明确核心空间，其他边深化边确认</option><option>希望设计师解释不同方式后再决定</option></select></div>
+            </div></div>
+            <div class="question"><div class="question-title">已知的物业、结构或设备限制</div><textarea id="knownLimits" placeholder="不确定可以留空，后续请设计师或专业人员核对"></textarea></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
+        </section>
+
+        <section class="step" id="step-vision">
+            <h2>先谈未来想怎样生活</h2>
+            <p class="section-lead">空间功能还没有确定，先不选择厨房、书房或影音室。设计师需要先知道哪些生活值得被支持。</p>
+            <div class="question"><div class="question-title">想象已经住进新家，最希望自己的一天和现在有什么不同？</div><textarea id="futureDay" placeholder="可以从早晨、回家、家人相处、独处、家务或睡眠说起"></textarea></div>
+            <div class="question"><div class="question-title">新家最重要的感受是什么？ <span class="required">至少1项，最多3项</span></div><div class="choices three" data-field="feelings" data-type="checkbox" data-max="3"></div></div>
+            <div class="question"><div class="question-title">现在很少发生，但希望在新家经常发生的生活</div><div class="choices" data-field="future_activities" data-type="checkbox"></div><textarea id="futureActivityOther" style="margin-top:12px;" placeholder="其他希望增加的生活，选填"></textarea></div>
+            <div class="question"><div class="question-title">过去住过的房子里，哪些体验绝不能在新家再次发生？ <span class="required">最多3项</span></div><div class="question-tip">新房项目不再追问旧房细节；翻新项目仅在相关问题触发后留给设计师继续核对。</div><div class="choices" data-field="boundaries" data-type="checkbox" data-max="3"></div><textarea id="boundaryOther" style="margin-top:12px;" placeholder="其他不可重复的体验，选填"></textarea></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
+        </section>
+
+        <section class="step" id="step-scan">
+            <h2>快速看一遍自己的生活</h2>
+            <p class="section-lead">每项只需做一次判断。与您关系不大的内容会自动跳过；还没想过也可以如实选择。</p>
+            <div class="scan-list" id="scanList"></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">按我的选择继续</button></div>
+        </section>
+
+        <section class="step" id="step-details">
+            <h2>把重要生活说清楚</h2>
+            <p class="section-lead">以下内容由刚才的选择自动生成。请说生活事实和真实感受，不需要替设计师给出空间方案。</p>
+            <div id="detailList"></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
+        </section>
+
+        <section class="step" id="step-professional">
+            <h2>已经明确的设计与设备偏好</h2>
+            <p class="section-lead">这一页全部选填。它只记录您已经知道的偏好和想了解的方向，不会自动形成设备选型、结构改造或最终设计结论。</p>
+            <div class="callout">涉及结构、机电、消防、门窗、外立面、地下室防潮、暖通容量和物业限制，请设计师或对应专业人员结合现场条件核对。</div>
+            <div class="professional-list" id="professionalList"></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
+        </section>
+
+        <section class="step" id="step-style">
+            <h2>视觉感受偏好</h2>
+            <p class="section-lead">这不是让您现在确定最终风格。可选1至3个看着舒服的方向，也可以直接跳过，留给后续沟通。</p>
+            <div class="style-grid" id="styleGrid"></div>
+            <div class="question"><div class="grid-2">
+                <div class="field"><label>表面质感偏好（选填）</label><select id="surfaceFinish"><option value="">暂不确定</option><option>哑光、克制</option><option>柔光、温润</option><option>亮面、明亮大气</option><option>不同区域分别处理</option></select></div>
+                <div class="field"><label>木作颜色偏好（选填）</label><select id="woodTone"><option value="">暂不确定</option><option>纯白</option><option>浅灰</option><option>浅木色</option><option>中木色</option><option>黑胡桃</option><option>深色木作</option></select></div>
+                <div class="field"><label>对造型时效的态度（选填）</label><select id="lastingPreference"><option value="">暂不确定</option><option>尽量简洁耐看，避免短期流行造型</option><option>可以有少量有识别度的造型</option><option>喜欢强个性和戏剧感</option></select></div>
+                <div class="field"><label>明确不希望出现的视觉方向（选填）</label><select id="styleAvoid"><option value="">暂时没有</option></select></div>
+            </div></div>
+            <div class="question"><div class="question-title">还有哪些明确不喜欢的材质、造型或布局？</div><textarea id="styleAvoidDetails" placeholder="例如：不接受复杂吊顶、笨重茶几、大面积亮面石材或外露电线"></textarea></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
+        </section>
+
+        <section class="step" id="step-final">
+            <h2>确认您最重要的表达</h2>
+            <p class="section-lead">提交后，设计师会在家庭汇总中看到您的个人需求；其他家庭成员不会看到您的具体答案或家庭分歧。</p>
+            <div class="question"><div class="question-title">最希望新家实现的三件事 <span class="required">至少1项，最多3项</span></div><div class="choices" id="priorityChoices" data-field="priorities" data-type="checkbox" data-max="3"></div></div>
+            <div class="question"><div class="question-title">最不能妥协的一件事</div><textarea id="nonNegotiable" placeholder="例如：睡觉时不能被公共活动的声音打扰"></textarea></div>
+            <div class="question"><div class="question-title">希望设计师进一步解释或核对什么？</div><textarea id="designerQuestions" placeholder="可以写设备、生活取舍、家庭分歧或不确定的专业问题"></textarea></div>
+            <div class="question"><div class="question-title">其他补充</div><textarea id="finalNotes" placeholder="任何没有被前面问题覆盖、但对您很重要的内容"></textarea></div>
+            <div class="question"><h3>提交前摘要</h3><ul class="summary-list" id="memberSummary"></ul></div>
+            <div class="actions"><button class="btn secondary" onclick="goBack()">返回修改</button><button class="btn primary wide" id="submitBtn" onclick="submitMember()">提交个人需求</button></div>
+        </section>
+
+        <section class="step" id="step-done">
+            <div class="done-band">
+                <h2 id="doneTitle">您的个人需求已加入这个家</h2>
+                <div class="done-code" id="doneCode"></div>
+                <p class="section-lead" id="doneLead">这份内容只代表您的表达，不会直接当成全家的统一答案。</p>
+                <div class="invite-box" id="inviteBox">
+                    <h3>邀请其他家庭成员分别填写</h3>
+                    <p>请把下面同一个家庭链接发给伴侣、孩子、长辈或家政照护人员。每个人进入后选择自己的身份即可。</p>
+                    <div class="invite-url" id="inviteUrl"></div>
+                    <button class="btn primary" type="button" onclick="copyInvite()">复制家庭邀请链接</button>
+                    <span id="copyStatus" style="margin-left:10px;color:var(--green);font-size:13px;"></span>
+                </div>
+                <div class="finish-box" id="finishBox">
+                    <h3>全家都填完了吗？</h3>
+                    <p>确认所有需要参与的家人都已提交后，再结束家庭填写并生成设计师汇总。</p>
+                    <button class="btn primary" id="completeFamilyBtn" type="button" onclick="completeFamily()">家人都填完了，生成家庭汇总</button>
+                </div>
+                <div class="finish-box hidden" id="familyCompleteBox">
+                    <h3>家庭汇总已经生成</h3>
+                    <p>设计师会看到完整需求、逐场景设计输入、明确不要、待解释和待专业核对事项。</p>
+                </div>
+                <section class="customer-report hidden" id="customerReport"><div id="customerReportContent"><div class="callout">正在生成家庭简报...</div></div></section>
+                <button class="btn secondary" id="anotherMemberBtn" type="button" onclick="startAnotherMember()">在这台设备上填写另一位成员</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const projectToken = location.pathname.split('/').filter(Boolean)[1] || '';
+        const draftKey = `family_survey_${projectToken}`;
+        const memberKey = `family_member_${projectToken}`;
+        const completedKey = `family_completed_${projectToken}`;
+        const steps = ['welcome','identity','home','vision','scan','details','professional','style','final','done'];
+        let currentStep = 'loading';
+        let project = null;
+        let includeHomeStep = false;
+        let activeRecognition = null;
+        let state = {
+            identity:{display_name:'',role:'',age_group:'',answer_source:'未单独询问'},
+            participation:[], home_profile:{},
+            vision:{future_day:'',feelings:[],future_activities:[],future_activity_other:'',boundaries:[],boundary_other:''},
+            scene_scan:{}, scene_details:{}, professional:{}, styles:{liked:[],avoid:'',surface_finish:'',wood_tone:'',lasting_preference:'',avoid_details:''},
+            final:{priorities:[],non_negotiable:'',designer_questions:'',notes:''},
+            meta:{max_reached:0}
+        };
+
+        const optionSets = {
+            role:['业主本人','伴侣','爷爷、奶奶、外公或外婆','儿子','女儿','其他家庭成员','保姆、家政或照护人员'],
+            age_group:['儿童','青少年','18至35岁','36至55岁','56至70岁','70岁以上'],
+            participation:['经常做饭或准备饮品','负责采购、囤货或餐厨收纳','负责洗衣、晾晒或衣物整理','负责日常清洁和家务','照顾孩子','照顾老人或行动不便者','居家办公','在家学习','经常招待亲友','在家运动','观影、游戏或K歌','喝茶、阅读、收藏或艺术创作','照顾宠物','使用庭院、地下室、车库或户外装备','主要关注自己的起居、睡眠和个人物品'],
+            home_features:['地下室','庭院','露台','阁楼','车库','室内电梯','户外泳池或水景','独立家政区域','暂不清楚'],
+            budget_status:['投入范围已经明确','正在比较和评估','希望设计师结合需求重点帮助梳理','暂时不讨论投入范围'],
+            feelings:['放松','安静','通透','整洁','温暖','有陪伴感','有个人空间','适合社交','有品质和审美','安全健康'],
+            future_activities:['家人更常一起吃饭','更从容地做饭和准备饮品','在家安静工作或学习','规律运动','在家招待朋友','喝茶、阅读或创作','更好地照顾老人孩子','更轻松地完成家务','使用庭院或户外空间','享受影音、游戏或收藏'],
+            boundaries:['收纳混乱','做饭不顺手','卫生间互相等待','睡眠被打扰','家务路线麻烦','采光或灯光不舒服','温湿度或空气不舒服','噪音或隐私问题','家人不同活动互相干扰','上下楼或搬运不方便','没有特别需要避免的体验']
+        };
+
+        const ratings = ['经常参与，而且很重要','偶尔参与，但有明确想法','不直接参与，但结果会影响我','与我关系不大','还没想过'];
+        const ratingShort = ['经常参与\n而且重要','偶尔参与\n有明确想法','不直接参与\n但会受影响','与我\n关系不大','还没想过'];
+        const scenes = [
+            {id:'kitchen',name:'餐厨茶饮',desc:'做饭、吃饭、茶饮和家庭聚会',needs:['日常做饭','中式爆炒','多人一起准备','早餐与简餐','烘焙或西餐','茶、咖啡或酒水','经常聚餐','采购囤货','餐后清洁']},
+            {id:'bathroom',name:'卫浴漱妆',desc:'洗漱、如厕、沐浴和梳妆',needs:['早晚使用高峰','多人同时准备','洗漱与如厕分开','泡澡放松','护肤梳妆','儿童或老人安全','水温水压','潮湿与异味','卫浴收纳']},
+            {id:'sleep',name:'健康睡眠',desc:'睡眠、夜间起居和个人放松',needs:['浅眠或易醒','作息时间不同','怕光','怕噪音','对冷热敏感','夜间起身','睡前阅读','卧室饮水','个人独处']},
+            {id:'laundry',name:'衣物洗护',desc:'洗、烘、晾、熨、整理和换季',needs:['高频洗衣','烘干','自然晾晒','床品和大件晾晒','手洗','熨烫护理','脏衣分类','净衣暂存','换季衣物','清洁工具与耗材','家政协作']},
+            {id:'storage',name:'智慧收纳',desc:'进门、日用品、个人物品和全屋秩序',needs:['入户随手物品','鞋子与雨季物品较多','家庭囤货','个人衣物','行李箱','清洁工具','运动或户外装备','收藏展示','儿童物品','藏与露的平衡']},
+            {id:'learning',name:'学习成长',desc:'办公、学习、阅读和孩子成长',needs:['居家办公','视频会议','儿童学习','阅读','乐器练习','绘画手作','电竞','大量书籍资料','安静与隐私']},
+            {id:'fitness',name:'家庭健身',desc:'日常运动、器械和运动后整理',needs:['瑜伽拉伸','力量训练','有氧器械','球类练习','舞蹈','康复训练','器械收纳','减震隔音','运动后沐浴']},
+            {id:'entertainment',name:'居家娱乐',desc:'观影、游戏、会客和兴趣展示',needs:['家庭观影','游戏','K歌','亲友会客','儿童活动','个人娱乐','收藏展示','家庭共处','声音不打扰他人']},
+            {id:'environment',name:'环境优化',desc:'空气、水、温度、灯光、智能和安防',needs:['空气质量','除湿防潮','冬季采暖','夏季制冷','生活热水','饮水品质','灯光舒适','落地窗与视野','隐私与遮阳','网络稳定','智能控制','安全守护','安静环境']},
+            {id:'special',name:'特殊生活',desc:'婴幼儿、老人、宠物、庭院、车库等扩展',needs:['备孕或婴幼儿','儿童成长空间','老人同住','行动不便','客人留宿','保姆或家政人员同住','家庭厅或亲子共处','宠物','户外装备','藏品或艺术创作','高频出差','庭院生活','地下室使用','阁楼或露台','车辆与充电','室内电梯','大件搬运']}
+        ];
+
+        const professionalDirections = {
+            kitchen:['开放、半开放或可开可合餐厨','中厨与轻食区的关系','岛台、水吧或早餐台','嵌入式厨电与设备位','餐桌形式与聚餐人数','厨房台面、插座与小家电收纳'],
+            bathroom:['双台盆或多人并行洗漱','浴缸与独立淋浴','智能马桶','卫浴干湿和功能分区'],
+            sleep:['主卧套房功能与氛围','衣帽与睡眠区域关系','主卧饮水或小冰箱','独立梳妆','遮光、隔音与睡眠环境'],
+            laundry:['洗烘设备组合','独立家政或洗衣区域','自然晾晒位置','衣物护理和熨烫设备','阳台、家事与休闲关系','家政工具、耗材与清洁设备'],
+            storage:['入户收纳系统','通顶柜与藏露比例','独立储藏或家政库房','大件与换季物品收纳','衣柜内部收纳结构'],
+            learning:['独立书房或共享学习区','儿童成长型学习位置','儿童房与多功能房布局','乐器或创作位置','网络、视频会议与隔音'],
+            fitness:['独立健身区域','大型器械位置','地面减震和隔音','通风与运动后路线'],
+            entertainment:['客厅格局与主要氛围','客厅茶几、吊顶与电视背景','电视、投影或专业影音','游戏、K歌与背景音乐','独立会客或茶饮方向','收藏展示与防尘避光'],
+            environment:['灯光层次、落地窗与窗帘','中央空调或分区空调','采暖系统','新风与除湿','净水、软水与直饮','全屋智能与网络','全屋设备嵌入与外露边界','安防与异常提醒'],
+            special:['客房、保姆房与家庭厅','地下室功能与声学','地下室防潮与通风','庭院、门窗或外立面','阁楼与露台用途','车库与车辆充电','室内电梯','宠物生活设施','老人儿童安全辅助']
+        };
+        const professionalStatuses = [
+            {value:'',label:'暂不表达'},
+            {value:'已经明确想要',label:'明确想要'},
+            {value:'想了解，请设计师解释',label:'想先了解，请设计师解释'},
+            {value:'没有明确想法，请设计师判断',label:'还不确定，请设计师判断'},
+            {value:'明确不考虑',label:'明确不考虑'}
+        ];
+        const professionalOptions = {
+            '开放、半开放或可开可合餐厨': {multiple:false, options:['开放式厨房','半开放式厨房','可开可合厨房','中厨封闭、轻食区开放']},
+            '中厨与轻食区的关系': {multiple:false, options:['只有中厨','中厨加轻食区','中厨加西厨','中厨加水吧或早餐区']},
+            '岛台、水吧或早餐台': {multiple:true, options:['岛台','水吧','早餐台','餐桌与岛台结合']},
+            '嵌入式厨电与设备位': {multiple:true, options:['蒸箱','烤箱','洗碗机','直饮机','制冰机','咖啡机','破壁机或小家电','嵌入式冰箱或冰柜'], detailPlaceholder:'可补充设备品牌、数量或已知尺寸'},
+            '餐桌形式与聚餐人数': {multiple:false, options:['圆桌','长桌','可伸缩餐桌','餐桌与岛台结合'], detailPlaceholder:'请补充日常用餐人数和最大聚餐人数'},
+            '厨房台面、插座与小家电收纳': {multiple:true, options:['台面尽量少放物品','增加操作台面','小家电集中收纳','增加插座和独立回路','食品或餐边高柜扩容']},
+            '双台盆或多人并行洗漱': {multiple:false, options:['双台盆','加长单台盆','分开设置洗漱位置']},
+            '浴缸与独立淋浴': {multiple:true, options:['独立浴缸','淋浴房','浴缸与淋浴都要']},
+            '智能马桶': {multiple:false, options:['智能马桶一体机','普通马桶加智能盖板','只预留电源条件']},
+            '卫浴干湿和功能分区': {multiple:true, options:['干湿分离','洗漱与如厕分开','淋浴与浴缸分开','多人可同时使用']},
+            '主卧套房功能与氛围': {multiple:true, options:['独立衣帽间','独立梳妆区','休息沙发或阅读角','主卧套房完整分区','酒店式克制','温馨居家','轻奢精致']},
+            '阳台、家事与休闲关系': {multiple:true, options:['阳台并入客厅、做大通铺','保留独立生活阳台','隐藏家政柜','隐形晾衣架','茶饮休闲','绿植','阅读或躺卧','强调落地窗视野','减少窗框遮挡']},
+            '家政工具、耗材与清洁设备': {multiple:true, options:['清洁工具高柜','耗材分类收纳','扫地机器人基站','洗地机或吸尘器位','设备充电','清洁设备上下水']},
+            '入户收纳系统': {multiple:true, options:['独立玄关','落尘区','坐换鞋凳','超大鞋柜','雨具和雨季杂物','钥匙包袋随手台','隐藏全身镜或仪容镜','消杀区','进门视线不见杂乱'], detailPlaceholder:'可补充家庭鞋量、婴儿车或常带出门物品'},
+            '通顶柜与藏露比例': {multiple:true, options:['全屋通顶高柜','杂物尽量隐藏','保留开放展示','隐藏插座和电线','设备尽量不外露','扫地机器人基站隐藏']},
+            '大件与换季物品收纳': {multiple:true, options:['行李箱','换季衣物和被褥','运动器材','户外装备','儿童大件','零食和家庭囤货']},
+            '衣柜内部收纳结构': {multiple:true, options:['挂衣为主','叠放为主','包袋展示','首饰和配饰','被褥和换季衣物','双人分区']},
+            '独立书房或共享学习区': {multiple:true, options:['独立书房','共享书房','长期居家办公','视频会议或直播','阅读区','茶室','收藏展示']},
+            '儿童房与多功能房布局': {multiple:true, options:['常规床加独立书桌','榻榻米多功能','成长型儿童房','隐形床或临时客房','书房兼客房','茶室或兴趣房一房多用']},
+            '客厅格局与主要氛围': {multiple:true, options:['横厅大通透','传统竖厅','客餐厅打通','商务会客感','慵懒居家感','亲子互动感','多场景灵活切换']},
+            '客厅茶几、吊顶与电视背景': {multiple:true, options:['轻便茶几或无茶几','简洁吊顶','减少复杂造型','极简隐形电视背景','无电视柜','悬浮电视柜','整墙收纳电视墙','石材大气电视墙']},
+            '电视、投影或专业影音': {multiple:true, options:['电视','投影','电视加投影','独立影音系统']},
+            '游戏、K歌与背景音乐': {multiple:true, options:['游戏主机或电脑','K歌','全屋背景音乐','隐藏式或嵌入式音响','低音炮','专业影K一体']},
+            '灯光层次、落地窗与窗帘': {multiple:true, options:['纯白明亮','中性克制','暖深氛围','无主灯','磁吸轨道灯','线性灯','防眩射灯','极简窗帘盒','强调落地窗视野','加强遮阳和隐私']},
+            '中央空调或分区空调': {multiple:false, options:['中央空调','分体空调','不同区域分别选择','请专业人员比较后判断'], detailPlaceholder:'有明确品牌、噪声或温控偏好可补充'},
+            '采暖系统': {multiple:true, options:['地暖','暖气片','热泵或空调采暖','局部采暖'], detailPlaceholder:'有明确品牌、能源或温度偏好可补充'},
+            '新风与除湿': {multiple:true, options:['全屋新风','独立除湿','新风加除湿','地下室专项除湿'], detailPlaceholder:'有明确品牌、空气指标或维护偏好可补充'},
+            '净水、软水与直饮': {multiple:true, options:['前置过滤','中央净水','软水','直饮水','分区饮水'], detailPlaceholder:'有明确品牌、水质或维护偏好可补充'},
+            '全屋智能与网络': {multiple:true, options:['回家模式','离家模式','观影模式','睡眠模式','就餐模式','灯光控制','窗帘控制','温控联动','全屋网络','语音控制']},
+            '全屋设备嵌入与外露边界': {multiple:true, options:['家电尽量内嵌或平齐','设备和电线尽量隐藏','保留便于检修的明装位置','插座尽量不裸露','柜体统一设备界面']},
+            '安防与异常提醒': {multiple:true, options:['监控','门禁','入侵报警','燃气或漏水报警','庭院灯光联动','老人儿童异常提醒']},
+            '客房、保姆房与家庭厅': {multiple:true, options:['固定客房','临时多功能客房','保姆房','家政专属收纳','独立家政或佣人动线','一楼老人房','二楼家庭厅','亲子互动或阅读区']},
+            '地下室功能与声学': {multiple:true, options:['影音室','KTV','茶室','酒窖','台球室','健身房','书房','储物间或工具间','采光井与灯光升级','专业隔音吸音']},
+            '庭院、门窗或外立面': {multiple:true, options:['庭院硬化','凉亭','水系','草坪','种菜区','户外洗手池','户外插座','庭院氛围灯','门窗更换','外立面局部改造'], detailPlaceholder:'可补充庭院活动、养护方式或物业限制'},
+            '阁楼与露台用途': {multiple:true, options:['储物','休闲','露台茶室','绿植种植','儿童或宠物活动','户外会客']},
+            '车库与车辆充电': {multiple:true, options:['燃油车位','新能源充电','多车位','洗车或工具收纳']},
+            '室内电梯': {multiple:false, options:['明确需要','只预留条件','现阶段不安装']},
+            '宠物生活设施': {multiple:true, options:['宠物进出动线','喂养区','用品收纳','宠物洗护区','如厕区','人与宠物活动边界']},
+            '老人儿童安全辅助': {multiple:true, options:['老人同层起居','少高差或无障碍','扶手预留','夜间感应灯','儿童防护','低位可取收纳']}
+        };
+        const styles = [
+            ['现代明亮','s01-modern-light.png'],['现代中古','s02-modern-midcentury.png'],['现代深色','s03-modern-dark.png'],['黑白极简','s04-modern-minimal-bw.png'],['中古奶油','s05-midcentury-cream.png'],['新中式经典','s06-new-chinese-classic.png'],['新中式宋韵','s07-new-chinese-song.png'],['奶油现代','s08-cream-modern.png'],['奶油法式','s09-cream-french.png'],['轻奢艺术','s10-art-luxury.png'],['轻奢现代','s11-modern-luxury.png'],['包豪斯','s12-bauhaus.png'],['艺术极简','s13-artistic-minimal.png']
+        ];
+
+        const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+        const activeStepList = () => steps.filter(step => step !== 'home' || includeHomeStep);
+        const stepLabels = {identity:'家庭成员',home:'这套住宅',vision:'未来生活',scan:'生活扫描',details:'重点追问',professional:'设计偏好',style:'视觉感受',final:'提交确认'};
+
+        async function init() {
+            if (!projectToken) return showError('缺少家庭项目编号。请使用后台生成的家庭需求链接进入。');
+            try {
+                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '项目读取失败');
+                project = data.project;
+                includeHomeStep = project.needs_home_profile;
+                restoreDraft();
+                renderStaticOptions();
+                renderProject();
+                renderScan();
+                renderStyles();
+                attachVoiceInputs(document);
+                if (project.status === 'ready_for_review') {
+                    showFamilyComplete();
+                    return;
+                }
+                let completed = null;
+                try { completed = JSON.parse(localStorage.getItem(completedKey) || 'null'); } catch (_) {}
+                if (completed) {
+                    document.getElementById('doneCode').textContent = `成员记录 #${completed.member_id}`;
+                    document.getElementById('inviteUrl').textContent = completed.invite_url;
+                    window.familyInviteUrl = completed.invite_url;
+                    showStep('done');
+                    return;
+                }
+                showStep('welcome');
+            } catch (error) { showError(error.message); }
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-error').classList.add('active');
+            document.getElementById('progressText').textContent = '链接不可用';
+        }
+
+        function renderProject() {
+            document.getElementById('welcomeTitle').textContent = '说说您希望未来的家怎么住';
+            document.getElementById('projectLabel').textContent = `本次填写：${project.home_name}`;
+            if (!includeHomeStep && project.home_profile) {
+                const p = project.home_profile;
+                const summary = [p.house_type,p.city,p.area ? `${p.area}㎡` : '',p.levels ? `${p.levels}层` : ''].filter(Boolean).join(' · ');
+                if (summary) document.getElementById('projectLabel').textContent += ` · ${summary}`;
+            }
+        }
+
+        function renderStaticOptions() {
+            document.querySelectorAll('[data-field][data-type]').forEach(container => {
+                const field = container.dataset.field;
+                if (field === 'priorities') return;
+                const values = optionSets[field] || [];
+                container.innerHTML = values.map(value => choiceHtml(field,value,container.dataset.type)).join('');
+            });
+            document.querySelectorAll('.choice').forEach(el => el.addEventListener('click', event => {
+                event.preventDefault();
+                handleChoice(el);
+            }));
+            syncAllChoices();
+        }
+
+        function choiceHtml(field, value, type='checkbox') {
+            return `<label class="choice ${type === 'checkbox' ? 'checkbox' : ''}" data-choice-field="${esc(field)}" data-choice-value="${esc(value)}"><input type="${type}" tabindex="-1"><span class="choice-mark"></span><span class="choice-copy">${esc(value)}</span></label>`;
+        }
+
+        function fieldTarget(field) {
+            if (['role','age_group'].includes(field)) return state.identity;
+            if (field === 'participation') return state;
+            if (['home_features','budget_status'].includes(field)) return state.home_profile;
+            if (['feelings','future_activities','boundaries'].includes(field)) return state.vision;
+            if (field === 'priorities') return state.final;
+            return state;
+        }
+
+        function handleChoice(el) {
+            const field = el.dataset.choiceField;
+            const value = el.dataset.choiceValue;
+            const container = el.parentElement;
+            const type = container.dataset.type;
+            const target = fieldTarget(field);
+            if (type === 'radio') {
+                target[field] = target[field] === value ? '' : value;
+            } else {
+                let current = Array.isArray(target[field]) ? [...target[field]] : [];
+                const index = current.indexOf(value);
+                if (index >= 0) current.splice(index,1);
+                else {
+                    if (field === 'boundaries') {
+                        if (value === '没有特别需要避免的体验') current = [];
+                        else current = current.filter(item => item !== '没有特别需要避免的体验');
+                    }
+                    const max = Number(container.dataset.max || 0);
+                    if (max && current.length >= max) { alert(`最多选择${max}项`); return; }
+                    current.push(value);
+                }
+                target[field] = current;
+            }
+            syncChoices(container);
+            if (field === 'priorities') renderMemberSummary();
+            saveDraft();
+        }
+
+        function syncChoices(container) {
+            container.querySelectorAll('.choice').forEach(el => {
+                const field = el.dataset.choiceField;
+                const target = fieldTarget(field);
+                const value = el.dataset.choiceValue;
+                const selected = Array.isArray(target[field]) ? target[field].includes(value) : target[field] === value;
+                el.classList.toggle('selected', selected);
+            });
+        }
+        function syncAllChoices() { document.querySelectorAll('[data-field][data-type]').forEach(syncChoices); }
+
+        function renderScan() {
+            document.getElementById('scanList').innerHTML = scenes.map(scene => `<div class="scan-row"><div><div class="scene-name">${scene.name}</div><div class="scene-desc">${scene.desc}</div></div><div class="segments">${ratings.map((rating,index) => `<button type="button" class="segment ${state.scene_scan[scene.id] === rating ? 'selected' : ''}" data-scene="${scene.id}" data-rating="${rating}">${ratingShort[index].replace('\n','<br>')}</button>`).join('')}</div></div>`).join('');
+            document.querySelectorAll('.segment').forEach(button => button.addEventListener('click', () => {
+                state.scene_scan[button.dataset.scene] = button.dataset.rating;
+                renderScan(); saveDraft();
+            }));
+        }
+
+        function renderDetails() {
+            const active = scenes.filter(scene => ['经常参与，而且很重要','偶尔参与，但有明确想法','不直接参与，但结果会影响我'].includes(state.scene_scan[scene.id]));
+            const container = document.getElementById('detailList');
+            if (!active.length) { container.innerHTML = '<div class="callout">您没有选择需要展开的场景，可以直接继续。设计师会保留“还没想过”的项目，后续再提醒。</div>'; return; }
+            container.innerHTML = active.map(scene => {
+                const rating = state.scene_scan[scene.id];
+                const savedDetail = state.scene_details[scene.id] || {};
+                const detail = {needs:[],note:'',impact:'',want:'',avoid:'',...savedDetail};
+                detail.needs = Array.isArray(detail.needs) ? detail.needs : [];
+                state.scene_details[scene.id] = detail;
+                const impactOnly = rating === '不直接参与，但结果会影响我';
+                const outcomeFields = `<div class="grid-2" style="margin-top:14px;"><div class="field"><label>在这项生活里，您明确希望新家做到什么？（选填）</label><textarea data-detail-scene="${scene.id}" data-detail-field="want" placeholder="写结果和体验即可，不需要给设计方案">${esc(detail.want)}</textarea></div><div class="field"><label>有什么明确不想要或不能接受？（选填）</label><textarea data-detail-scene="${scene.id}" data-detail-field="avoid" placeholder="例如不接受互相打扰、台面长期杂乱">${esc(detail.avoid)}</textarea></div></div>`;
+                return `<section class="detail-section"><div class="detail-head"><div><h3>${scene.name}</h3><div class="scene-desc">${scene.desc}</div></div><span class="detail-mode">${impactOnly ? '只问影响与边界' : rating === '经常参与，而且很重要' ? '完整追问' : '精简追问'}</span></div>
+                    ${impactOnly ? `<div class="field"><label>这项生活会怎样影响您的安静、隐私、安全、动线或相处？</label><textarea data-detail-scene="${scene.id}" data-detail-field="impact" placeholder="只写与自己有关的影响">${esc(detail.impact)}</textarea></div>` : `<div class="question-tip">哪些内容最接近您的真实生活？可多选。</div><div class="choices three detail-needs" data-detail-scene="${scene.id}">${scene.needs.map(need => `<label class="choice checkbox ${detail.needs.includes(need) ? 'selected' : ''}" data-detail-need="${esc(need)}"><span class="choice-mark"></span><span class="choice-copy">${esc(need)}</span></label>`).join('')}</div><div class="field" style="margin-top:12px;"><label>还有什么频率、习惯、冲突或边界需要设计师知道？</label><textarea data-detail-scene="${scene.id}" data-detail-field="note" placeholder="例如谁使用、多久一次、与谁互相影响">${esc(detail.note)}</textarea></div>`}${outcomeFields}</section>`;
+            }).join('');
+            container.querySelectorAll('[data-detail-need]').forEach(el => el.addEventListener('click', () => {
+                const sceneId = el.parentElement.dataset.detailScene;
+                const list = state.scene_details[sceneId].needs;
+                const value = el.dataset.detailNeed;
+                const index = list.indexOf(value);
+                if (index >= 0) list.splice(index,1); else list.push(value);
+                el.classList.toggle('selected', list.includes(value)); saveDraft();
+            }));
+            container.querySelectorAll('[data-detail-field]').forEach(el => el.addEventListener('input', () => {
+                state.scene_details[el.dataset.detailScene][el.dataset.detailField] = el.value; saveDraft();
+            }));
+            attachVoiceInputs(container);
+        }
+
+        function attachVoiceInputs(root) {
+            const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!Recognition) return;
+            root.querySelectorAll('textarea:not([data-voice-ready])').forEach(textarea => {
+                textarea.dataset.voiceReady = '1';
+                const tools = document.createElement('div');
+                tools.className = 'voice-tools';
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'voice-btn';
+                button.textContent = '语音输入';
+                button.setAttribute('aria-label', '开始语音输入');
+                button.addEventListener('click', () => toggleVoiceInput(textarea, button, Recognition));
+                tools.appendChild(button);
+                textarea.insertAdjacentElement('afterend', tools);
+            });
+        }
+
+        function toggleVoiceInput(textarea, button, Recognition) {
+            if (activeRecognition) {
+                activeRecognition.stop();
+                return;
+            }
+            const recognition = new Recognition();
+            const original = textarea.value.trim();
+            recognition.lang = 'zh-CN';
+            recognition.interimResults = true;
+            recognition.continuous = false;
+            activeRecognition = recognition;
+            button.classList.add('listening');
+            button.textContent = '正在听，再点一次结束';
+            recognition.onresult = event => {
+                let transcript = '';
+                for (let index = event.resultIndex; index < event.results.length; index += 1) {
+                    transcript += event.results[index][0].transcript;
+                }
+                textarea.value = [original, transcript.trim()].filter(Boolean).join(original ? '\n' : '');
+                textarea.dispatchEvent(new Event('input', {bubbles: true}));
+            };
+            recognition.onerror = event => {
+                if (!['aborted', 'no-speech'].includes(event.error)) alert('当前语音输入未能启动，请检查麦克风权限，或使用系统键盘语音。');
+            };
+            recognition.onend = () => {
+                activeRecognition = null;
+                button.classList.remove('listening');
+                button.textContent = '语音输入';
+            };
+            recognition.start();
+        }
+
+        function renderProfessional() {
+            const selectedScenes = scenes.filter(scene => ['经常参与，而且很重要','偶尔参与，但有明确想法'].includes(state.scene_scan[scene.id]));
+            const rows = [];
+            selectedScenes.forEach(scene => (professionalDirections[scene.id] || []).forEach((label,index) => {
+                const key = `${scene.id}_${index}`;
+                const current = state.professional[key] || {};
+                const detail = professionalDetailHtml(key, label, current);
+                rows.push(`<div class="professional-row"><label>${esc(label)}<small>${scene.name} · 先说明态度，明确想要时再选具体形式</small></label><select data-professional-key="${key}" data-professional-label="${esc(label)}">${professionalStatuses.map(status => `<option value="${esc(status.value)}" ${status.value === (current.status || '') ? 'selected' : ''}>${esc(status.label)}</option>`).join('')}</select>${detail}</div>`);
+            }));
+            const container = document.getElementById('professionalList');
+            container.innerHTML = rows.length ? rows.join('') : '<div class="callout">当前没有需要展开的专业方向，可以直接继续。</div>';
+            container.querySelectorAll('[data-professional-key]').forEach(select => select.addEventListener('change', () => {
+                if (!select.value) delete state.professional[select.dataset.professionalKey];
+                else state.professional[select.dataset.professionalKey] = {
+                    ...(state.professional[select.dataset.professionalKey] || {}),
+                    label:select.dataset.professionalLabel,
+                    status:select.value
+                };
+                saveDraft();
+                renderProfessional();
+            }));
+            container.querySelectorAll('[data-preference-choice]').forEach(button => button.addEventListener('click', () => {
+                const key = button.dataset.professionalKey;
+                const value = button.dataset.preferenceChoice;
+                const config = professionalOptions[state.professional[key].label] || {multiple:true};
+                const selections = Array.isArray(state.professional[key].selections) ? [...state.professional[key].selections] : [];
+                if (config.multiple) {
+                    const index = selections.indexOf(value);
+                    if (index >= 0) selections.splice(index, 1); else selections.push(value);
+                } else {
+                    selections.splice(0, selections.length, value);
+                }
+                state.professional[key].selections = selections;
+                saveDraft();
+                renderProfessional();
+            }));
+            container.querySelectorAll('[data-professional-detail]').forEach(input => input.addEventListener('input', () => {
+                state.professional[input.dataset.professionalDetail].detail = input.value.trim();
+                saveDraft();
+            }));
+        }
+
+        function professionalDetailHtml(key, label, current) {
+            if (current.status !== '已经明确想要') return '';
+            const config = professionalOptions[label];
+            if (!config) {
+                return `<div class="professional-detail"><div class="professional-detail-title">请具体说说您明确想要什么</div><input type="text" data-professional-detail="${key}" value="${esc(current.detail || '')}" placeholder="例如具体形式、设备或使用方式"></div>`;
+            }
+            const selections = Array.isArray(current.selections) ? current.selections : [];
+            const detailInput = config.detailPlaceholder ? `<input type="text" data-professional-detail="${key}" value="${esc(current.detail || '')}" placeholder="${esc(config.detailPlaceholder)}" style="margin-top:10px;">` : '';
+            return `<div class="professional-detail"><div class="professional-detail-title">具体想要哪一种${config.multiple ? '或哪些' : ''}？</div><div class="preference-options">${config.options.map(option => `<button type="button" class="preference-choice ${selections.includes(option) ? 'selected' : ''}" data-professional-key="${key}" data-preference-choice="${esc(option)}">${esc(option)}</button>`).join('')}</div>${detailInput}</div>`;
+        }
+
+        function renderStyles() {
+            const grid = document.getElementById('styleGrid');
+            grid.innerHTML = styles.map(([label,file]) => `<div class="style-card ${state.styles.liked.includes(label) ? 'selected' : ''}" data-style="${label}"><img src="/style-images/${file}" alt="${label}"><span>${label}</span></div>`).join('');
+            grid.querySelectorAll('.style-card').forEach(card => card.addEventListener('click', () => {
+                const value = card.dataset.style;
+                const index = state.styles.liked.indexOf(value);
+                if (index >= 0) state.styles.liked.splice(index,1);
+                else { if (state.styles.liked.length >= 3) return alert('最多选择3个视觉方向'); state.styles.liked.push(value); }
+                renderStyles(); saveDraft();
+            }));
+            const avoid = document.getElementById('styleAvoid');
+            avoid.innerHTML = '<option value="">暂时没有</option>' + styles.map(([label]) => `<option ${state.styles.avoid===label?'selected':''}>${label}</option>`).join('');
+            avoid.onchange = () => { state.styles.avoid = avoid.value; saveDraft(); };
+        }
+
+        function renderPriorities() {
+            const candidates = [...state.vision.feelings, ...scenes.filter(scene => ['经常参与，而且很重要','偶尔参与，但有明确想法'].includes(state.scene_scan[scene.id])).map(scene => scene.name)];
+            const unique = [...new Set(candidates)];
+            state.final.priorities = state.final.priorities.filter(item => unique.includes(item));
+            const container = document.getElementById('priorityChoices');
+            container.innerHTML = unique.length ? unique.map(value => choiceHtml('priorities',value,'checkbox')).join('') : '<div class="callout">请先返回补充新家感受或生活场景。</div>';
+            container.querySelectorAll('.choice').forEach(el => el.addEventListener('click', event => {
+                event.preventDefault();
+                handleChoice(el);
+            }));
+            syncChoices(container);
+        }
+
+        function collectInputs() {
+            state.identity.display_name = document.getElementById('displayName').value.trim();
+            state.vision.future_day = document.getElementById('futureDay').value.trim();
+            state.vision.future_activity_other = document.getElementById('futureActivityOther').value.trim();
+            state.vision.boundary_other = document.getElementById('boundaryOther').value.trim();
+            state.final.non_negotiable = document.getElementById('nonNegotiable').value.trim();
+            state.final.designer_questions = document.getElementById('designerQuestions').value.trim();
+            state.final.notes = document.getElementById('finalNotes').value.trim();
+            state.styles.surface_finish = document.getElementById('surfaceFinish').value;
+            state.styles.wood_tone = document.getElementById('woodTone').value;
+            state.styles.lasting_preference = document.getElementById('lastingPreference').value;
+            state.styles.avoid_details = document.getElementById('styleAvoidDetails').value.trim();
+            if (includeHomeStep) state.home_profile = {
+                ...state.home_profile, house_type:document.getElementById('houseType').value, city:document.getElementById('city').value.trim(),
+                area:document.getElementById('area').value, levels:document.getElementById('levels').value, stage:document.getElementById('houseStage').value,
+                move_in:document.getElementById('moveIn').value.trim(), future_changes:document.getElementById('futureChanges').value.trim(),
+                household_use:document.getElementById('householdUse').value.trim(), home_rhythm:document.getElementById('homeRhythm').value,
+                guest_stay:document.getElementById('guestStay').value, budget_range:document.getElementById('budgetRange').value.trim(),
+                schedule_constraints:document.getElementById('scheduleConstraints').value.trim(), decision_roles:document.getElementById('decisionRoles').value.trim(),
+                process_preference:document.getElementById('processPreference').value, known_limits:document.getElementById('knownLimits').value.trim()
+            };
+            saveDraft();
+        }
+
+        function restoreInputs() {
+            document.getElementById('displayName').value = state.identity.display_name || '';
+            document.getElementById('futureDay').value = state.vision.future_day || '';
+            document.getElementById('futureActivityOther').value = state.vision.future_activity_other || '';
+            document.getElementById('boundaryOther').value = state.vision.boundary_other || '';
+            document.getElementById('nonNegotiable').value = state.final.non_negotiable || '';
+            document.getElementById('designerQuestions').value = state.final.designer_questions || '';
+            document.getElementById('finalNotes').value = state.final.notes || '';
+            document.getElementById('surfaceFinish').value = state.styles.surface_finish || '';
+            document.getElementById('woodTone').value = state.styles.wood_tone || '';
+            document.getElementById('lastingPreference').value = state.styles.lasting_preference || '';
+            document.getElementById('styleAvoidDetails').value = state.styles.avoid_details || '';
+            if (includeHomeStep) {
+                const p = state.home_profile;
+                document.getElementById('houseType').value = p.house_type || ''; document.getElementById('city').value = p.city || '';
+                document.getElementById('area').value = p.area || ''; document.getElementById('levels').value = p.levels || '';
+                document.getElementById('houseStage').value = p.stage || ''; document.getElementById('moveIn').value = p.move_in || '';
+                document.getElementById('householdUse').value = p.household_use || ''; document.getElementById('homeRhythm').value = p.home_rhythm || '';
+                document.getElementById('guestStay').value = p.guest_stay || ''; document.getElementById('futureChanges').value = p.future_changes || '';
+                document.getElementById('budgetRange').value = p.budget_range || ''; document.getElementById('scheduleConstraints').value = p.schedule_constraints || '';
+                document.getElementById('decisionRoles').value = p.decision_roles || ''; document.getElementById('processPreference').value = p.process_preference || '';
+                document.getElementById('knownLimits').value = p.known_limits || '';
+            }
+            syncAllChoices();
+        }
+
+        function validate(step) {
+            collectInputs();
+            if (step === 'identity') {
+                if (!state.identity.role) return alert('请选择您在家庭中的身份'), false;
+            }
+            if (step === 'home' && !state.home_profile.house_type) return alert('请选择房屋类型'), false;
+            if (step === 'vision' && !state.vision.feelings.length) return alert('请至少选择一项新家感受'), false;
+            if (step === 'scan' && scenes.some(scene => !state.scene_scan[scene.id])) return alert('请完成10项生活场景快速判断'), false;
+            if (step === 'professional') {
+                const incomplete = Object.values(state.professional).find(item => item.status === '已经明确想要' && !((Array.isArray(item.selections) ? item.selections : []).length || String(item.detail || '').trim()));
+                if (incomplete) return alert(`您选择了“${incomplete.label}”明确想要，请再选择具体形式`), false;
+            }
+            if (step === 'final' && !state.final.priorities.length) return alert('请至少确认一项最重要的表达'), false;
+            return true;
+        }
+
+        function showStep(step) {
+            currentStep = step;
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            const list = activeStepList();
+            const index = list.indexOf(step);
+            const progress = index < 0 ? 0 : Math.round(index / (list.length - 1) * 100);
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = step === 'done' ? '已完成' : index <= 0 ? '准备开始' : `${index}/${list.length-2}`;
+            if (!['welcome','done'].includes(step) && index > (state.meta?.max_reached || 0)) {
+                state.meta = {...(state.meta || {}), max_reached:index};
+                saveDraft();
+            }
+            renderStepNavigation();
+            if (step === 'details') renderDetails();
+            if (step === 'professional') renderProfessional();
+            if (step === 'style') renderStyles();
+            if (step === 'final') { renderPriorities(); restoreInputs(); renderMemberSummary(); }
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+
+        function renderStepNavigation() {
+            const nav = document.getElementById('stepNav');
+            if (['loading','welcome','done'].includes(currentStep)) {
+                nav.classList.add('hidden');
+                return;
+            }
+            nav.classList.remove('hidden');
+            const list = activeStepList();
+            const maxReached = state.meta?.max_reached || 0;
+            nav.innerHTML = list.filter(step => !['welcome','done'].includes(step)).map((step, order) => {
+                const listIndex = list.indexOf(step);
+                const disabled = listIndex > maxReached;
+                return `<button type="button" class="${step === currentStep ? 'active' : ''}" ${disabled ? 'disabled' : ''} onclick="jumpToStep('${step}')">${order + 1} ${stepLabels[step]}</button>`;
+            }).join('');
+            nav.querySelector('button.active')?.scrollIntoView({inline:'center',block:'nearest'});
+        }
+
+        function jumpToStep(step) {
+            const list = activeStepList();
+            if (list.indexOf(step) > (state.meta?.max_reached || 0)) return;
+            collectInputs();
+            showStep(step);
+        }
+
+        function goNext() {
+            if (!validate(currentStep)) return;
+            const list = activeStepList();
+            const index = list.indexOf(currentStep);
+            if (index >= 0 && index < list.length-1) showStep(list[index+1]);
+        }
+        function goBack() { collectInputs(); const list=activeStepList(); const index=list.indexOf(currentStep); if(index>0) showStep(list[index-1]); }
+
+        function renderMemberSummary() {
+            collectInputs();
+            const importantScenes = scenes.filter(scene => state.scene_scan[scene.id] === '经常参与，而且很重要').map(scene => scene.name);
+            const explicit = Object.values(state.professional).filter(item => item.status === '已经明确想要').map(formatExplicitPreference);
+            const explain = Object.values(state.professional).filter(item => item.status === '想了解，请设计师解释').map(item => item.label);
+            const rows = [
+                ['成员',`${state.identity.display_name || state.identity.role || '家庭成员'} · ${state.identity.role || '-'}`],
+                ['最重要',state.final.priorities.join('、') || '待确认'],
+                ['重点生活',importantScenes.join('、') || '暂无高优先场景'],
+                ['明确偏好',explicit.join('、') || '暂无'],
+                ['请解释',explain.join('、') || state.final.designer_questions || '暂无'],
+                ['不可妥协',state.final.non_negotiable || '未填写']
+            ];
+            document.getElementById('memberSummary').innerHTML = rows.map(([label,value]) => `<li><strong>${label}</strong><span>${esc(value)}</span></li>`).join('');
+        }
+
+        function formatExplicitPreference(item) {
+            const parts = Array.isArray(item.selections) ? [...item.selections] : [];
+            if (String(item.detail || '').trim()) parts.push(String(item.detail).trim());
+            const detail = parts.join('、') || '尚未说明具体形式';
+            return `${item.label}：${detail}`;
+        }
+
+        function buildReport() {
+            return {
+                priorities:state.final.priorities,
+                important_scenes:scenes.filter(scene => state.scene_scan[scene.id] === '经常参与，而且很重要').map(scene => scene.name),
+                non_negotiable:state.final.non_negotiable,
+                explicit_preferences:Object.values(state.professional).filter(item => item.status === '已经明确想要').map(formatExplicitPreference),
+                needs_designer_explanation:Object.values(state.professional).filter(item => ['想了解，请设计师解释','没有明确想法，请设计师判断'].includes(item.status))
+            };
+        }
+
+        async function submitMember() {
+            if (!validate('final')) return;
+            const button = document.getElementById('submitBtn');
+            button.disabled = true; button.textContent = '正在保存...';
+            try {
+                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}/members`, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({identity:state.identity,answers:{participation:state.participation,vision:state.vision,scene_scan:state.scene_scan,scene_details:state.scene_details,professional:state.professional,styles:state.styles,final:state.final},home_profile:includeHomeStep?state.home_profile:null,report:buildReport(),member_token:localStorage.getItem(memberKey)||''})
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '保存失败');
+                localStorage.setItem(memberKey,data.member_token);
+                localStorage.setItem(completedKey,JSON.stringify({member_id:data.member_id,invite_url:data.invite_url}));
+                localStorage.removeItem(draftKey);
+                document.getElementById('doneCode').textContent = `成员记录 #${data.member_id}`;
+                document.getElementById('inviteUrl').textContent = data.invite_url;
+                window.familyInviteUrl = data.invite_url;
+                showStep('done');
+            } catch (error) { alert(error.message); }
+            finally { button.disabled=false; button.textContent='提交个人需求'; }
+        }
+
+        async function copyInvite() {
+            try { await navigator.clipboard.writeText(window.familyInviteUrl); document.getElementById('copyStatus').textContent='已复制'; }
+            catch (_) { window.prompt('复制家庭邀请链接',window.familyInviteUrl); }
+        }
+        async function completeFamily() {
+            if (!confirm('请确认：需要参与的家庭成员都已经提交。完成后将停止继续填写，并生成设计师汇总。')) return;
+            const button = document.getElementById('completeFamilyBtn');
+            button.disabled = true;
+            button.textContent = '正在生成家庭汇总...';
+            try {
+                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}/complete`, {method:'POST'});
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '家庭项目结束失败');
+                project.status = data.status;
+                localStorage.removeItem(completedKey);
+                showFamilyComplete(data.member_count);
+            } catch (error) {
+                alert(error.message);
+                button.disabled = false;
+                button.textContent = '家人都填完了，生成家庭汇总';
+            }
+        }
+        function showFamilyComplete(memberCount) {
+            showStep('done');
+            document.getElementById('doneTitle').textContent = '全家的新家想法已经提交';
+            document.getElementById('doneCode').textContent = memberCount ? `${memberCount} 位家庭成员已参与` : '等待设计师查看';
+            document.getElementById('doneLead').textContent = '设计师会先查看家庭共识、每个人的重点和需要继续讨论的问题，再与您进一步沟通。';
+            document.getElementById('inviteBox').classList.add('hidden');
+            document.getElementById('finishBox').classList.add('hidden');
+            document.getElementById('familyCompleteBox').classList.remove('hidden');
+            document.getElementById('anotherMemberBtn').classList.add('hidden');
+            loadCustomerReport();
+        }
+        async function loadCustomerReport() {
+            const report = document.getElementById('customerReport');
+            const content = document.getElementById('customerReportContent');
+            report.classList.remove('hidden');
+            try {
+                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}/summary`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '家庭简报生成失败');
+                const summary = data.summary;
+                const profile = summary.home_profile || {};
+                const profileText = [profile.house_type, profile.city, profile.area ? `${profile.area}㎡` : '', profile.levels ? `${profile.levels}层` : '', profile.stage].filter(Boolean).join(' · ') || '住宅基础信息待设计师继续补充';
+                const feelings = summary.shared_feelings?.length ? summary.shared_feelings.join('、') : '每个人的表达已经分别保留，等待设计师继续梳理共同方向';
+                const listBlock = (title, values, empty, className='') => `<div class="customer-list-block ${className}"><h4>${title}</h4>${values?.length ? `<ul>${values.map(value => `<li>${esc(value)}</li>`).join('')}</ul>` : `<p class="report-disclaimer">${empty}</p>`}</div>`;
+                const scenes = summary.focus_scenes?.length ? `<div class="customer-scene-list">${summary.focus_scenes.map((scene,index) => `<div class="customer-scene"><span class="customer-scene-index">${String(index + 1).padStart(2,'0')}</span><div><strong>${esc(scene.name)}</strong><span>${esc(scene.description)}</span></div></div>`).join('')}</div>` : '<p class="report-disclaimer">目前还没有形成明确的家庭重点场景。</p>';
+                content.innerHTML = `
+                    <div class="customer-report-cover"><div class="customer-report-kicker">家庭生活需求简报</div><h2>${esc(summary.home_name)}</h2><p>${esc(summary.headline)}</p><div class="customer-report-meta"><span>${esc(profileText)}</span><span>${summary.member_count} 位家庭成员参与</span></div></div>
+                    <div class="customer-report-body">
+                        <div class="customer-report-quote"><span>我们共同希望新家带来的感受</span><strong>${esc(feelings)}</strong></div>
+                        <section class="customer-report-section"><h3>这个家重点支持的生活</h3>${scenes}</section>
+                        <section class="customer-report-section"><div class="customer-two-column">${listBlock('希望增加的共同生活', summary.shared_activities, '暂未形成重复表达的共同活动。')}${listBlock('共同避免的居住体验', summary.shared_boundaries, '暂未形成重复表达的共同边界。','boundary')}</div></section>
+                        <section class="customer-report-section"><p class="report-disclaimer">${esc(summary.note)}</p></section>
+                    </div>`;
+            } catch (error) {
+                content.innerHTML = `<div class="callout">${esc(error.message)}</div>`;
+            }
+        }
+        function startAnotherMember() { localStorage.removeItem(memberKey); localStorage.removeItem(completedKey); localStorage.removeItem(draftKey); location.reload(); }
+
+        function saveDraft() { try { localStorage.setItem(draftKey,JSON.stringify(state)); } catch(_){} }
+        function restoreDraft() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(draftKey) || 'null');
+                if (!saved) return;
+                state = {...state,...saved,identity:{...state.identity,...saved.identity},vision:{...state.vision,...saved.vision},home_profile:{...state.home_profile,...saved.home_profile},styles:{...state.styles,...saved.styles},final:{...state.final,...saved.final}};
+            } catch(_){}
+        }
+
+        document.addEventListener('input', event => {
+            if (event.target.matches('input,textarea,select')) {
+                collectInputs();
+                if (currentStep === 'final') renderMemberSummary();
+            }
+        });
+        init().then(() => restoreInputs());
+    </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭需求项目 · 内部工作台</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23203f34'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' fill='white'%3E%E5%AE%B6%3C/text%3E%3C/svg%3E">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #20231f; background: #e9ece8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        button, input { font: inherit; }
+        .topbar { background: #203f34; color: #fff; }
+        .topbar-inner, main { max-width: 1280px; margin: 0 auto; }
+        .topbar-inner { min-height: 68px; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .brand { font-size: 18px; font-weight: 700; }
+        .brand small { display: block; margin-top: 2px; color: #c6d4ce; font-size: 12px; font-weight: 500; }
+        .nav-link { color: #fff; text-decoration: none; font-size: 14px; }
+        main { padding: 28px 24px 60px; }
+        h1 { margin: 0; font-size: 26px; letter-spacing: 0; }
+        h2 { margin: 0 0 14px; font-size: 18px; letter-spacing: 0; }
+        .lead { color: #646a64; margin: 8px 0 24px; }
+        .create-band { padding: 22px 0 28px; border-bottom: 1px solid #d8dcd6; }
+        .create-row { display: grid; grid-template-columns: minmax(240px, 1fr) auto; gap: 12px; max-width: 720px; }
+        input { width: 100%; min-height: 46px; padding: 10px 13px; border: 1px solid #bcc4bd; border-radius: 6px; background: #fff; color: #20231f; }
+        input:focus { outline: 3px solid rgba(47, 105, 82, .18); border-color: #2f6952; }
+        button { min-height: 42px; padding: 9px 14px; border: 1px solid transparent; border-radius: 6px; cursor: pointer; font-weight: 650; }
+        .primary { background: #2f6952; color: #fff; }
+        .primary:hover { background: #285b47; }
+        .secondary { background: #fff; border-color: #b8c0b9; color: #273129; }
+        .secondary:hover { border-color: #2f6952; color: #2f6952; }
+        .danger { background: #8a4936; color: #fff; }
+        .hint { min-height: 22px; margin-top: 10px; font-size: 13px; color: #59615b; }
+        .list-band { padding: 28px 0; }
+        .list-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 12px; }
+        .table-wrap { overflow-x: auto; border: 1px solid #d5d9d4; background: #fff; }
+        table { width: 100%; border-collapse: collapse; min-width: 820px; }
+        th, td { padding: 13px 14px; text-align: left; border-bottom: 1px solid #e4e7e3; vertical-align: middle; }
+        th { background: #eef0ec; color: #525a53; font-size: 12px; font-weight: 700; }
+        td { font-size: 14px; }
+        tr:last-child td { border-bottom: 0; }
+        .status { display: inline-flex; align-items: center; min-height: 26px; padding: 3px 8px; border-radius: 5px; background: #e8f0ec; color: #2b614b; font-size: 12px; font-weight: 700; }
+        .actions { display: flex; gap: 7px; flex-wrap: wrap; }
+        .actions button, .actions a { min-height: 34px; padding: 6px 9px; border: 1px solid #c3c9c3; border-radius: 5px; background: #fff; color: #28342c; font-size: 12px; font-weight: 650; text-decoration: none; cursor: pointer; }
+        .empty { padding: 42px 20px; text-align: center; color: #727972; }
+        .report-band { display: none; margin-top: 8px; border: 1px solid #d2d7d1; border-radius: 6px; background: #fdfdfb; box-shadow: 0 14px 40px rgba(31,48,39,.08); }
+        .report-band.active { display: block; }
+        .report-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin: 0; padding: 28px 30px; color:#fff; background:#203a30; border-radius:6px 6px 0 0; }
+        .report-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .report-head .secondary { border-color:#81968d; background:transparent; color:#fff; }
+        .report-head .secondary:hover { border-color:#fff; color:#fff; }
+        .report-title { font-size: 25px; font-weight: 760; }
+        .report-meta { margin-top: 7px; color: #c5d2cc; font-size: 13px; }
+        .report-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 42px; padding:30px; }
+        .report-section { min-width: 0; border-top: 1px solid #ccd3cd; padding-top: 15px; }
+        .report-section.warn { border-color: #a05b3f; }
+        .report-section.full { grid-column: 1 / -1; }
+        .report-section h3 { margin: 0 0 14px; font-size: 17px; }
+        .report-section ul { margin: 0; padding-left: 20px; }
+        .report-section li { margin: 7px 0; line-height: 1.55; }
+        .member-block { padding: 12px 0; border-bottom: 1px solid #e0e3df; }
+        .member-block:last-child { border-bottom: 0; }
+        .member-name { font-weight: 750; }
+        .member-note { margin-top: 5px; color: #5d655f; line-height: 1.55; }
+        .view-row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid #e4e7e3; }
+        .view-row:last-child { border-bottom: 0; }
+        .view-person { font-weight: 700; }
+        .profile-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #d9ddd8; background: #fff; }
+        .profile-item { min-height: 66px; padding: 10px 12px; border-right: 1px solid #d9ddd8; border-bottom: 1px solid #d9ddd8; background: #fff; }
+        .profile-item span { display: block; color: #737a74; font-size: 11px; }
+        .profile-item strong { display: block; margin-top: 4px; font-size: 14px; }
+        .scene-report { padding: 29px 0 34px; border-bottom: 1px solid #cfd5cf; }
+        .scene-report:last-child { border-bottom: 0; }
+        .scene-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 13px; }
+        .scene-head h4 { margin: 0; font-size: 20px; }
+        .scene-head p { margin: 4px 0 0; color: #697069; font-size: 13px; }
+        .scene-status { flex: 0 0 auto; padding: 4px 8px; border-radius: 4px; background: #e7efe9; color: #2f644e; font-size: 12px; font-weight: 700; }
+        .scene-status.low { background: #eceeeb; color: #686f69; }
+        .scene-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 28px; }
+        .scene-block { min-width: 0; }
+        .scene-block.full { grid-column: 1 / -1; }
+        .scene-block h5 { margin: 0 0 7px; color: #4f5751; font-size: 13px; }
+        .scene-block ul { margin: 0; padding-left: 18px; }
+        .scene-block li { margin: 5px 0; line-height: 1.5; }
+        .evidence { color: #737a74; font-size: 12px; }
+        .member-view { padding: 9px 0; border-bottom: 1px dashed #dce0dc; }
+        .member-view:last-child { border-bottom: 0; }
+        .member-view strong { display: block; margin-bottom: 3px; }
+        .tag { display: inline-block; margin: 2px 5px 2px 0; padding: 2px 6px; border-radius: 4px; background: #edf0ed; color: #4c554e; font-size: 11px; }
+        .tag.want { background: #e7f0ea; color: #2b614b; }
+        .tag.avoid { background: #f5e9e5; color: #844332; }
+        .tag.seed { background: #f5f0e3; color: #765d29; }
+        .empty-inline { color: #7a817b; font-size: 13px; }
+        .report-overview { grid-column:1/-1; display:grid; grid-template-columns:1.6fr repeat(4,minmax(110px,.7fr)); border:1px solid #d5dad5; background:#fff; }
+        .overview-copy { padding:20px 22px; border-right:1px solid #dfe3df; }
+        .overview-copy span { color:#8a6230; font-size:11px; font-weight:800; }
+        .overview-copy strong { display:block; margin-top:7px; color:#263a31; font-size:18px; line-height:1.45; }
+        .overview-stat { padding:18px 15px; border-right:1px solid #dfe3df; }
+        .overview-stat:last-child { border-right:0; }
+        .overview-stat span { display:block; color:#707771; font-size:11px; }
+        .overview-stat strong { display:block; margin-top:6px; color:#244a3a; font-size:24px; }
+        .requirement-wrap { max-width: 100%; overflow-x:auto; border:1px solid #d9ded9; background:#fff; }
+        .requirement-table { min-width:880px; }
+        .requirement-table th { background:#eef1ed; }
+        .requirement-table th, .requirement-table td { padding:11px 12px; vertical-align:top; }
+        .requirement-table th:nth-child(1) { width:112px; }
+        .requirement-table th:nth-child(2) { width:40%; }
+        .requirement-table th:nth-child(3) { width:24%; }
+        .requirement-table td { line-height:1.5; }
+        .requirement-name { font-weight:700; color:#263b31; }
+        .requirement-type { display:block; margin-bottom:3px; color:#7a817b; font-size:11px; }
+        .requirement-state { display:inline-block; padding:3px 7px; border-radius:4px; font-size:11px; font-weight:750; white-space:nowrap; }
+        .requirement-state.confirmed { background:#dcece3; color:#255b43; }
+        .requirement-state.focus { background:#f2e8cf; color:#7a5a20; }
+        .requirement-state.candidate { background:#e5ebef; color:#49616e; }
+        .evidence-band { padding:13px 15px; border-left:3px solid #557c6a; background:#f1f4f1; }
+        .evidence-band h5 { margin:0 0 8px; color:#405249; font-size:12px; }
+        .supplement-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; margin-top:18px; background:#dce1dc; border:1px solid #dce1dc; }
+        .supplement-block { padding:15px; background:#fafbf9; }
+        .supplement-block h5 { margin:0 0 8px; font-size:12px; }
+        .supplement-block ul { margin:0; padding-left:17px; }
+        .supplement-block li { margin:5px 0; }
+        .designer-checklist { margin-top:16px; padding-top:13px; border-top:1px dashed #cfd5cf; }
+        .designer-checklist summary { cursor:pointer; color:#53615a; font-size:12px; font-weight:700; }
+        .designer-checklist ul { margin:9px 0 0; padding-left:19px; columns:2; column-gap:32px; }
+        .designer-checklist li { margin:5px 0; break-inside:avoid; }
+        .section-eyebrow { display:block; margin-bottom:5px; color:#8a6332; font-size:11px; font-weight:800; }
+        .error { color: #8a352b; }
+        @media print {
+            @page { size: A4 landscape; margin: 12mm; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .topbar, main > h1, .lead, .create-band, .list-band, .report-head-actions { display: none !important; }
+            body { background: #fff; }
+            main { max-width: none; padding: 0; }
+            .report-band { display: block !important; margin: 0; border: 0; box-shadow: none; }
+            .report-head { padding: 18px 20px; }
+            .report-grid { display: block; padding: 22px 20px; }
+            .report-overview, .report-section { margin-bottom: 24px; }
+            .requirement-wrap { overflow: visible; }
+            .requirement-table { min-width: 0; table-layout: fixed; }
+            .requirement-table th, .requirement-table td { padding: 7px 8px; font-size: 10px; }
+            .requirement-table th:nth-child(1) { width: 10%; }
+            .requirement-table th:nth-child(2) { width: 39%; }
+            .requirement-table th:nth-child(3) { width: 22%; }
+            .supplement-block { font-size: 11px; }
+            .scene-report { break-inside: auto; }
+            .scene-head, .scene-report h5, .designer-checklist summary { break-after: avoid; }
+            .requirement-table thead { display: table-header-group; }
+            .requirement-table tr, .supplement-block, .member-view { break-inside: avoid; }
+        }
+        @media (max-width: 760px) {
+            .topbar-inner, main { padding-left: 16px; padding-right: 16px; }
+            .create-row, .report-grid { grid-template-columns: 1fr; }
+            .report-grid { min-width: 0; padding: 20px 16px; }
+            .report-section.full { grid-column: auto; }
+            .report-head { flex-direction: column; }
+            .view-row { grid-template-columns: 1fr; }
+            .profile-list, .scene-columns { grid-template-columns: 1fr; }
+            .report-overview { grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .overview-copy { grid-column:1/-1; border-right:0; border-bottom:1px solid #dfe3df; }
+            .overview-stat { border-bottom:1px solid #dfe3df; }
+            .supplement-grid { grid-template-columns:1fr; }
+            .designer-checklist ul { columns:1; }
+            .scene-block.full { grid-column: auto; }
+            .scene-head { flex-direction: column; }
+            .requirement-table { min-width: 0; }
+            .requirement-table thead { display: none; }
+            .requirement-table, .requirement-table tbody, .requirement-table tr, .requirement-table td { display: block; width: 100%; }
+            .requirement-table tr { padding: 12px 13px; border-bottom: 1px solid #dfe4df; }
+            .requirement-table tr:last-child { border-bottom: 0; }
+            .requirement-table td { padding: 6px 0; border: 0; }
+            .requirement-table td::before { display: block; margin-bottom: 3px; color: #747c75; font-size: 10px; font-weight: 750; }
+            .requirement-table td:nth-child(1)::before { content: "确定程度"; }
+            .requirement-table td:nth-child(2)::before { content: "设计需求"; }
+            .requirement-table td:nth-child(3)::before { content: "生活证据"; }
+            .requirement-table td:nth-child(4)::before { content: "还需确认"; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">家庭需求项目<small>01 专项 · 内部测试工作台</small></div>
+            <a class="nav-link" href="/admin">返回原问卷后台</a>
+        </div>
+    </header>
+    <main>
+        <h1>别墅大宅家庭需求洞察</h1>
+        <p class="lead">当前页面模拟“后台准备发送需求洞察链接时自动创建家庭项目”。正式接入微信后，由消息流程调用同一个创建接口。</p>
+
+        <section class="create-band">
+            <h2>生成家庭填写链接</h2>
+            <div class="create-row">
+                <input id="homeName" placeholder="住宅称呼，例如：站南路新家" maxlength="60">
+                <button class="primary" id="createBtn" type="button">生成链接</button>
+            </div>
+            <div class="hint" id="createHint">不记录推荐设计师和来源；该归属由客户扫码入口自动明确。</div>
+        </section>
+
+        <section class="list-band">
+            <div class="list-head">
+                <h2>家庭项目</h2>
+                <button class="secondary" type="button" onclick="loadProjects()">刷新</button>
+            </div>
+            <div class="table-wrap" id="projectTable"><div class="empty">正在读取项目...</div></div>
+        </section>
+
+        <section class="report-band" id="reportBand">
+            <div class="report-head">
+                <div>
+                    <div class="report-title" id="reportTitle"></div>
+                    <div class="report-meta" id="reportMeta"></div>
+                </div>
+                <div class="report-head-actions"><button class="secondary" type="button" onclick="window.print()">打印或存为PDF</button><button class="secondary" type="button" onclick="closeReport()">关闭汇总</button></div>
+            </div>
+            <div class="report-grid" id="reportContent"></div>
+        </section>
+    </main>
+    <script>
+        const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+        const listText = value => Array.isArray(value) && value.length ? value.join('、') : '未填写';
+        let autoOpenedProject = false;
+
+        document.getElementById('createBtn').addEventListener('click', createProject);
+        document.getElementById('homeName').addEventListener('keydown', event => {
+            if (event.key === 'Enter') createProject();
+        });
+
+        async function createProject() {
+            const input = document.getElementById('homeName');
+            const hint = document.getElementById('createHint');
+            const button = document.getElementById('createBtn');
+            const homeName = input.value.trim();
+            if (!homeName) { hint.textContent = '请先填写住宅称呼。'; hint.className = 'hint error'; return; }
+            button.disabled = true;
+            hint.className = 'hint';
+            hint.textContent = '正在生成家庭项目...';
+            try {
+                const response = await fetch('/api/admin/family-projects', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({home_name: homeName})
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '生成失败');
+                input.value = '';
+                hint.innerHTML = `链接已生成：<a href="${escapeHtml(data.invite_url)}" target="_blank">打开家庭填写入口</a>`;
+                await loadProjects();
+            } catch (error) {
+                hint.textContent = error.message;
+                hint.className = 'hint error';
+            } finally { button.disabled = false; }
+        }
+
+        async function loadProjects() {
+            const container = document.getElementById('projectTable');
+            try {
+                const response = await fetch('/api/admin/family-projects');
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '读取失败');
+                if (!data.items.length) { container.innerHTML = '<div class="empty">还没有家庭项目。</div>'; return; }
+                container.innerHTML = `<table><thead><tr><th>编号</th><th>住宅称呼</th><th>成员答卷</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead><tbody>${data.items.map(item => {
+                    const url = `${location.origin}/family/${item.token}`;
+                    const statusLabel = item.status === 'ready_for_review' ? '待设计师查看' : '填写中';
+                    return `<tr>
+                        <td>#${item.id}</td><td><strong>${escapeHtml(item.home_name)}</strong></td><td>${item.member_count} 份</td>
+                        <td><span class="status">${statusLabel}</span></td><td>${escapeHtml(item.created_at)}</td>
+                        <td><div class="actions"><a href="${url}" target="_blank">打开</a><button onclick="copyLink('${url}', this)">复制链接</button><button onclick="viewReport(${item.id})">查看汇总</button>${item.status === 'ready_for_review' ? `<button onclick="reopenProject(${item.id})">重新开放</button>` : ''}</div></td>
+                    </tr>`;
+                }).join('')}</tbody></table>`;
+                const projectId = Number(new URLSearchParams(location.search).get('project') || 0);
+                if (projectId && !autoOpenedProject) {
+                    autoOpenedProject = true;
+                    viewReport(projectId);
+                }
+            } catch (error) { container.innerHTML = `<div class="empty error">${escapeHtml(error.message)}</div>`; }
+        }
+
+        async function copyLink(url, button) {
+            try { await navigator.clipboard.writeText(url); button.textContent = '已复制'; setTimeout(() => button.textContent = '复制链接', 1500); }
+            catch (_) { window.prompt('复制这个链接', url); }
+        }
+
+        async function reopenProject(projectId) {
+            if (!confirm('重新开放后，家庭成员可以继续通过原链接填写。确认重新开放吗？')) return;
+            const response = await fetch(`/api/admin/family-projects/${projectId}/reopen`, {method:'POST'});
+            const data = await response.json();
+            if (!response.ok) return alert(data.message || '重新开放失败');
+            await loadProjects();
+        }
+
+        async function viewReport(projectId) {
+            const band = document.getElementById('reportBand');
+            const content = document.getElementById('reportContent');
+            band.classList.add('active');
+            content.innerHTML = '<div class="empty">正在整理家庭汇总...</div>';
+            band.scrollIntoView({behavior: 'smooth', block: 'start'});
+            try {
+                const response = await fetch(`/api/admin/family-projects/${projectId}`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || '读取失败');
+                renderReport(data.summary);
+            } catch (error) { content.innerHTML = `<div class="empty error">${escapeHtml(error.message)}</div>`; }
+        }
+
+        function renderReport(summary) {
+            document.getElementById('reportTitle').textContent = `${summary.project.home_name} · 家庭设计需求推导报告`;
+            document.getElementById('reportMeta').textContent = `${summary.member_count} 位成员已提交 · 生活证据 → 设计需求 → 待核对条件`;
+            const consensus = summary.consensus.length ? `<ul>${summary.consensus.map(item => `<li><strong>${escapeHtml(item.type)}：</strong>${escapeHtml(item.value)} <span class="report-meta">${escapeHtml(item.members.join('、'))}</span></li>`).join('')}</ul>` : '<p class="member-note">当前还没有满足规则的家庭共识，不能用单人答案代替全家结论。</p>';
+            const personal = summary.personal.length ? summary.personal.map(item => `<div class="member-block"><div class="member-name">${escapeHtml(item.name)} · ${escapeHtml(item.role)}</div><div class="member-note">重点：${escapeHtml(listText(item.priorities))}</div><div class="member-note">相关生活：${escapeHtml(listText(item.active_scenes))}</div>${item.explicit_preferences?.length ? `<div class="member-note">明确偏好：${escapeHtml(item.explicit_preferences.join('；'))}</div>` : ''}${item.future_day ? `<div class="member-note">未来一天：${escapeHtml(item.future_day)}</div>` : ''}${item.non_negotiable ? `<div class="member-note">不可妥协：${escapeHtml(item.non_negotiable)}</div>` : ''}</div>`).join('') : '<p class="member-note">尚无成员提交。</p>';
+            const conflicts = summary.conflicts.length ? summary.conflicts.map(item => `<div class="member-block"><div class="member-name">${escapeHtml(item.item)}</div>${item.views.map(view => `<div class="view-row"><div class="view-person">${escapeHtml(view.name)}</div><div>${escapeHtml(view.status)}${view.selections?.length ? `：${escapeHtml(view.selections.join('、'))}` : view.detail ? `：${escapeHtml(view.detail)}` : ''}</div></div>`).join('')}<div class="member-note">${escapeHtml(item.note)}</div></div>`).join('') : '<p class="member-note">暂未识别到明确相反的专业偏好。</p>';
+            const checks = summary.designer_checks.length ? `<ul>${summary.designer_checks.map(item => `<li>${escapeHtml(item.member)}：${escapeHtml(item.item)}（${escapeHtml(item.status)}）</li>`).join('')}</ul>` : '<p class="member-note">暂无集中待解释项。</p>';
+            const pendingCount = summary.report_stats?.pending_count || 0;
+            const insufficient = summary.insufficient.length
+                ? `<ul>${summary.insufficient.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+                : `<p class="member-note">基础资料已足以进入设计沟通；当前仍有 ${pendingCount} 项场景细节需要设计师继续确认，不应被视为客户已明确的设计结论。</p>`;
+            const members = summary.members.length ? `<ul>${summary.members.map(item => `<li>${escapeHtml(item.display_name)} · ${escapeHtml(item.role)}</li>`).join('')}</ul>` : '<p class="member-note">尚无成员提交。</p>';
+            const profileLabels = {house_type:'房屋类型',city:'城市',area:'建筑面积',levels:'室内层数',stage:'当前阶段',move_in:'计划入住',household_use:'居住与阶段性使用',home_rhythm:'日常居家状态',guest_stay:'客人留宿',future_changes:'未来家庭变化',budget_status:'投入状态',budget_range:'投入范围',schedule_constraints:'入住或工期节点',decision_roles:'家庭决策分工',process_preference:'推进方式倾向',home_features:'住宅组成',known_limits:'已知限制'};
+            const profileEntries = Object.entries(summary.project.home_profile || {}).filter(([key,value]) => profileLabels[key] && value !== '' && value != null);
+            const profile = profileEntries.length ? `<div class="profile-list">${profileEntries.map(([key,value]) => `<div class="profile-item"><span>${profileLabels[key]}</span><strong>${escapeHtml(Array.isArray(value) ? value.join('、') : key === 'area' ? `${value}㎡` : key === 'levels' ? `${value}层` : value)}</strong></div>`).join('')}</div>` : '<p class="member-note">住宅基础信息尚未补充。</p>';
+            const homeChecks = summary.home_professional_checks?.length ? `<ul>${summary.home_professional_checks.map(item => `<li><strong>${escapeHtml(item.item)}：</strong>${escapeHtml(item.check)}</li>`).join('')}</ul>` : '<p class="member-note">暂无由住宅组成自动触发的专项核对项。</p>';
+            const styles = summary.styles?.length ? summary.styles.map(item => `<div class="member-view"><strong>${escapeHtml(item.member)}</strong><div>喜欢：${escapeHtml(listText(item.liked))}</div><div>表面质感：${escapeHtml(item.surface_finish || '未填写')}</div><div>木作颜色：${escapeHtml(item.wood_tone || '未填写')}</div><div>造型时效：${escapeHtml(item.lasting_preference || '未填写')}</div><div>明确避免：${escapeHtml([item.avoid,item.avoid_details].filter(Boolean).join('；') || '未填写')}</div></div>`).join('') : '<p class="member-note">未填写视觉偏好。</p>';
+            const sceneReports = (summary.scene_reports || []).map(scene => {
+                const memberViews = scene.member_views?.length ? scene.member_views.map(view => {
+                    const details = [];
+                    if (view.needs?.length) details.push(`生活内容：${view.needs.join('、')}`);
+                    if (view.note) details.push(`习惯/频率/冲突：${view.note}`);
+                    if (view.impact) details.push(`受到的影响：${view.impact}`);
+                    if (view.want) details.push(`明确想要：${view.want}`);
+                    if (view.avoid) details.push(`明确不要：${view.avoid}`);
+                    return `<div class="member-view"><strong>${escapeHtml(view.name)} · ${escapeHtml(view.role)} <span class="tag">${escapeHtml(view.rating)}</span></strong>${details.length ? details.map(text => `<div>${escapeHtml(text)}</div>`).join('') : '<div class="empty-inline">未补充场景细节</div>'}</div>`;
+                }).join('') : '<p class="empty-inline">没有成员表达与此场景相关。</p>';
+                const requirementStateClass = status => ['客户明确提出','家庭共同需求'].includes(status) ? 'confirmed' : status === '重点确认' ? 'focus' : 'candidate';
+                const requirements = scene.design_requirements?.length ? `<div class="requirement-wrap"><table class="requirement-table"><thead><tr><th>确定程度</th><th>推导出的设计需求</th><th>生活证据</th><th>设计师还需确认</th></tr></thead><tbody>${scene.design_requirements.map(item => `<tr><td><span class="requirement-state ${requirementStateClass(item.status)}">${escapeHtml(item.status)}</span></td><td><span class="requirement-type">${escapeHtml(item.category)}</span><span class="requirement-name">${escapeHtml(item.requirement)}</span></td><td>${escapeHtml(item.evidence)}<span class="evidence">${item.members?.length ? ` · ${escapeHtml(item.members.join('、'))}` : ''}</span></td><td>${escapeHtml(item.verify)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="evidence-band">现有答案不足以推导具体设计需求。不能把“未回答”写成“不需要”，请按下方沟通清单继续核对。</div>';
+                const avoids = scene.confirmed_avoids?.length ? `<ul>${scene.confirmed_avoids.map(item => `<li><span class="tag avoid">明确不要</span>${escapeHtml(item.item)} <span class="evidence">${escapeHtml(item.member)}</span></li>`).join('')}</ul>` : '<p class="empty-inline">没有记录明确不要。</p>';
+                const seeds = scene.seeds?.length ? `<ul>${scene.seeds.map(item => `<li><span class="tag seed">种草待确认</span>${escapeHtml(item.item)} <span class="evidence">触发原因：${escapeHtml(item.reason)}；${escapeHtml(item.status)}</span></li>`).join('')}</ul>` : '<p class="empty-inline">当前没有基于生活事实触发的种草方向。</p>';
+                const pending = [...(scene.pending_questions || []).map(item => `${item.member}：${item.item}（${item.status}）`), ...(scene.missing || [])];
+                const pendingHtml = pending.length ? `<ul>${pending.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '<p class="empty-inline">当前没有明显待补项。</p>';
+                const checklist = `<ul>${(scene.design_checklist || []).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+                return `<article class="scene-report"><div class="scene-head"><div><span class="section-eyebrow">生活场景 ${String((summary.scene_reports || []).indexOf(scene) + 1).padStart(2,'0')}</span><h4>${escapeHtml(scene.name)}</h4><p>${escapeHtml(scene.description)}</p></div><span class="scene-status ${scene.priority === '低关联' ? 'low' : ''}">${escapeHtml(scene.priority)}</span></div><div class="evidence-band"><h5>客户生活事实与原始表达</h5>${memberViews}</div><div style="margin-top:20px;"><h5 style="margin:0 0 10px;">从生活推导出的设计需求</h5>${requirements}</div><div class="supplement-grid"><div class="supplement-block"><h5>明确不要 / 设计边界</h5>${avoids}</div><div class="supplement-block"><h5>种草待确认</h5>${seeds}</div><div class="supplement-block"><h5>待继续追问</h5>${pendingHtml}</div></div><details class="designer-checklist"><summary>展开《平层大宅、别墅沟通清单》对应核对项</summary>${checklist}</details></article>`;
+            }).join('');
+            const stats = summary.report_stats || {};
+            const overview = `<div class="report-overview"><div class="overview-copy"><span>从生活事实到设计输入</span><strong>${escapeHtml(summary.customer_summary?.headline || '家庭需求已经完成结构化汇总')}</strong></div><div class="overview-stat"><span>参与成员</span><strong>${summary.member_count || 0}</strong></div><div class="overview-stat"><span>重点场景</span><strong>${stats.focus_scene_count || 0}</strong></div><div class="overview-stat"><span>设计需求</span><strong>${stats.design_requirement_count || 0}</strong></div><div class="overview-stat"><span>待确认项</span><strong>${stats.pending_count || 0}</strong></div></div>`;
+            document.getElementById('reportContent').innerHTML = `
+                ${overview}
+                <section class="report-section full"><span class="section-eyebrow">01 · 项目底图</span><h3>住宅与项目锚点</h3>${profile}</section>
+                <section class="report-section"><span class="section-eyebrow">02 · 家庭判断</span><h3>家庭共识</h3>${consensus}</section>
+                <section class="report-section"><span class="section-eyebrow">03 · 答卷来源</span><h3>参与成员</h3>${members}</section>
+                <section class="report-section full"><span class="section-eyebrow">04 · 核心交付</span><h3>逐场景生活证据与设计需求矩阵</h3>${sceneReports}</section>
+                <section class="report-section full"><span class="section-eyebrow">05 · 个体差异</span><h3>个人专属需求</h3>${personal}</section>
+                <section class="report-section warn"><span class="section-eyebrow">06 · 不自动裁决</span><h3>家庭分歧</h3>${conflicts}</section>
+                <section class="report-section"><span class="section-eyebrow">07 · 沟通任务</span><h3>待设计师解释或判断</h3>${checks}</section>
+                <section class="report-section"><span class="section-eyebrow">08 · 审美证据</span><h3>视觉偏好原始表达</h3>${styles}</section>
+                <section class="report-section warn"><span class="section-eyebrow">09 · 专业边界</span><h3>结构、机电与专项核对</h3>${homeChecks}</section>
+                <section class="report-section full ${summary.insufficient.length ? 'warn' : ''}"><span class="section-eyebrow">10 · 信息质量</span><h3>信息质量与待补充</h3>${insufficient}</section>`;
+        }
+
+        function closeReport() { document.getElementById('reportBand').classList.remove('active'); }
+        loadProjects();
+    </script>
+</body>
+</html>
