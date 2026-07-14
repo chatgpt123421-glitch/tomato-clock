@@ -608,6 +608,7 @@
 
         function attachVoiceInputs(root) {
             const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const keyboardMode = shouldUseKeyboardDictation() || !Recognition;
             root.querySelectorAll('textarea:not([data-voice-ready])').forEach(textarea => {
                 textarea.dataset.voiceReady = '1';
                 const tools = document.createElement('div');
@@ -615,12 +616,16 @@
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'voice-btn';
-                button.textContent = '语音输入';
-                button.setAttribute('aria-label', '开始语音输入');
+                button.textContent = keyboardMode ? '键盘听写' : '语音输入';
+                button.dataset.voiceMode = keyboardMode ? 'keyboard' : 'recognition';
+                button.setAttribute('aria-label', keyboardMode ? '打开系统键盘听写' : '开始语音输入');
                 const status = document.createElement('span');
                 status.className = 'voice-status';
                 status.setAttribute('aria-live', 'polite');
-                button.addEventListener('click', () => toggleVoiceInput(textarea, button, status, Recognition));
+                button.addEventListener('click', () => {
+                    if (keyboardMode) activateKeyboardDictation(textarea, button, status);
+                    else toggleVoiceInput(textarea, button, status, Recognition);
+                });
                 tools.appendChild(status);
                 tools.appendChild(button);
                 textarea.insertAdjacentElement('afterend', tools);
@@ -630,6 +635,33 @@
         function setVoiceStatus(status, message, isError=false) {
             status.textContent = message;
             status.classList.toggle('error', isError);
+        }
+
+        function isIOSDevice() {
+            return /iPad|iPhone|iPod/i.test(navigator.userAgent)
+                || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        function shouldUseKeyboardDictation() {
+            if (!isIOSDevice()) return false;
+            const userAgent = navigator.userAgent;
+            const embeddedApp = /Lark|Feishu|MicroMessenger|DingTalk|BytedanceWebview|NewsArticle|FBAN|FBAV|Line\//i.test(userAgent);
+            const standaloneSafari = /Version\/[\d.]+.*Mobile\/\S+.*Safari\//i.test(userAgent);
+            return embeddedApp || !standaloneSafari;
+        }
+
+        function activateKeyboardDictation(textarea, button, status) {
+            if (activeRecognition) {
+                activeRecognition.stop();
+                activeRecognition = null;
+            }
+            textarea.focus({preventScroll:false});
+            const end = textarea.value.length;
+            textarea.setSelectionRange?.(end, end);
+            button.classList.remove('listening');
+            button.textContent = '键盘听写';
+            button.dataset.voiceMode = 'keyboard';
+            setVoiceStatus(status, '请点击系统键盘上的麦克风开始听写。');
         }
 
         function voiceErrorMessage(error) {
@@ -658,8 +690,7 @@
                 return;
             }
             if (!Recognition) {
-                setVoiceStatus(status, '当前浏览器不支持网页语音输入，请改用 Safari 或 Chrome。', true);
-                textarea.focus();
+                activateKeyboardDictation(textarea, button, status);
                 return;
             }
             button.disabled = true;
@@ -679,6 +710,7 @@
             const recognition = new Recognition();
             const original = textarea.value.trim();
             let finalTranscript = '';
+            let recognitionError = '';
             recognition.lang = 'zh-CN';
             recognition.interimResults = true;
             recognition.continuous = false;
@@ -699,13 +731,21 @@
                 textarea.dispatchEvent(new Event('input', {bubbles: true}));
             };
             recognition.onerror = event => {
-                if (event.error !== 'aborted') setVoiceStatus(status, voiceErrorMessage(event.error), true);
-            };
-            recognition.onend = () => {
-                activeRecognition = null;
+                recognitionError = event.error || 'unknown';
+                if (activeRecognition === recognition) activeRecognition = null;
                 button.classList.remove('listening');
                 button.textContent = '语音输入';
-                if (!status.classList.contains('error')) setVoiceStatus(status, textarea.value.trim() === original ? '语音已结束，未新增文字。' : '语音内容已写入。');
+                if (event.error === 'service-not-allowed' && isIOSDevice()) {
+                    activateKeyboardDictation(textarea, button, status);
+                } else if (event.error !== 'aborted') {
+                    setVoiceStatus(status, voiceErrorMessage(event.error), true);
+                }
+            };
+            recognition.onend = () => {
+                if (activeRecognition === recognition) activeRecognition = null;
+                button.classList.remove('listening');
+                button.textContent = button.dataset.voiceMode === 'keyboard' ? '键盘听写' : '语音输入';
+                if (!recognitionError && !status.classList.contains('error')) setVoiceStatus(status, textarea.value.trim() === original ? '语音已结束，未新增文字。' : '语音内容已写入。');
             };
             try {
                 recognition.start();
