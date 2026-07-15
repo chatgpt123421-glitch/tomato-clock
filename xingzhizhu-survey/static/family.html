@@ -450,26 +450,48 @@
             const token = localStorage.getItem(coordinatorKey) || '';
             return token ? {'X-Family-Coordinator-Token':token} : {};
         };
+        function savedCoordinatorProjects() {
+            const candidates = [];
+            try {
+                const recent = JSON.parse(localStorage.getItem(lastProjectKey) || 'null');
+                if (recent?.project_token && recent?.coordinator_token) candidates.push({...recent,score:100});
+            } catch (_) {}
+            for (let index = 0; index < localStorage.length; index += 1) {
+                const key = localStorage.key(index) || '';
+                if (!key.startsWith('family_coordinator_')) continue;
+                const token = key.slice('family_coordinator_'.length);
+                const credential = localStorage.getItem(key) || '';
+                if (!token || token === 'pending' || !credential) continue;
+                const score = (localStorage.getItem(`family_completed_${token}`) ? 30 : 0)
+                    + (localStorage.getItem(`family_survey_${token}`) ? 20 : 0)
+                    + (localStorage.getItem(`family_member_${token}`) ? 10 : 0);
+                candidates.push({project_token:token,coordinator_token:credential,score});
+            }
+            const unique = new Map();
+            candidates.sort((a,b) => b.score - a.score).forEach(item => {
+                if (!unique.has(item.project_token)) unique.set(item.project_token,item);
+            });
+            return [...unique.values()];
+        }
 
         async function init() {
             if (!projectToken) {
-                let lastProject = null;
-                try { lastProject = JSON.parse(localStorage.getItem(lastProjectKey) || 'null'); } catch (_) {}
-                if (lastProject?.project_token && lastProject?.coordinator_token) {
-                    const resumeToken = String(lastProject.project_token);
-                    const resumeCoordinator = String(lastProject.coordinator_token);
+                for (const savedProject of savedCoordinatorProjects()) {
+                    const resumeToken = String(savedProject.project_token);
+                    const resumeCoordinator = String(savedProject.coordinator_token);
                     try {
                         const response = await fetch(`/api/family-projects/${encodeURIComponent(resumeToken)}`, {
                             headers:{'X-Family-Coordinator-Token':resumeCoordinator}
                         });
                         if (response.ok) {
                             localStorage.setItem(`family_coordinator_${resumeToken}`, resumeCoordinator);
+                            localStorage.setItem(lastProjectKey, JSON.stringify({project_token:resumeToken,coordinator_token:resumeCoordinator}));
                             location.replace(`/family/${resumeToken}`);
                             return;
                         }
                     } catch (_) {}
-                    localStorage.removeItem(lastProjectKey);
                 }
+                localStorage.removeItem(lastProjectKey);
                 project = {home_name:'官网自主填写',home_profile:{},needs_home_profile:true,member_count:0,status:'active',self_start:true};
                 includeHomeStep = true;
                 renderStaticOptions();
