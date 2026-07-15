@@ -330,9 +330,11 @@
         let completedKey = `family_completed_${projectToken || 'pending'}`;
         let coordinatorKey = `family_coordinator_${projectToken || 'pending'}`;
         let newMemberKey = `family_new_member_${projectToken || 'pending'}`;
+        const lastProjectKey = 'jiabao_last_coordinator_project';
         const coordinatorFromUrl = new URLSearchParams(location.search).get('coordinator') || '';
         if (projectToken && coordinatorFromUrl) {
             localStorage.setItem(coordinatorKey, coordinatorFromUrl);
+            localStorage.setItem(lastProjectKey, JSON.stringify({project_token:projectToken,coordinator_token:coordinatorFromUrl}));
             const cleanUrl = new URL(location.href);
             cleanUrl.searchParams.delete('coordinator');
             history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
@@ -451,6 +453,23 @@
 
         async function init() {
             if (!projectToken) {
+                let lastProject = null;
+                try { lastProject = JSON.parse(localStorage.getItem(lastProjectKey) || 'null'); } catch (_) {}
+                if (lastProject?.project_token && lastProject?.coordinator_token) {
+                    const resumeToken = String(lastProject.project_token);
+                    const resumeCoordinator = String(lastProject.coordinator_token);
+                    try {
+                        const response = await fetch(`/api/family-projects/${encodeURIComponent(resumeToken)}`, {
+                            headers:{'X-Family-Coordinator-Token':resumeCoordinator}
+                        });
+                        if (response.ok) {
+                            localStorage.setItem(`family_coordinator_${resumeToken}`, resumeCoordinator);
+                            location.replace(`/family/${resumeToken}`);
+                            return;
+                        }
+                    } catch (_) {}
+                    localStorage.removeItem(lastProjectKey);
+                }
                 project = {home_name:'官网自主填写',home_profile:{},needs_home_profile:true,member_count:0,status:'active',self_start:true};
                 includeHomeStep = true;
                 renderStaticOptions();
@@ -466,6 +485,12 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || '项目读取失败');
                 project = data.project;
+                if (project.is_coordinator) {
+                    localStorage.setItem(lastProjectKey, JSON.stringify({
+                        project_token:projectToken,
+                        coordinator_token:localStorage.getItem(coordinatorKey) || ''
+                    }));
+                }
                 includeHomeStep = project.needs_home_profile;
                 const savedDraft = localStorage.getItem(draftKey);
                 restoreDraft();
@@ -973,6 +998,7 @@
                 coordinatorKey = `family_coordinator_${projectToken}`;
                 newMemberKey = `family_new_member_${projectToken}`;
                 localStorage.setItem(coordinatorKey, data.coordinator_token);
+                localStorage.setItem(lastProjectKey, JSON.stringify({project_token:projectToken,coordinator_token:data.coordinator_token}));
                 project = data.project;
                 project.is_coordinator = true;
                 includeHomeStep = true;
