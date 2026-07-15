@@ -241,7 +241,7 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || '生成失败');
                 input.value = '';
-                hint.innerHTML = `链接已生成：<a href="${escapeHtml(data.invite_url)}" target="_blank">打开家庭填写入口</a>`;
+                hint.innerHTML = `家庭主理人链接已生成：<a href="${escapeHtml(data.coordinator_url)}" target="_blank">打开主理人填写入口</a>。请只把这条链接发给最初对接的男主人或女主人。`;
                 await loadProjects();
             } catch (error) {
                 hint.textContent = error.message;
@@ -257,12 +257,12 @@
                 if (!response.ok) throw new Error(data.message || '读取失败');
                 if (!data.items.length) { container.innerHTML = '<div class="empty">还没有家庭项目。</div>'; return; }
                 container.innerHTML = `<table><thead><tr><th>编号</th><th>住宅称呼</th><th>成员答卷</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead><tbody>${data.items.map(item => {
-                    const url = `${location.origin}/family/${item.token}`;
+                    const url = `${location.origin}/family/${item.token}?coordinator=${encodeURIComponent(item.coordinator_token)}`;
                     const statusLabel = item.status === 'ready_for_review' ? '待设计师查看' : '填写中';
                     return `<tr>
                         <td>#${item.id}</td><td><strong>${escapeHtml(item.home_name)}</strong></td><td>${item.member_count} 份</td>
                         <td><span class="status">${statusLabel}</span></td><td>${escapeHtml(item.created_at)}</td>
-                        <td><div class="actions"><a href="${url}" target="_blank">打开</a><button onclick="copyLink('${url}', this)">复制链接</button><button onclick="viewReport(${item.id})">查看汇总</button>${item.status === 'ready_for_review' ? `<button onclick="reopenProject(${item.id})">重新开放</button>` : ''}</div></td>
+                        <td><div class="actions"><a href="${url}" target="_blank">打开主理人入口</a><button onclick="copyLink('${url}', this)">复制主理人链接</button><button onclick="viewReport(${item.id})">查看汇总</button>${item.status === 'ready_for_review' ? `<button onclick="reopenProject(${item.id})">重新开放</button>` : ''}</div></td>
                     </tr>`;
                 }).join('')}</tbody></table>`;
                 const projectId = Number(new URLSearchParams(location.search).get('project') || 0);

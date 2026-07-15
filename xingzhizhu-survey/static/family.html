@@ -231,13 +231,9 @@
                     <div class="field"><label>计划入住时间</label><input type="text" id="moveIn" maxlength="40" placeholder="例如：2027年春节前"></div>
                 </div>
             </div>
-            <div class="question"><div class="question-title">这套住宅还包含哪些部分？</div><div class="choices three" data-field="home_features" data-type="checkbox"></div></div>
+            <div class="question"><div class="question-title">这套住宅目前已知还包含哪些特殊区域？</div><div class="question-tip">用于补充别墅、大平层或复式住宅的特殊使用条件，不确定可以选“暂不清楚”。</div><div class="choices three" data-field="home_features" data-type="checkbox"></div></div>
             <div class="question"><div class="question-title">这套住宅通常会有哪些人住、哪些人偶尔来住？</div><textarea id="householdUse" placeholder="例如：夫妻和两个孩子常住，父母每年来住两个月，有住家保姆，亲友偶尔留宿"></textarea></div>
-            <div class="question"><div class="grid-2">
-                <div class="field"><label>平时在家更接近哪种状态？</label><select id="homeRhythm"><option value="">暂不确定</option><option>大多数时间居家，偏安静</option><option>工作日在家较少</option><option>经常有亲友来访或聚餐</option><option>居家办公或学习时间较多</option><option>家庭成员作息差异较大</option></select></div>
-                <div class="field"><label>客人留宿通常怎么安排？</label><select id="guestStay"><option value="">暂不确定</option><option>基本不留宿</option><option>偶尔留宿，可用多功能空间</option><option>经常留宿，希望有固定客房</option><option>父母或长辈会阶段性长住</option></select></div>
-            </div></div>
-            <div class="question"><div class="question-title">未来3至5年，家庭可能发生哪些变化？</div><textarea id="futureChanges" placeholder="例如：孩子进入中学、老人可能阶段性同住、计划增加家政人员"></textarea></div>
+            <div class="question"><div class="question-title">未来3至5年，家庭可能发生哪些变化？</div><div class="question-tip">可多选。这里只记录家庭阶段变化，相关生活需求会在后面继续展开。</div><div class="choices three" data-field="future_changes" data-type="checkbox"></div></div>
             <div class="question"><div class="question-title">目前怎样考虑整体投入？</div><div class="choices" data-field="budget_status" data-type="radio"></div><input type="text" id="budgetRange" style="margin-top:12px;" placeholder="已明确范围时可补充，选填"></div>
             <div class="question"><div class="grid-2">
                 <div class="field"><label>有没有必须赶上的入住或工期节点？</label><input type="text" id="scheduleConstraints" placeholder="例如：孩子开学前、春节前；没有可留空"></div>
@@ -251,10 +247,8 @@
         <section class="step" id="step-vision">
             <h2>先谈未来想怎样生活</h2>
             <p class="section-lead">空间功能还没有确定，先不选择厨房、书房或影音室。设计师需要先知道哪些生活值得被支持。</p>
-            <div class="question"><div class="question-title">想象已经住进新家，最希望自己的一天和现在有什么不同？</div><textarea id="futureDay" placeholder="可以从早晨、回家、家人相处、独处、家务或睡眠说起"></textarea></div>
             <div class="question"><div class="question-title">新家最重要的感受是什么？ <span class="required">至少1项，最多3项</span></div><div class="choices three" data-field="feelings" data-type="checkbox" data-max="3"></div></div>
             <div class="question"><div class="question-title">现在很少发生，但希望在新家经常发生的生活</div><div class="choices" data-field="future_activities" data-type="checkbox"></div><textarea id="futureActivityOther" style="margin-top:12px;" placeholder="其他希望增加的生活，选填"></textarea></div>
-            <div class="question"><div class="question-title">过去住过的房子里，哪些体验绝不能在新家再次发生？ <span class="required">最多3项</span></div><div class="question-tip">新房项目不再追问旧房细节；翻新项目仅在相关问题触发后留给设计师继续核对。</div><div class="choices" data-field="boundaries" data-type="checkbox" data-max="3"></div><textarea id="boundaryOther" style="margin-top:12px;" placeholder="其他不可重复的体验，选填"></textarea></div>
             <div class="actions"><button class="btn secondary" onclick="goBack()">返回</button><button class="btn primary" onclick="goNext()">继续</button></div>
         </section>
 
@@ -295,12 +289,8 @@
         </section>
 
         <section class="step" id="step-final">
-            <h2>确认您最重要的表达</h2>
-            <p class="section-lead">提交后，设计师会在家庭汇总中看到您的个人需求；其他家庭成员不会看到您的具体答案或家庭分歧。</p>
-            <div class="question"><div class="question-title">最希望新家实现的三件事 <span class="required">至少1项，最多3项</span></div><div class="choices" id="priorityChoices" data-field="priorities" data-type="checkbox" data-max="3"></div></div>
-            <div class="question"><div class="question-title">最不能妥协的一件事</div><textarea id="nonNegotiable" placeholder="例如：睡觉时不能被公共活动的声音打扰"></textarea></div>
-            <div class="question"><div class="question-title">希望设计师进一步解释或核对什么？</div><textarea id="designerQuestions" placeholder="可以写设备、生活取舍、家庭分歧或不确定的专业问题"></textarea></div>
-            <div class="question"><div class="question-title">其他补充</div><textarea id="finalNotes" placeholder="任何没有被前面问题覆盖、但对您很重要的内容"></textarea></div>
+            <h2>提交前确认</h2>
+            <p class="section-lead">请快速确认下面的填写范围。需要修改时，可直接点击上方已完成的步骤返回。</p>
             <div class="question"><h3>提交前摘要</h3><ul class="summary-list" id="memberSummary"></ul></div>
             <div class="actions"><button class="btn secondary" onclick="goBack()">返回修改</button><button class="btn primary wide" id="submitBtn" onclick="submitMember()">提交个人需求</button></div>
         </section>
@@ -318,10 +308,11 @@
                     <span id="copyStatus" style="margin-left:10px;color:var(--green);font-size:13px;"></span>
                 </div>
                 <div class="finish-box" id="finishBox">
-                    <h3>全家都填完了吗？</h3>
-                    <p>确认所有需要参与的家人都已提交后，再结束家庭填写并生成设计师汇总。</p>
-                    <button class="btn primary" id="completeFamilyBtn" type="button" onclick="completeFamily()">家人都填完了，生成家庭汇总</button>
+                    <h3>由家庭主理人决定何时结束</h3>
+                    <p id="familyProgressText">其他成员没有全部填写也可以结束。结束后将生成家庭简报，并停止继续填写。</p>
+                    <button class="btn primary" id="completeFamilyBtn" type="button" onclick="completeFamily()">结束家庭填写，生成家庭汇总</button>
                 </div>
+                <div class="finish-box hidden" id="memberWaitingBox"><h3>您的需求已经提交</h3><p>家庭主理人会继续邀请其他成员，并在合适的时候结束家庭填写。</p></div>
                 <div class="finish-box hidden" id="familyCompleteBox">
                     <h3>家庭汇总已经生成</h3>
                     <p>设计师会看到完整需求、逐场景设计输入、明确不要、待解释和待专业核对事项。</p>
@@ -337,6 +328,15 @@
         let draftKey = `family_survey_${projectToken || 'pending'}`;
         let memberKey = `family_member_${projectToken || 'pending'}`;
         let completedKey = `family_completed_${projectToken || 'pending'}`;
+        let coordinatorKey = `family_coordinator_${projectToken || 'pending'}`;
+        let newMemberKey = `family_new_member_${projectToken || 'pending'}`;
+        const coordinatorFromUrl = new URLSearchParams(location.search).get('coordinator') || '';
+        if (projectToken && coordinatorFromUrl) {
+            localStorage.setItem(coordinatorKey, coordinatorFromUrl);
+            const cleanUrl = new URL(location.href);
+            cleanUrl.searchParams.delete('coordinator');
+            history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+        }
         const steps = ['welcome','identity','home','vision','scan','details','professional','style','final','done'];
         let currentStep = 'loading';
         let project = null;
@@ -345,21 +345,21 @@
         let state = {
             identity:{display_name:'',role:'',age_group:'',answer_source:'未单独询问'},
             participation:[], home_profile:{},
-            vision:{future_day:'',feelings:[],future_activities:[],future_activity_other:'',boundaries:[],boundary_other:''},
+            vision:{feelings:[],future_activities:[],future_activity_other:''},
             scene_scan:{}, scene_details:{}, professional:{}, styles:{liked:[],avoid:'',surface_finish:'',wood_tone:'',lasting_preference:'',avoid_details:''},
-            final:{priorities:[],non_negotiable:'',designer_questions:'',notes:''},
+            final:{},
             meta:{max_reached:0}
         };
 
         const optionSets = {
-            role:['业主本人','伴侣','爷爷、奶奶、外公或外婆','儿子','女儿','其他家庭成员','保姆、家政或照护人员'],
+            role:['男主人','女主人','爷爷、奶奶、外公或外婆','儿子','女儿','其他家庭成员','保姆、家政或照护人员'],
             age_group:['儿童','青少年','18至35岁','36至55岁','56至70岁','70岁以上'],
             participation:['经常做饭或准备饮品','负责采购、囤货或餐厨收纳','负责洗衣、晾晒或衣物整理','负责日常清洁和家务','照顾孩子','照顾老人或行动不便者','居家办公','在家学习','经常招待亲友','在家运动','观影、游戏或K歌','喝茶、阅读、收藏或艺术创作','照顾宠物','使用庭院、地下室、车库或户外装备','主要关注自己的起居、睡眠和个人物品'],
             home_features:['地下室','庭院','露台','阁楼','车库','室内电梯','户外泳池或水景','独立家政区域','暂不清楚'],
+            future_changes:['计划要孩子或增加家庭成员','孩子进入新的成长阶段','老人可能阶段性或长期同住','可能增加保姆、家政或照护人员','家庭成员居家办公或学习增加','家庭成员行动能力可能变化','暂时没有明确变化','暂不确定，需要与家人确认'],
             budget_status:['投入范围已经明确','正在比较和评估','希望设计师结合需求重点帮助梳理','暂时不讨论投入范围'],
             feelings:['放松','安静','通透','整洁','温暖','有陪伴感','有个人空间','适合社交','有品质和审美','安全健康'],
             future_activities:['家人更常一起吃饭','更从容地做饭和准备饮品','在家安静工作或学习','规律运动','在家招待朋友','喝茶、阅读或创作','更好地照顾老人孩子','更轻松地完成家务','使用庭院或户外空间','享受影音、游戏或收藏'],
-            boundaries:['收纳混乱','做饭不顺手','卫生间互相等待','睡眠被打扰','家务路线麻烦','采光或灯光不舒服','温湿度或空气不舒服','噪音或隐私问题','家人不同活动互相干扰','上下楼或搬运不方便','没有特别需要避免的体验']
         };
 
         const ratings = ['经常参与，而且很重要','偶尔参与，但有明确想法','不直接参与，但结果会影响我','与我关系不大','还没想过'];
@@ -444,6 +444,10 @@
         const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
         const activeStepList = () => steps.filter(step => step !== 'home' || includeHomeStep);
         const stepLabels = {identity:'家庭成员',home:'这套住宅',vision:'未来生活',scan:'生活扫描',details:'重点追问',professional:'设计偏好',style:'视觉感受',final:'提交确认'};
+        const coordinatorHeaders = () => {
+            const token = localStorage.getItem(coordinatorKey) || '';
+            return token ? {'X-Family-Coordinator-Token':token} : {};
+        };
 
         async function init() {
             if (!projectToken) {
@@ -458,11 +462,12 @@
                 return;
             }
             try {
-                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}`);
+                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}`, {headers:coordinatorHeaders()});
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || '项目读取失败');
                 project = data.project;
                 includeHomeStep = project.needs_home_profile;
+                const savedDraft = localStorage.getItem(draftKey);
                 restoreDraft();
                 renderStaticOptions();
                 renderProject();
@@ -473,12 +478,31 @@
                     showFamilyComplete();
                     return;
                 }
+                const forceNewMember = sessionStorage.getItem(newMemberKey) === '1';
+                sessionStorage.removeItem(newMemberKey);
                 let completed = null;
                 try { completed = JSON.parse(localStorage.getItem(completedKey) || 'null'); } catch (_) {}
+                if (forceNewMember) {
+                    showStep('identity');
+                    return;
+                }
                 if (completed) {
                     document.getElementById('doneCode').textContent = `成员记录 #${completed.member_id}`;
                     document.getElementById('inviteUrl').textContent = completed.invite_url;
                     window.familyInviteUrl = completed.invite_url;
+                    showStep('done');
+                    return;
+                }
+                if (savedDraft) {
+                    const list = activeStepList();
+                    const resumeIndex = Math.max(1, Math.min(Number(state.meta?.max_reached || 1), list.length - 2));
+                    showStep(list[resumeIndex]);
+                    return;
+                }
+                if (project.is_coordinator && project.coordinator_submitted) {
+                    document.getElementById('doneCode').textContent = `家庭主理人记录 #${project.coordinator_member_id}`;
+                    window.familyInviteUrl = `${location.origin}/family/${projectToken}`;
+                    document.getElementById('inviteUrl').textContent = window.familyInviteUrl;
                     showStep('done');
                     return;
                 }
@@ -506,7 +530,6 @@
         function renderStaticOptions() {
             document.querySelectorAll('[data-field][data-type]').forEach(container => {
                 const field = container.dataset.field;
-                if (field === 'priorities') return;
                 const values = optionSets[field] || [];
                 container.innerHTML = values.map(value => choiceHtml(field,value,container.dataset.type)).join('');
             });
@@ -524,9 +547,8 @@
         function fieldTarget(field) {
             if (['role','age_group'].includes(field)) return state.identity;
             if (field === 'participation') return state;
-            if (['home_features','budget_status'].includes(field)) return state.home_profile;
-            if (['feelings','future_activities','boundaries'].includes(field)) return state.vision;
-            if (field === 'priorities') return state.final;
+            if (['home_features','budget_status','future_changes'].includes(field)) return state.home_profile;
+            if (['feelings','future_activities'].includes(field)) return state.vision;
             return state;
         }
 
@@ -543,9 +565,9 @@
                 const index = current.indexOf(value);
                 if (index >= 0) current.splice(index,1);
                 else {
-                    if (field === 'boundaries') {
-                        if (value === '没有特别需要避免的体验') current = [];
-                        else current = current.filter(item => item !== '没有特别需要避免的体验');
+                    if (field === 'future_changes') {
+                        if (value === '暂时没有明确变化') current = [];
+                        else current = current.filter(item => item !== '暂时没有明确变化');
                     }
                     const max = Number(container.dataset.max || 0);
                     if (max && current.length >= max) { alert(`最多选择${max}项`); return; }
@@ -554,7 +576,6 @@
                 target[field] = current;
             }
             syncChoices(container);
-            if (field === 'priorities') renderMemberSummary();
             saveDraft();
         }
 
@@ -584,13 +605,22 @@
             container.innerHTML = active.map(scene => {
                 const rating = state.scene_scan[scene.id];
                 const savedDetail = state.scene_details[scene.id] || {};
-                const detail = {needs:[],note:'',impact:'',want:'',avoid:'',...savedDetail};
+                const detail = {needs:[],note:'',impact:'',...savedDetail};
                 detail.needs = Array.isArray(detail.needs) ? detail.needs : [];
-                state.scene_details[scene.id] = detail;
                 const impactOnly = rating === '不直接参与，但结果会影响我';
-                const outcomeFields = `<div class="grid-2" style="margin-top:14px;"><div class="field"><label>在这项生活里，您明确希望新家做到什么？（选填）</label><textarea data-detail-scene="${scene.id}" data-detail-field="want" placeholder="写结果和体验即可，不需要给设计方案">${esc(detail.want)}</textarea></div><div class="field"><label>有什么明确不想要或不能接受？（选填）</label><textarea data-detail-scene="${scene.id}" data-detail-field="avoid" placeholder="例如不接受互相打扰、台面长期杂乱">${esc(detail.avoid)}</textarea></div></div>`;
+                const legacyNotes = [
+                    detail.want ? `希望改善：${detail.want}` : '',
+                    detail.avoid ? `明确不能接受：${detail.avoid}` : ''
+                ].filter(Boolean);
+                if (legacyNotes.length) {
+                    const target = impactOnly ? 'impact' : 'note';
+                    detail[target] = [detail[target], ...legacyNotes].filter(Boolean).join('\n');
+                }
+                delete detail.want;
+                delete detail.avoid;
+                state.scene_details[scene.id] = detail;
                 return `<section class="detail-section"><div class="detail-head"><div><h3>${scene.name}</h3><div class="scene-desc">${scene.desc}</div></div><span class="detail-mode">${impactOnly ? '只问影响与边界' : rating === '经常参与，而且很重要' ? '完整追问' : '精简追问'}</span></div>
-                    ${impactOnly ? `<div class="field"><label>这项生活会怎样影响您的安静、隐私、安全、动线或相处？</label><textarea data-detail-scene="${scene.id}" data-detail-field="impact" placeholder="只写与自己有关的影响">${esc(detail.impact)}</textarea></div>` : `<div class="question-tip">哪些内容最接近您的真实生活？可多选。</div><div class="choices three detail-needs" data-detail-scene="${scene.id}">${scene.needs.map(need => `<label class="choice checkbox ${detail.needs.includes(need) ? 'selected' : ''}" data-detail-need="${esc(need)}"><span class="choice-mark"></span><span class="choice-copy">${esc(need)}</span></label>`).join('')}</div><div class="field" style="margin-top:12px;"><label>还有什么频率、习惯、冲突或边界需要设计师知道？</label><textarea data-detail-scene="${scene.id}" data-detail-field="note" placeholder="例如谁使用、多久一次、与谁互相影响">${esc(detail.note)}</textarea></div>`}${outcomeFields}</section>`;
+                    ${impactOnly ? `<div class="field"><label>这项生活会怎样影响您的安静、隐私、安全、动线或相处？</label><textarea data-detail-scene="${scene.id}" data-detail-field="impact" placeholder="可写受到的影响、希望改善和明确不能接受的情况">${esc(detail.impact)}</textarea></div>` : `<div class="question-tip">哪些内容最接近您的真实生活？可多选。</div><div class="choices three detail-needs" data-detail-scene="${scene.id}">${scene.needs.map(need => `<label class="choice checkbox ${detail.needs.includes(need) ? 'selected' : ''}" data-detail-need="${esc(need)}"><span class="choice-mark"></span><span class="choice-copy">${esc(need)}</span></label>`).join('')}</div><div class="field" style="margin-top:12px;"><label>上面没有覆盖的内容，可以在这里补充（选填）</label><textarea data-detail-scene="${scene.id}" data-detail-field="note" placeholder="可写使用频率、生活习惯、家庭冲突、希望改善或明确不能接受的情况">${esc(detail.note)}</textarea></div>`}</section>`;
             }).join('');
             container.querySelectorAll('[data-detail-need]').forEach(el => el.addEventListener('click', () => {
                 const sceneId = el.parentElement.dataset.detailScene;
@@ -825,27 +855,9 @@
             avoid.onchange = () => { state.styles.avoid = avoid.value; saveDraft(); };
         }
 
-        function renderPriorities() {
-            const candidates = [...state.vision.feelings, ...scenes.filter(scene => ['经常参与，而且很重要','偶尔参与，但有明确想法'].includes(state.scene_scan[scene.id])).map(scene => scene.name)];
-            const unique = [...new Set(candidates)];
-            state.final.priorities = state.final.priorities.filter(item => unique.includes(item));
-            const container = document.getElementById('priorityChoices');
-            container.innerHTML = unique.length ? unique.map(value => choiceHtml('priorities',value,'checkbox')).join('') : '<div class="callout">请先返回补充新家感受或生活场景。</div>';
-            container.querySelectorAll('.choice').forEach(el => el.addEventListener('click', event => {
-                event.preventDefault();
-                handleChoice(el);
-            }));
-            syncChoices(container);
-        }
-
         function collectInputs() {
             state.identity.display_name = document.getElementById('displayName').value.trim();
-            state.vision.future_day = document.getElementById('futureDay').value.trim();
             state.vision.future_activity_other = document.getElementById('futureActivityOther').value.trim();
-            state.vision.boundary_other = document.getElementById('boundaryOther').value.trim();
-            state.final.non_negotiable = document.getElementById('nonNegotiable').value.trim();
-            state.final.designer_questions = document.getElementById('designerQuestions').value.trim();
-            state.final.notes = document.getElementById('finalNotes').value.trim();
             state.styles.surface_finish = document.getElementById('surfaceFinish').value;
             state.styles.wood_tone = document.getElementById('woodTone').value;
             state.styles.lasting_preference = document.getElementById('lastingPreference').value;
@@ -854,9 +866,8 @@
                 ...state.home_profile, home_name:document.getElementById('homeName').value.trim(),
                 house_type:document.getElementById('houseType').value, city:document.getElementById('city').value.trim(),
                 area:document.getElementById('area').value, levels:document.getElementById('levels').value, stage:document.getElementById('houseStage').value,
-                move_in:document.getElementById('moveIn').value.trim(), future_changes:document.getElementById('futureChanges').value.trim(),
-                household_use:document.getElementById('householdUse').value.trim(), home_rhythm:document.getElementById('homeRhythm').value,
-                guest_stay:document.getElementById('guestStay').value, budget_range:document.getElementById('budgetRange').value.trim(),
+                move_in:document.getElementById('moveIn').value.trim(),
+                household_use:document.getElementById('householdUse').value.trim(), budget_range:document.getElementById('budgetRange').value.trim(),
                 schedule_constraints:document.getElementById('scheduleConstraints').value.trim(), decision_roles:document.getElementById('decisionRoles').value.trim(),
                 process_preference:document.getElementById('processPreference').value, known_limits:document.getElementById('knownLimits').value.trim()
             };
@@ -865,12 +876,7 @@
 
         function restoreInputs() {
             document.getElementById('displayName').value = state.identity.display_name || '';
-            document.getElementById('futureDay').value = state.vision.future_day || '';
             document.getElementById('futureActivityOther').value = state.vision.future_activity_other || '';
-            document.getElementById('boundaryOther').value = state.vision.boundary_other || '';
-            document.getElementById('nonNegotiable').value = state.final.non_negotiable || '';
-            document.getElementById('designerQuestions').value = state.final.designer_questions || '';
-            document.getElementById('finalNotes').value = state.final.notes || '';
             document.getElementById('surfaceFinish').value = state.styles.surface_finish || '';
             document.getElementById('woodTone').value = state.styles.wood_tone || '';
             document.getElementById('lastingPreference').value = state.styles.lasting_preference || '';
@@ -881,8 +887,7 @@
                 document.getElementById('houseType').value = p.house_type || ''; document.getElementById('city').value = p.city || '';
                 document.getElementById('area').value = p.area || ''; document.getElementById('levels').value = p.levels || '';
                 document.getElementById('houseStage').value = p.stage || ''; document.getElementById('moveIn').value = p.move_in || '';
-                document.getElementById('householdUse').value = p.household_use || ''; document.getElementById('homeRhythm').value = p.home_rhythm || '';
-                document.getElementById('guestStay').value = p.guest_stay || ''; document.getElementById('futureChanges').value = p.future_changes || '';
+                document.getElementById('householdUse').value = p.household_use || '';
                 document.getElementById('budgetRange').value = p.budget_range || ''; document.getElementById('scheduleConstraints').value = p.schedule_constraints || '';
                 document.getElementById('decisionRoles').value = p.decision_roles || ''; document.getElementById('processPreference').value = p.process_preference || '';
                 document.getElementById('knownLimits').value = p.known_limits || '';
@@ -902,7 +907,6 @@
                 const incomplete = Object.values(state.professional).find(item => item.status === '已经明确想要' && !((Array.isArray(item.selections) ? item.selections : []).length || String(item.detail || '').trim()));
                 if (incomplete) return alert(`您选择了“${incomplete.label}”明确想要，请再选择具体形式`), false;
             }
-            if (step === 'final' && !state.final.priorities.length) return alert('请至少确认一项最重要的表达'), false;
             return true;
         }
 
@@ -923,7 +927,8 @@
             if (step === 'details') renderDetails();
             if (step === 'professional') renderProfessional();
             if (step === 'style') renderStyles();
-            if (step === 'final') { renderPriorities(); restoreInputs(); renderMemberSummary(); }
+            if (step === 'final') { restoreInputs(); renderMemberSummary(); }
+            if (step === 'done') renderDoneAccess();
             window.scrollTo({top:0,behavior:'smooth'});
         }
 
@@ -965,7 +970,11 @@
                 draftKey = `family_survey_${projectToken}`;
                 memberKey = `family_member_${projectToken}`;
                 completedKey = `family_completed_${projectToken}`;
+                coordinatorKey = `family_coordinator_${projectToken}`;
+                newMemberKey = `family_new_member_${projectToken}`;
+                localStorage.setItem(coordinatorKey, data.coordinator_token);
                 project = data.project;
+                project.is_coordinator = true;
                 includeHomeStep = true;
                 history.replaceState({}, '', new URL(data.invite_url).pathname);
                 renderProject();
@@ -996,11 +1005,10 @@
             const explain = Object.values(state.professional).filter(item => item.status === '想了解，请设计师解释').map(item => item.label);
             const rows = [
                 ['成员',`${state.identity.display_name || state.identity.role || '家庭成员'} · ${state.identity.role || '-'}`],
-                ['最重要',state.final.priorities.join('、') || '待确认'],
+                ['希望新家带来的感受',state.vision.feelings.join('、') || '未选择'],
                 ['重点生活',importantScenes.join('、') || '暂无高优先场景'],
                 ['明确偏好',explicit.join('、') || '暂无'],
-                ['请解释',explain.join('、') || state.final.designer_questions || '暂无'],
-                ['不可妥协',state.final.non_negotiable || '未填写']
+                ['请设计师解释',explain.join('、') || '暂无']
             ];
             document.getElementById('memberSummary').innerHTML = rows.map(([label,value]) => `<li><strong>${label}</strong><span>${esc(value)}</span></li>`).join('');
         }
@@ -1014,9 +1022,8 @@
 
         function buildReport() {
             return {
-                priorities:state.final.priorities,
+                priorities:state.vision.feelings,
                 important_scenes:scenes.filter(scene => state.scene_scan[scene.id] === '经常参与，而且很重要').map(scene => scene.name),
-                non_negotiable:state.final.non_negotiable,
                 explicit_preferences:Object.values(state.professional).filter(item => item.status === '已经明确想要').map(formatExplicitPreference),
                 needs_designer_explanation:Object.values(state.professional).filter(item => ['想了解，请设计师解释','没有明确想法，请设计师判断'].includes(item.status))
             };
@@ -1028,7 +1035,7 @@
             button.disabled = true; button.textContent = '正在保存...';
             try {
                 const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}/members`, {
-                    method:'POST', headers:{'Content-Type':'application/json'},
+                    method:'POST', headers:{'Content-Type':'application/json',...coordinatorHeaders()},
                     body:JSON.stringify({identity:state.identity,answers:{participation:state.participation,vision:state.vision,scene_scan:state.scene_scan,scene_details:state.scene_details,professional:state.professional,styles:state.styles,final:state.final},home_profile:includeHomeStep?state.home_profile:null,report:buildReport(),member_token:localStorage.getItem(memberKey)||''})
                 });
                 const data = await response.json();
@@ -1039,6 +1046,8 @@
                 document.getElementById('doneCode').textContent = `成员记录 #${data.member_id}`;
                 document.getElementById('inviteUrl').textContent = data.invite_url;
                 window.familyInviteUrl = data.invite_url;
+                project.member_count = data.member_count;
+                if (project.is_coordinator) project.coordinator_submitted = true;
                 showStep('done');
             } catch (error) { alert(error.message); }
             finally { button.disabled=false; button.textContent='提交个人需求'; }
@@ -1048,13 +1057,25 @@
             try { await navigator.clipboard.writeText(window.familyInviteUrl); document.getElementById('copyStatus').textContent='已复制'; }
             catch (_) { window.prompt('复制家庭邀请链接',window.familyInviteUrl); }
         }
+        function renderDoneAccess() {
+            if (!project || project.status === 'ready_for_review') return;
+            const isCoordinator = Boolean(project.is_coordinator);
+            document.getElementById('finishBox').classList.toggle('hidden', !isCoordinator);
+            document.getElementById('memberWaitingBox').classList.toggle('hidden', isCoordinator);
+            if (isCoordinator) {
+                const count = Number(project.member_count || 0);
+                const progress = count ? `当前已有 ${count} 位家庭成员提交。` : '家庭成员答卷已保存。';
+                document.getElementById('familyProgressText').textContent = `${progress}其他成员没有全部填写也可以结束；结束后将生成家庭简报，并停止继续填写。`;
+            }
+        }
         async function completeFamily() {
-            if (!confirm('请确认：需要参与的家庭成员都已经提交。完成后将停止继续填写，并生成设计师汇总。')) return;
+            if (!project?.is_coordinator) return alert('只有家庭主理人可以结束家庭填写');
+            if (!confirm('确认结束家庭填写吗？其他成员即使还没提交，也会停止继续填写。系统将生成家庭简报和设计师汇总。')) return;
             const button = document.getElementById('completeFamilyBtn');
             button.disabled = true;
             button.textContent = '正在生成家庭汇总...';
             try {
-                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}/complete`, {method:'POST'});
+                const response = await fetch(`/api/family-projects/${encodeURIComponent(projectToken)}/complete`, {method:'POST',headers:coordinatorHeaders()});
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || '家庭项目结束失败');
                 project.status = data.status;
@@ -1063,7 +1084,7 @@
             } catch (error) {
                 alert(error.message);
                 button.disabled = false;
-                button.textContent = '家人都填完了，生成家庭汇总';
+                button.textContent = '结束家庭填写，生成家庭汇总';
             }
         }
         function showFamilyComplete(memberCount) {
@@ -1073,6 +1094,7 @@
             document.getElementById('doneLead').textContent = '设计师会先查看家庭共识、每个人的重点和需要继续讨论的问题，再与您进一步沟通。';
             document.getElementById('inviteBox').classList.add('hidden');
             document.getElementById('finishBox').classList.add('hidden');
+            document.getElementById('memberWaitingBox').classList.add('hidden');
             document.getElementById('familyCompleteBox').classList.remove('hidden');
             document.getElementById('anotherMemberBtn').classList.add('hidden');
             loadCustomerReport();
@@ -1103,7 +1125,13 @@
                 content.innerHTML = `<div class="callout">${esc(error.message)}</div>`;
             }
         }
-        function startAnotherMember() { localStorage.removeItem(memberKey); localStorage.removeItem(completedKey); localStorage.removeItem(draftKey); location.reload(); }
+        function startAnotherMember() {
+            localStorage.removeItem(memberKey);
+            localStorage.removeItem(completedKey);
+            localStorage.removeItem(draftKey);
+            sessionStorage.setItem(newMemberKey, '1');
+            location.reload();
+        }
 
         function saveDraft() { try { localStorage.setItem(draftKey,JSON.stringify(state)); } catch(_){} }
         function restoreDraft() {

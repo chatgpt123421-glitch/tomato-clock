@@ -84,6 +84,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS family_projects (
                 id SERIAL PRIMARY KEY,
                 token TEXT UNIQUE NOT NULL,
+                coordinator_token TEXT,
+                coordinator_member_id INTEGER,
                 home_name TEXT NOT NULL,
                 home_profile TEXT,
                 status TEXT DEFAULT 'active',
@@ -92,6 +94,16 @@ def init_db():
             )
             """
         )
+        conn.run("ALTER TABLE family_projects ADD COLUMN IF NOT EXISTS coordinator_token TEXT")
+        conn.run("ALTER TABLE family_projects ADD COLUMN IF NOT EXISTS coordinator_member_id INTEGER")
+        for row in conn.run(
+            "SELECT id FROM family_projects WHERE coordinator_token IS NULL OR coordinator_token=''"
+        ):
+            conn.run(
+                "UPDATE family_projects SET coordinator_token=:token WHERE id=:id",
+                token=secrets.token_urlsafe(24),
+                id=row[0],
+            )
         conn.run(
             """
             CREATE TABLE IF NOT EXISTS family_members (
@@ -108,6 +120,16 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
+            """
+        )
+        conn.run(
+            """
+            UPDATE family_projects p
+            SET coordinator_member_id=(
+                SELECT MIN(m.id) FROM family_members m WHERE m.project_id=p.id
+            )
+            WHERE p.coordinator_member_id IS NULL
+              AND EXISTS (SELECT 1 FROM family_members m WHERE m.project_id=p.id)
             """
         )
         conn.close()
@@ -152,6 +174,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS family_projects (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 token TEXT UNIQUE NOT NULL,
+                coordinator_token TEXT,
+                coordinator_member_id INTEGER,
                 home_name TEXT NOT NULL,
                 home_profile TEXT,
                 status TEXT DEFAULT 'active',
@@ -160,6 +184,21 @@ def init_db():
             )
             """
         )
+        try:
+            c.execute("ALTER TABLE family_projects ADD COLUMN coordinator_token TEXT")
+        except Exception:
+            pass
+        try:
+            c.execute("ALTER TABLE family_projects ADD COLUMN coordinator_member_id INTEGER")
+        except Exception:
+            pass
+        for row in c.execute(
+            "SELECT id FROM family_projects WHERE coordinator_token IS NULL OR coordinator_token=''"
+        ).fetchall():
+            c.execute(
+                "UPDATE family_projects SET coordinator_token=? WHERE id=?",
+                (secrets.token_urlsafe(24), row[0]),
+            )
         c.execute(
             """
             CREATE TABLE IF NOT EXISTS family_members (
@@ -177,6 +216,16 @@ def init_db():
                 updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(project_id) REFERENCES family_projects(id)
             )
+            """
+        )
+        c.execute(
+            """
+            UPDATE family_projects
+            SET coordinator_member_id=(
+                SELECT MIN(m.id) FROM family_members m WHERE m.project_id=family_projects.id
+            )
+            WHERE coordinator_member_id IS NULL
+              AND EXISTS (SELECT 1 FROM family_members m WHERE m.project_id=family_projects.id)
             """
         )
         conn.commit()
@@ -891,7 +940,7 @@ def _family_project_by_token(token):
     if DATABASE_URL:
         conn = _pg_conn()
         rows = conn.run(
-            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE token = :token",
+            "SELECT id, token, coordinator_token, coordinator_member_id, home_name, home_profile, status, created_at FROM family_projects WHERE token = :token",
             token=token,
         )
         conn.close()
@@ -899,7 +948,7 @@ def _family_project_by_token(token):
         import sqlite3
         conn = sqlite3.connect(DB_PATH)
         rows = conn.execute(
-            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE token = ?",
+            "SELECT id, token, coordinator_token, coordinator_member_id, home_name, home_profile, status, created_at FROM family_projects WHERE token = ?",
             (token,),
         ).fetchall()
         conn.close()
@@ -909,10 +958,12 @@ def _family_project_by_token(token):
     return {
         "id": row[0],
         "token": row[1],
-        "home_name": row[2],
-        "home_profile": _safe_json(row[3]),
-        "status": row[4],
-        "created_at": str(row[5]),
+        "coordinator_token": row[2],
+        "coordinator_member_id": row[3],
+        "home_name": row[4],
+        "home_profile": _safe_json(row[5]),
+        "status": row[6],
+        "created_at": str(row[7]),
     }
 
 
@@ -920,7 +971,7 @@ def _family_project_by_id(project_id):
     if DATABASE_URL:
         conn = _pg_conn()
         rows = conn.run(
-            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE id = :id",
+            "SELECT id, token, coordinator_token, coordinator_member_id, home_name, home_profile, status, created_at FROM family_projects WHERE id = :id",
             id=project_id,
         )
         conn.close()
@@ -928,7 +979,7 @@ def _family_project_by_id(project_id):
         import sqlite3
         conn = sqlite3.connect(DB_PATH)
         rows = conn.execute(
-            "SELECT id, token, home_name, home_profile, status, created_at FROM family_projects WHERE id = ?",
+            "SELECT id, token, coordinator_token, coordinator_member_id, home_name, home_profile, status, created_at FROM family_projects WHERE id = ?",
             (project_id,),
         ).fetchall()
         conn.close()
@@ -938,10 +989,12 @@ def _family_project_by_id(project_id):
     return {
         "id": row[0],
         "token": row[1],
-        "home_name": row[2],
-        "home_profile": _safe_json(row[3]),
-        "status": row[4],
-        "created_at": str(row[5]),
+        "coordinator_token": row[2],
+        "coordinator_member_id": row[3],
+        "home_name": row[4],
+        "home_profile": _safe_json(row[5]),
+        "status": row[6],
+        "created_at": str(row[7]),
     }
 
 
@@ -982,11 +1035,11 @@ def _family_project_list():
         conn = _pg_conn()
         rows = conn.run(
             """
-            SELECT p.id, p.token, p.home_name, p.home_profile, p.status, p.created_at,
+            SELECT p.id, p.token, p.coordinator_token, p.home_name, p.home_profile, p.status, p.created_at,
                    COUNT(m.id) AS member_count
             FROM family_projects p
             LEFT JOIN family_members m ON m.project_id = p.id
-            GROUP BY p.id, p.token, p.home_name, p.home_profile, p.status, p.created_at
+            GROUP BY p.id, p.token, p.coordinator_token, p.home_name, p.home_profile, p.status, p.created_at
             ORDER BY p.id DESC
             """
         )
@@ -996,7 +1049,7 @@ def _family_project_list():
         conn = sqlite3.connect(DB_PATH)
         rows = conn.execute(
             """
-            SELECT p.id, p.token, p.home_name, p.home_profile, p.status, p.created_at,
+            SELECT p.id, p.token, p.coordinator_token, p.home_name, p.home_profile, p.status, p.created_at,
                    COUNT(m.id) AS member_count
             FROM family_projects p
             LEFT JOIN family_members m ON m.project_id = p.id
@@ -1009,11 +1062,12 @@ def _family_project_list():
         {
             "id": row[0],
             "token": row[1],
-            "home_name": row[2],
-            "home_profile": _safe_json(row[3]),
-            "status": row[4],
-            "created_at": str(row[5]),
-            "member_count": row[6],
+            "coordinator_token": row[2],
+            "home_name": row[3],
+            "home_profile": _safe_json(row[4]),
+            "status": row[5],
+            "created_at": str(row[6]),
+            "member_count": row[7],
         }
         for row in rows
     ]
@@ -1315,15 +1369,25 @@ def _build_family_summary(project, members):
                 f'{preference.get("label", "专业偏好")}：{detail or "尚未说明具体形式"}'
             )
         active_scenes = []
+        important_scenes = []
         for scene_id, rating in answers.get("scene_scan", {}).items():
             if rating in ["经常参与，而且很重要", "偶尔参与，但有明确想法", "不直接参与，但结果会影响我"]:
                 active_scenes.append(FAMILY_SCENE_LABELS.get(scene_id, scene_id))
+            if rating == "经常参与，而且很重要":
+                important_scenes.append(FAMILY_SCENE_LABELS.get(scene_id, scene_id))
+        priorities = list(
+            dict.fromkeys(
+                _as_list(final.get("priorities"))
+                + _as_list(vision.get("feelings"))
+                + important_scenes
+            )
+        )
         personal.append(
             {
                 "name": member["display_name"],
                 "role": member["role"],
                 "future_day": vision.get("future_day", ""),
-                "priorities": _as_list(final.get("priorities")),
+                "priorities": priorities,
                 "non_negotiable": final.get("non_negotiable", ""),
                 "active_scenes": active_scenes,
                 "explicit_preferences": explicit_preferences,
@@ -1477,15 +1541,17 @@ def _create_family_project_record(home_name, home_profile=None):
     requested_name = str(home_name or "").strip()
     stored_name = requested_name or "我的新家"
     token = secrets.token_urlsafe(18)
+    coordinator_token = secrets.token_urlsafe(24)
     profile_json = json.dumps(home_profile or {}, ensure_ascii=False)
     if DATABASE_URL:
         conn = _pg_conn()
         project_id = conn.run(
             """
-            INSERT INTO family_projects (token, home_name, home_profile)
-            VALUES (:token, :home_name, :home_profile) RETURNING id
+            INSERT INTO family_projects (token, coordinator_token, home_name, home_profile)
+            VALUES (:token, :coordinator_token, :home_name, :home_profile) RETURNING id
             """,
             token=token,
+            coordinator_token=coordinator_token,
             home_name=stored_name,
             home_profile=profile_json,
         )[0][0]
@@ -1501,8 +1567,8 @@ def _create_family_project_record(home_name, home_profile=None):
         import sqlite3
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.execute(
-            "INSERT INTO family_projects (token, home_name, home_profile) VALUES (?, ?, ?)",
-            (token, stored_name, profile_json),
+            "INSERT INTO family_projects (token, coordinator_token, home_name, home_profile) VALUES (?, ?, ?, ?)",
+            (token, coordinator_token, stored_name, profile_json),
         )
         project_id = cursor.lastrowid
         if not requested_name:
@@ -1513,7 +1579,13 @@ def _create_family_project_record(home_name, home_profile=None):
             )
         conn.commit()
         conn.close()
-    return project_id, token, stored_name
+    return project_id, token, coordinator_token, stored_name
+
+
+def _family_coordinator_authorized(project, request):
+    supplied = request.headers.get("X-Family-Coordinator-Token", "").strip()
+    expected = str(project.get("coordinator_token") or "").strip()
+    return bool(supplied and expected and secrets.compare_digest(supplied, expected))
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -1557,13 +1629,14 @@ async def create_family_project(request: Request):
     home_name = str(data.get("home_name", "")).strip()
     if not home_name:
         return JSONResponse({"code": 400, "message": "请填写住宅称呼"}, status_code=400)
-    project_id, token, _ = _create_family_project_record(home_name, data.get("home_profile", {}))
+    project_id, token, coordinator_token, _ = _create_family_project_record(home_name, data.get("home_profile", {}))
     base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
     return {
         "code": 0,
         "id": project_id,
         "token": token,
         "invite_url": f"{base_url}/family/{token}",
+        "coordinator_url": f"{base_url}/family/{token}?coordinator={coordinator_token}",
     }
 
 
@@ -1574,13 +1647,14 @@ async def create_public_family_project(request: Request):
     except Exception:
         data = {}
     home_name = str(data.get("home_name", "")).strip() if isinstance(data, dict) else ""
-    project_id, token, stored_name = _create_family_project_record(home_name)
+    project_id, token, coordinator_token, stored_name = _create_family_project_record(home_name)
     base_url = BASE_URL.rstrip("/") if BASE_URL else str(request.base_url).rstrip("/")
     return {
         "code": 0,
         "id": project_id,
         "token": token,
         "invite_url": f"{base_url}/family/{token}",
+        "coordinator_token": coordinator_token,
         "project": {
             "home_name": stored_name,
             "home_profile": {},
@@ -1610,11 +1684,12 @@ async def get_family_project_report(project_id: int, request: Request):
 
 
 @app.get("/api/family-projects/{project_token}")
-async def get_family_project(project_token: str):
+async def get_family_project(project_token: str, request: Request):
     project = _family_project_by_token(project_token)
     if not project or project["status"] not in ["active", "ready_for_review"]:
         return JSONResponse({"code": 404, "message": "家庭需求链接无效或已关闭"}, status_code=404)
     members = _family_members(project["id"])
+    is_coordinator = _family_coordinator_authorized(project, request)
     public_profile = {
         key: project["home_profile"].get(key)
         for key in ["house_type", "city", "area", "levels", "stage"]
@@ -1625,9 +1700,12 @@ async def get_family_project(project_token: str):
         "project": {
             "home_name": project["home_name"],
             "home_profile": public_profile,
-            "needs_home_profile": not bool(project["home_profile"]),
+            "needs_home_profile": is_coordinator and not bool(project["home_profile"]),
             "member_count": len(members),
             "status": project["status"],
+            "is_coordinator": is_coordinator,
+            "coordinator_submitted": bool(is_coordinator and project.get("coordinator_member_id")),
+            "coordinator_member_id": project.get("coordinator_member_id") if is_coordinator else None,
         },
     }
 
@@ -1648,6 +1726,13 @@ async def complete_family_project(project_token: str, request: Request):
     project = _family_project_by_token(project_token)
     if not project:
         return JSONResponse({"code": 404, "message": "家庭需求链接无效"}, status_code=404)
+    if not _family_coordinator_authorized(project, request):
+        return JSONResponse(
+            {"code": 403, "message": "只有最初收到主链接的家庭主理人可以结束家庭填写"},
+            status_code=403,
+        )
+    if not project.get("coordinator_member_id"):
+        return JSONResponse({"code": 400, "message": "请先提交家庭主理人的个人需求"}, status_code=400)
     members = _family_members(project["id"])
     if not members:
         return JSONResponse({"code": 400, "message": "至少需要一位家庭成员先提交"}, status_code=400)
@@ -1751,6 +1836,12 @@ async def submit_family_member(project_token: str, request: Request):
                 profile=json.dumps(home_profile, ensure_ascii=False),
                 id=project["id"],
             )
+        if _family_coordinator_authorized(project, request) and not project.get("coordinator_member_id"):
+            conn.run(
+                "UPDATE family_projects SET coordinator_member_id=:member_id, updated_at=CURRENT_TIMESTAMP WHERE id=:id",
+                member_id=member_id,
+                id=project["id"],
+            )
         conn.close()
     else:
         import sqlite3
@@ -1787,6 +1878,11 @@ async def submit_family_member(project_token: str, request: Request):
                 "UPDATE family_projects SET home_name=?, home_profile=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
                 (submitted_home_name, json.dumps(home_profile, ensure_ascii=False), project["id"]),
             )
+        if _family_coordinator_authorized(project, request) and not project.get("coordinator_member_id"):
+            conn.execute(
+                "UPDATE family_projects SET coordinator_member_id=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+                (member_id, project["id"]),
+            )
         conn.commit()
         conn.close()
 
@@ -1795,6 +1891,7 @@ async def submit_family_member(project_token: str, request: Request):
         "code": 0,
         "member_id": member_id,
         "member_token": member_token,
+        "member_count": len(_family_members(project["id"])),
         "invite_url": f"{base_url}/family/{project_token}",
         "message": "您的个人需求已加入家庭项目",
     }
