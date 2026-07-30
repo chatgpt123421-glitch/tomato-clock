@@ -1,0 +1,2057 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="以周计划、重点事项和风险跟踪为核心的工作汇报平台"
+    />
+    <title>工作汇报台｜周计划与重点跟进</title>
+    <style>
+      :root {
+        --navy-950: #12283b;
+        --navy-800: #1d3a50;
+        --navy-650: #365469;
+        --ink-muted: #6b7e8c;
+        --teal-700: #087873;
+        --teal-100: #dff1ef;
+        --blue-600: #3c76ae;
+        --blue-100: #e7f0f8;
+        --gold-600: #cf922b;
+        --gold-100: #fff3d9;
+        --coral-600: #d85b4b;
+        --coral-100: #fde9e6;
+        --green-600: #31846e;
+        --green-100: #e3f2ec;
+        --surface: #ffffff;
+        --canvas: #f3f6f7;
+        --line: #d8e1e5;
+        --line-strong: #c5d0d6;
+        --shadow: 0 12px 30px rgba(18, 40, 59, 0.08);
+        --font: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC",
+          Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--canvas);
+      }
+
+      body {
+        margin: 0;
+        background: var(--canvas);
+        color: var(--navy-950);
+        font-family: var(--font);
+        letter-spacing: 0;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        letter-spacing: 0;
+      }
+
+      button,
+      select {
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(60, 118, 174, 0.25);
+        outline-offset: 2px;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 224px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: var(--navy-950);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding: 24px 16px;
+        position: sticky;
+        top: 0;
+      }
+
+      .brand {
+        align-items: center;
+        display: flex;
+        gap: 12px;
+        margin: 0 8px 32px;
+      }
+
+      .brand-mark {
+        align-items: center;
+        background: var(--teal-700);
+        display: inline-flex;
+        font-size: 15px;
+        font-weight: 800;
+        height: 36px;
+        justify-content: center;
+        width: 36px;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 16px;
+      }
+
+      .brand span:last-child {
+        color: #9fb0bc;
+        display: block;
+        font-size: 10px;
+        margin-top: 3px;
+      }
+
+      .side-label {
+        color: #7890a0;
+        font-size: 10px;
+        font-weight: 800;
+        margin: 0 11px 8px;
+      }
+
+      .side-nav {
+        display: grid;
+        gap: 5px;
+      }
+
+      .side-nav button {
+        align-items: center;
+        background: transparent;
+        border: 0;
+        border-radius: 4px;
+        color: #b8c6cf;
+        display: flex;
+        gap: 11px;
+        min-height: 42px;
+        padding: 0 12px;
+        text-align: left;
+      }
+
+      .side-nav button:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+      }
+
+      .side-nav button.active {
+        background: var(--teal-700);
+        color: #fff;
+      }
+
+      .nav-icon {
+        align-items: center;
+        display: inline-flex;
+        font-size: 13px;
+        height: 22px;
+        justify-content: center;
+        width: 22px;
+      }
+
+      .side-note {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        margin-top: auto;
+        padding: 20px 10px 2px;
+      }
+
+      .side-note b {
+        color: #fff;
+        display: block;
+        font-size: 12px;
+        margin-bottom: 7px;
+      }
+
+      .side-note span {
+        color: #8fa3b0;
+        font-size: 10px;
+        line-height: 1.6;
+      }
+
+      .main {
+        min-width: 0;
+      }
+
+      .topbar {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        min-height: 70px;
+        padding: 0 28px;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+
+      .topbar-title {
+        min-width: 0;
+      }
+
+      .topbar-title h1 {
+        font-size: 18px;
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .topbar-title p {
+        color: var(--ink-muted);
+        font-size: 11px;
+        margin: 5px 0 0;
+      }
+
+      .topbar-actions {
+        align-items: center;
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+      }
+
+      .icon-button {
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        color: var(--navy-800);
+        display: inline-flex;
+        font-size: 16px;
+        height: 36px;
+        justify-content: center;
+        padding: 0;
+        width: 36px;
+      }
+
+      .icon-button:hover {
+        background: var(--canvas);
+        border-color: var(--navy-650);
+      }
+
+      .primary-button,
+      .secondary-button,
+      .danger-button {
+        align-items: center;
+        border-radius: 4px;
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 800;
+        gap: 7px;
+        justify-content: center;
+        min-height: 36px;
+        padding: 0 14px;
+      }
+
+      .primary-button {
+        background: var(--teal-700);
+        border: 1px solid var(--teal-700);
+        color: #fff;
+      }
+
+      .primary-button:hover {
+        background: #06645f;
+      }
+
+      .secondary-button {
+        background: #fff;
+        border: 1px solid var(--line-strong);
+        color: var(--navy-800);
+      }
+
+      .danger-button {
+        background: #fff;
+        border: 1px solid #e7b4ad;
+        color: var(--coral-600);
+      }
+
+      .content {
+        margin: 0 auto;
+        max-width: 1720px;
+        padding: 26px 28px 60px;
+      }
+
+      .report-heading {
+        align-items: flex-end;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+
+      .report-heading h2 {
+        font-size: clamp(26px, 3vw, 40px);
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      .report-heading p {
+        color: var(--ink-muted);
+        font-size: 12px;
+        margin: 9px 0 0;
+      }
+
+      .week-switcher {
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        display: flex;
+        min-height: 42px;
+        padding: 0 5px;
+      }
+
+      .week-switcher button {
+        background: transparent;
+        border: 0;
+        color: var(--navy-650);
+        font-size: 17px;
+        height: 32px;
+        width: 32px;
+      }
+
+      .week-switcher b {
+        font-size: 12px;
+        min-width: 176px;
+        text-align: center;
+      }
+
+      .stats {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-bottom: 18px;
+      }
+
+      .stat {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr auto;
+        min-height: 104px;
+        padding: 18px 19px;
+      }
+
+      .stat-label {
+        color: var(--ink-muted);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 30px;
+        margin-top: 10px;
+      }
+
+      .stat small {
+        color: var(--ink-muted);
+        display: block;
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .stat-icon {
+        align-items: center;
+        background: var(--teal-100);
+        color: var(--teal-700);
+        display: flex;
+        font-size: 17px;
+        height: 34px;
+        justify-content: center;
+        width: 34px;
+      }
+
+      .stat:nth-child(2) .stat-icon {
+        background: var(--green-100);
+        color: var(--green-600);
+      }
+
+      .stat:nth-child(3) .stat-icon {
+        background: var(--blue-100);
+        color: var(--blue-600);
+      }
+
+      .stat:nth-child(4) .stat-icon {
+        background: var(--coral-100);
+        color: var(--coral-600);
+      }
+
+      .progress-band {
+        align-items: center;
+        background: var(--navy-950);
+        color: #fff;
+        display: grid;
+        gap: 22px;
+        grid-template-columns: auto minmax(180px, 1fr) auto;
+        margin-bottom: 18px;
+        min-height: 72px;
+        padding: 16px 20px;
+      }
+
+      .progress-band b {
+        font-size: 13px;
+      }
+
+      .progress-track {
+        background: rgba(255, 255, 255, 0.14);
+        height: 7px;
+        overflow: hidden;
+      }
+
+      .progress-value {
+        background: var(--gold-600);
+        height: 100%;
+        transition: width 220ms ease;
+      }
+
+      .progress-band strong {
+        color: #f3bd60;
+        font-size: 22px;
+      }
+
+      .toolbar {
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        min-height: 58px;
+        padding: 9px 11px;
+      }
+
+      .filters {
+        align-items: center;
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .search-wrap {
+        align-items: center;
+        border: 1px solid var(--line-strong);
+        display: flex;
+        min-height: 36px;
+        min-width: 220px;
+        padding: 0 10px;
+      }
+
+      .search-wrap span {
+        color: var(--ink-muted);
+        font-size: 13px;
+        margin-right: 8px;
+      }
+
+      .search-wrap input {
+        border: 0;
+        color: var(--navy-950);
+        min-width: 0;
+        outline: 0;
+        width: 100%;
+      }
+
+      .toolbar select {
+        background: #fff;
+        border: 1px solid var(--line-strong);
+        color: var(--navy-800);
+        min-height: 36px;
+        padding: 0 30px 0 10px;
+      }
+
+      .segments {
+        align-items: center;
+        background: var(--canvas);
+        border: 1px solid var(--line);
+        display: flex;
+        padding: 3px;
+      }
+
+      .segments button {
+        background: transparent;
+        border: 0;
+        color: var(--ink-muted);
+        font-size: 11px;
+        min-height: 28px;
+        padding: 0 10px;
+      }
+
+      .segments button.active {
+        background: #fff;
+        color: var(--navy-950);
+        font-weight: 800;
+      }
+
+      .view {
+        display: none;
+      }
+
+      .view.active {
+        display: block;
+      }
+
+      .matrix-wrap {
+        background: #fff;
+        border: 1px solid var(--line);
+        overflow: auto;
+      }
+
+      .matrix {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 1240px;
+        table-layout: fixed;
+        width: 100%;
+      }
+
+      .matrix th,
+      .matrix td {
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      .matrix th {
+        background: #f7f9fa;
+        color: var(--navy-650);
+        font-size: 11px;
+        height: 66px;
+        padding: 12px 10px;
+        text-align: left;
+      }
+
+      .matrix th:first-child,
+      .matrix td:first-child {
+        left: 0;
+        position: sticky;
+        z-index: 2;
+      }
+
+      .matrix th:first-child {
+        background: var(--navy-950);
+        color: #fff;
+        width: 158px;
+        z-index: 4;
+      }
+
+      .matrix th:last-child,
+      .matrix td:last-child {
+        border-right: 0;
+      }
+
+      .matrix td {
+        background: #fff;
+        height: 120px;
+        padding: 8px;
+      }
+
+      .matrix td:first-child {
+        background: #f8fafb;
+        padding: 13px 12px;
+      }
+
+      .day-name {
+        display: block;
+        font-weight: 800;
+      }
+
+      .day-date {
+        color: #8a9ba6;
+        display: block;
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .today .day-name,
+      .today .day-date {
+        color: var(--teal-700);
+      }
+
+      .project-name {
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.4;
+      }
+
+      .project-owner {
+        color: var(--ink-muted);
+        display: block;
+        font-size: 10px;
+        margin-top: 6px;
+      }
+
+      .task-card {
+        background: var(--blue-100);
+        border-left: 3px solid var(--blue-600);
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 6px;
+        min-height: 46px;
+        padding: 8px 8px 8px 9px;
+        position: relative;
+      }
+
+      .task-card:hover {
+        box-shadow: 0 4px 12px rgba(18, 40, 59, 0.12);
+      }
+
+      .task-card.p0 {
+        background: var(--coral-100);
+        border-left-color: var(--coral-600);
+      }
+
+      .task-card.p1 {
+        background: var(--gold-100);
+        border-left-color: var(--gold-600);
+      }
+
+      .task-card.done {
+        background: var(--green-100);
+        border-left-color: var(--green-600);
+        opacity: 0.78;
+      }
+
+      .task-card.blocked {
+        background: var(--coral-100);
+        border-left-color: var(--coral-600);
+      }
+
+      .task-title {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1.5;
+        padding-right: 17px;
+      }
+
+      .task-meta {
+        align-items: center;
+        color: var(--ink-muted);
+        display: flex;
+        font-size: 9px;
+        gap: 7px;
+        margin-top: 5px;
+      }
+
+      .task-check {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(54, 84, 105, 0.22);
+        display: inline-flex;
+        height: 15px;
+        justify-content: center;
+        position: absolute;
+        right: 7px;
+        top: 7px;
+        width: 15px;
+      }
+
+      .task-check.checked::after {
+        color: var(--green-600);
+        content: "✓";
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      .empty-cell {
+        align-items: center;
+        color: #b4c0c7;
+        display: flex;
+        font-size: 14px;
+        height: 100%;
+        justify-content: center;
+      }
+
+      .empty-state {
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--ink-muted);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 320px;
+        padding: 40px;
+        text-align: center;
+      }
+
+      .empty-state strong {
+        color: var(--navy-950);
+        font-size: 17px;
+        margin-bottom: 9px;
+      }
+
+      .focus-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .focus-item,
+      .risk-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: auto 1fr auto;
+        min-height: 126px;
+        padding: 20px;
+      }
+
+      .focus-number {
+        align-items: center;
+        background: var(--coral-100);
+        color: var(--coral-600);
+        display: flex;
+        font-size: 12px;
+        font-weight: 900;
+        height: 32px;
+        justify-content: center;
+        width: 32px;
+      }
+
+      .focus-item h3,
+      .risk-item h3 {
+        font-size: 15px;
+        margin: 1px 0 7px;
+      }
+
+      .focus-item p,
+      .risk-item p {
+        color: var(--ink-muted);
+        font-size: 11px;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .priority-tag,
+      .status-tag {
+        align-self: start;
+        font-size: 10px;
+        font-weight: 900;
+        padding: 5px 7px;
+      }
+
+      .priority-tag {
+        background: var(--coral-100);
+        color: var(--coral-600);
+      }
+
+      .status-tag {
+        background: var(--gold-100);
+        color: #9b6818;
+      }
+
+      .risk-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .risk-item {
+        grid-template-columns: 7px 1fr auto;
+      }
+
+      .risk-line {
+        background: var(--coral-600);
+        height: 100%;
+      }
+
+      .modal-backdrop {
+        align-items: center;
+        background: rgba(10, 28, 42, 0.54);
+        display: none;
+        inset: 0;
+        justify-content: center;
+        padding: 20px;
+        position: fixed;
+        z-index: 100;
+      }
+
+      .modal-backdrop.open {
+        display: flex;
+      }
+
+      .modal {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: var(--shadow);
+        max-height: calc(100vh - 40px);
+        max-width: 620px;
+        overflow: auto;
+        width: 100%;
+      }
+
+      .modal-header {
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        min-height: 62px;
+        padding: 0 20px;
+      }
+
+      .modal-header h2 {
+        font-size: 17px;
+        margin: 0;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 15px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      .field label {
+        color: var(--navy-650);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        background: #fff;
+        border: 1px solid var(--line-strong);
+        border-radius: 3px;
+        color: var(--navy-950);
+        min-height: 40px;
+        padding: 9px 10px;
+        width: 100%;
+      }
+
+      .field textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+
+      .modal-footer {
+        align-items: center;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        min-height: 68px;
+        padding: 0 20px;
+      }
+
+      .modal-footer-actions {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+      }
+
+      .toast {
+        background: var(--navy-950);
+        bottom: 24px;
+        color: #fff;
+        font-size: 12px;
+        left: 50%;
+        opacity: 0;
+        padding: 11px 16px;
+        pointer-events: none;
+        position: fixed;
+        transform: translate(-50%, 14px);
+        transition:
+          opacity 160ms ease,
+          transform 160ms ease;
+        z-index: 120;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .hidden-input {
+        display: none;
+      }
+
+      @media (max-width: 980px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          min-height: 0;
+          padding: 12px 16px;
+          position: static;
+        }
+
+        .brand {
+          margin: 0 0 10px;
+        }
+
+        .brand span:last-child,
+        .side-label,
+        .side-note {
+          display: none;
+        }
+
+        .side-nav {
+          display: flex;
+          overflow-x: auto;
+        }
+
+        .side-nav button {
+          flex: 0 0 auto;
+        }
+
+        .topbar {
+          top: 0;
+        }
+
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .focus-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .topbar {
+          padding: 0 14px;
+        }
+
+        .topbar-title p,
+        .topbar-actions .icon-button:nth-of-type(1),
+        .topbar-actions .icon-button:nth-of-type(2) {
+          display: none;
+        }
+
+        .primary-button span:last-child {
+          display: none;
+        }
+
+        .content {
+          padding: 20px 14px 48px;
+        }
+
+        .report-heading {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .week-switcher {
+          justify-content: space-between;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+
+        .progress-band {
+          grid-template-columns: 1fr auto;
+        }
+
+        .progress-track {
+          grid-column: 1 / -1;
+          grid-row: 2;
+        }
+
+        .toolbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .filters {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .search-wrap {
+          min-width: 0;
+        }
+
+        .segments {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .field.full {
+          grid-column: auto;
+        }
+
+        .focus-item,
+        .risk-item {
+          grid-template-columns: auto 1fr;
+        }
+
+        .priority-tag,
+        .status-tag {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+
+      @media print {
+        .sidebar,
+        .topbar,
+        .toolbar,
+        .week-switcher,
+        .toast,
+        .modal-backdrop {
+          display: none !important;
+        }
+
+        .app-shell {
+          display: block;
+        }
+
+        .content {
+          max-width: none;
+          padding: 18px;
+        }
+
+        .matrix-wrap {
+          overflow: visible;
+        }
+
+        .matrix {
+          font-size: 8px;
+          min-width: 0;
+        }
+
+        .matrix td {
+          height: 90px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">汇</span>
+          <div>
+            <strong>工作汇报台</strong>
+            <span>计划 · 重点 · 风险</span>
+          </div>
+        </div>
+        <p class="side-label">本周工作</p>
+        <nav class="side-nav" aria-label="工作汇报视图">
+          <button class="active" data-view="weekly" type="button">
+            <span class="nav-icon">▦</span>
+            <span>周计划</span>
+          </button>
+          <button data-view="focus" type="button">
+            <span class="nav-icon">◎</span>
+            <span>重点关注</span>
+          </button>
+          <button data-view="risks" type="button">
+            <span class="nav-icon">△</span>
+            <span>风险与阻塞</span>
+          </button>
+        </nav>
+        <div class="side-note">
+          <b>数据保存位置</b>
+          <span>当前浏览器本机保存。导出文件可用于备份或迁移。</span>
+        </div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar-title">
+            <h1 id="headerTitle">组织周工作汇报</h1>
+            <p>统一计划、统一进度、统一重点事项</p>
+          </div>
+          <div class="topbar-actions">
+            <input
+              class="hidden-input"
+              id="importInput"
+              type="file"
+              accept="application/json"
+            />
+            <button
+              class="icon-button"
+              id="importButton"
+              type="button"
+              title="导入备份"
+              aria-label="导入备份"
+            >
+              ⇧
+            </button>
+            <button
+              class="icon-button"
+              id="exportButton"
+              type="button"
+              title="导出备份"
+              aria-label="导出备份"
+            >
+              ⇩
+            </button>
+            <button
+              class="icon-button"
+              id="copySummaryButton"
+              type="button"
+              title="复制本周摘要"
+              aria-label="复制本周摘要"
+            >
+              ⧉
+            </button>
+            <button
+              class="icon-button"
+              id="printButton"
+              type="button"
+              title="打印或导出 PDF"
+              aria-label="打印或导出 PDF"
+            >
+              ⎙
+            </button>
+            <button class="primary-button" id="newTaskButton" type="button">
+              <span>＋</span>
+              <span>新建事项</span>
+            </button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="report-heading">
+            <div>
+              <h2 id="reportTitle">本周工作计划与进展</h2>
+              <p id="reportSubtitle">按项目查看每天的工作安排和完成情况</p>
+            </div>
+            <div class="week-switcher">
+              <button id="previousWeek" type="button" title="上一周" aria-label="上一周">
+                ‹
+              </button>
+              <b id="weekRange"></b>
+              <button id="nextWeek" type="button" title="下一周" aria-label="下一周">
+                ›
+              </button>
+            </div>
+          </div>
+
+          <section class="stats" aria-label="本周数据">
+            <article class="stat">
+              <div>
+                <span class="stat-label">本周事项</span>
+                <strong id="totalCount">0</strong>
+                <small id="projectCount">0 个项目</small>
+              </div>
+              <span class="stat-icon">▦</span>
+            </article>
+            <article class="stat">
+              <div>
+                <span class="stat-label">已完成</span>
+                <strong id="doneCount">0</strong>
+                <small id="doneRate">完成率 0%</small>
+              </div>
+              <span class="stat-icon">✓</span>
+            </article>
+            <article class="stat">
+              <div>
+                <span class="stat-label">进行中</span>
+                <strong id="doingCount">0</strong>
+                <small>持续跟进</small>
+              </div>
+              <span class="stat-icon">→</span>
+            </article>
+            <article class="stat">
+              <div>
+                <span class="stat-label">风险 / 阻塞</span>
+                <strong id="blockedCount">0</strong>
+                <small>P0 与阻塞事项</small>
+              </div>
+              <span class="stat-icon">!</span>
+            </article>
+          </section>
+
+          <section class="progress-band" aria-label="本周整体进度">
+            <b>本周整体完成度</b>
+            <div class="progress-track">
+              <div class="progress-value" id="progressValue"></div>
+            </div>
+            <strong id="progressLabel">0%</strong>
+          </section>
+
+          <section class="toolbar" aria-label="筛选工具">
+            <div class="filters">
+              <label class="search-wrap">
+                <span>⌕</span>
+                <input id="searchInput" type="search" placeholder="搜索项目、事项或负责人" />
+              </label>
+              <select id="projectFilter" aria-label="按项目筛选">
+                <option value="all">全部项目</option>
+              </select>
+              <select id="priorityFilter" aria-label="按优先级筛选">
+                <option value="all">全部优先级</option>
+                <option value="P0">P0 重点</option>
+                <option value="P1">P1 重要</option>
+                <option value="P2">P2 常规</option>
+              </select>
+            </div>
+            <div class="segments" aria-label="按状态筛选">
+              <button class="active" data-status="all" type="button">全部</button>
+              <button data-status="open" type="button">未完成</button>
+              <button data-status="done" type="button">已完成</button>
+            </div>
+          </section>
+
+          <section class="view active" id="weeklyView">
+            <div class="matrix-wrap">
+              <table class="matrix" aria-label="周工作计划矩阵">
+                <thead>
+                  <tr id="matrixHeader"></tr>
+                </thead>
+                <tbody id="matrixBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="view" id="focusView">
+            <div class="focus-grid" id="focusGrid"></div>
+          </section>
+
+          <section class="view" id="risksView">
+            <div class="risk-list" id="riskList"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="taskModal" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-header">
+          <h2 id="modalTitle">新建事项</h2>
+          <button
+            class="icon-button"
+            id="closeModalButton"
+            type="button"
+            title="关闭"
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </header>
+        <form id="taskForm">
+          <div class="modal-body">
+            <div class="form-grid">
+              <div class="field">
+                <label for="taskProject">项目 / 工作线</label>
+                <input id="taskProject" name="project" required />
+              </div>
+              <div class="field">
+                <label for="taskOwner">负责人</label>
+                <input id="taskOwner" name="owner" required />
+              </div>
+              <div class="field full">
+                <label for="taskTitle">工作事项</label>
+                <input id="taskTitle" name="title" required />
+              </div>
+              <div class="field full">
+                <label for="taskDetail">交付内容 / 补充说明</label>
+                <textarea id="taskDetail" name="detail"></textarea>
+              </div>
+              <div class="field">
+                <label for="taskDay">安排日期</label>
+                <select id="taskDay" name="day"></select>
+              </div>
+              <div class="field">
+                <label for="taskPriority">优先级</label>
+                <select id="taskPriority" name="priority">
+                  <option value="P0">P0 重点</option>
+                  <option value="P1">P1 重要</option>
+                  <option value="P2" selected>P2 常规</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="taskStatus">状态</label>
+                <select id="taskStatus" name="status">
+                  <option value="todo">待开始</option>
+                  <option value="doing">进行中</option>
+                  <option value="done">已完成</option>
+                  <option value="blocked">已阻塞</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="taskDue">截止说明</label>
+                <input id="taskDue" name="due" placeholder="例如：周五前" />
+              </div>
+            </div>
+          </div>
+          <footer class="modal-footer">
+            <button class="danger-button" id="deleteTaskButton" type="button">
+              删除
+            </button>
+            <div class="modal-footer-actions">
+              <button class="secondary-button" id="cancelButton" type="button">
+                取消
+              </button>
+              <button class="primary-button" type="submit">保存事项</button>
+            </div>
+          </footer>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const STORAGE_KEY = "work-report-platform-v1";
+      const DAY_NAMES = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+      const STATUS_LABELS = {
+        todo: "待开始",
+        doing: "进行中",
+        done: "已完成",
+        blocked: "已阻塞",
+      };
+
+      const seedState = {
+        reportName: "组织周工作汇报",
+        weekStart: "2026-07-27",
+        tasks: [
+          {
+            id: "t1",
+            weekStart: "2026-07-27",
+            project: "东台德缘",
+            owner: "佳佳",
+            title: "启动岗位梳理",
+            detail: "拉通能力模块清单，形成岗位说明书初稿框架",
+            day: 0,
+            priority: "P1",
+            status: "done",
+            due: "周一完成",
+          },
+          {
+            id: "t2",
+            weekStart: "2026-07-27",
+            project: "东台德缘",
+            owner: "佳佳",
+            title: "能力台账定稿",
+            detail: "与供热业务对齐本地资源",
+            day: 3,
+            priority: "P1",
+            status: "doing",
+            due: "周四前",
+          },
+          {
+            id: "t3",
+            weekStart: "2026-07-27",
+            project: "水城德泽",
+            owner: "陈工",
+            title: "政府关系摸底",
+            detail: "提交摸底报告与可行性判断，等待方向决策",
+            day: 2,
+            priority: "P0",
+            status: "blocked",
+            due: "7 月 30 日",
+          },
+          {
+            id: "t4",
+            weekStart: "2026-07-27",
+            project: "水城德泽",
+            owner: "陈工",
+            title: "AI 调度框架",
+            detail: "形成产能与跨团队协同方案",
+            day: 4,
+            priority: "P1",
+            status: "todo",
+            due: "周五前",
+          },
+          {
+            id: "t5",
+            weekStart: "2026-07-27",
+            project: "华东拓展",
+            owner: "刘主管",
+            title: "合伙人初筛名单",
+            detail: "完成三类合作路径和候选人优先级",
+            day: 2,
+            priority: "P1",
+            status: "doing",
+            due: "周三完成",
+          },
+          {
+            id: "t6",
+            weekStart: "2026-07-27",
+            project: "华东拓展",
+            owner: "刘主管",
+            title: "分利机制方案 v1",
+            detail: "输出项目线索清单与合作机制草案",
+            day: 3,
+            priority: "P2",
+            status: "todo",
+            due: "周四前",
+          },
+          {
+            id: "t7",
+            weekStart: "2026-07-27",
+            project: "兴化养殖",
+            owner: "王经理",
+            title: "渔光互补权责对齐",
+            detail: "两方确认权责与收益分配机制",
+            day: 2,
+            priority: "P0",
+            status: "doing",
+            due: "7 月 30 日",
+          },
+          {
+            id: "t8",
+            weekStart: "2026-07-27",
+            project: "兴化光伏",
+            owner: "周工",
+            title: "AI 应用场景清单",
+            detail: "整理发电台账和智能运维场景",
+            day: 2,
+            priority: "P2",
+            status: "done",
+            due: "周三完成",
+          },
+          {
+            id: "t9",
+            weekStart: "2026-07-27",
+            project: "兴化光伏",
+            owner: "周工",
+            title: "渔光互补协议",
+            detail: "配合养殖团队完成最终协议",
+            day: 3,
+            priority: "P0",
+            status: "todo",
+            due: "7 月 30 日",
+          },
+          {
+            id: "t10",
+            weekStart: "2026-07-27",
+            project: "东台供热",
+            owner: "赵主管",
+            title: "供热季准备盘点",
+            detail: "整理检修、燃料和管网保障清单",
+            day: 0,
+            priority: "P1",
+            status: "done",
+            due: "周一完成",
+          },
+          {
+            id: "t11",
+            weekStart: "2026-07-27",
+            project: "东台供热",
+            owner: "赵主管",
+            title: "智能温控清单",
+            detail: "梳理 AI 温控应用与客户需求",
+            day: 3,
+            priority: "P2",
+            status: "doing",
+            due: "周四前",
+          },
+          {
+            id: "t12",
+            weekStart: "2026-07-27",
+            project: "宠物饲料孵化",
+            owner: "项目组",
+            title: "立项与组队",
+            detail: "确认 6 个月里程碑并启动市场调研",
+            day: 3,
+            priority: "P0",
+            status: "doing",
+            due: "7 月 30 日",
+          },
+          {
+            id: "t13",
+            weekStart: "2026-07-27",
+            project: "东台种植",
+            owner: "农业组",
+            title: "供应能力初盘",
+            detail: "完成 80 亩和 30 个品种盘点",
+            day: 0,
+            priority: "P2",
+            status: "done",
+            due: "周一完成",
+          },
+          {
+            id: "t14",
+            weekStart: "2026-07-27",
+            project: "东台种植",
+            owner: "农业组",
+            title: "核心品种 SOP",
+            detail: "输出数字农场规划初稿",
+            day: 4,
+            priority: "P1",
+            status: "todo",
+            due: "周五前",
+          },
+        ],
+      };
+
+      let state = loadState();
+      let currentView = "weekly";
+      let statusFilter = "all";
+      let editingTaskId = null;
+
+      const elements = {
+        headerTitle: document.getElementById("headerTitle"),
+        reportTitle: document.getElementById("reportTitle"),
+        reportSubtitle: document.getElementById("reportSubtitle"),
+        weekRange: document.getElementById("weekRange"),
+        matrixHeader: document.getElementById("matrixHeader"),
+        matrixBody: document.getElementById("matrixBody"),
+        focusGrid: document.getElementById("focusGrid"),
+        riskList: document.getElementById("riskList"),
+        totalCount: document.getElementById("totalCount"),
+        projectCount: document.getElementById("projectCount"),
+        doneCount: document.getElementById("doneCount"),
+        doingCount: document.getElementById("doingCount"),
+        blockedCount: document.getElementById("blockedCount"),
+        doneRate: document.getElementById("doneRate"),
+        progressValue: document.getElementById("progressValue"),
+        progressLabel: document.getElementById("progressLabel"),
+        searchInput: document.getElementById("searchInput"),
+        projectFilter: document.getElementById("projectFilter"),
+        priorityFilter: document.getElementById("priorityFilter"),
+        taskModal: document.getElementById("taskModal"),
+        modalTitle: document.getElementById("modalTitle"),
+        taskForm: document.getElementById("taskForm"),
+        taskProject: document.getElementById("taskProject"),
+        taskOwner: document.getElementById("taskOwner"),
+        taskTitle: document.getElementById("taskTitle"),
+        taskDetail: document.getElementById("taskDetail"),
+        taskDay: document.getElementById("taskDay"),
+        taskPriority: document.getElementById("taskPriority"),
+        taskStatus: document.getElementById("taskStatus"),
+        taskDue: document.getElementById("taskDue"),
+        deleteTaskButton: document.getElementById("deleteTaskButton"),
+        toast: document.getElementById("toast"),
+      };
+
+      function cloneSeed() {
+        return JSON.parse(JSON.stringify(seedState));
+      }
+
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) return cloneSeed();
+          const parsed = JSON.parse(saved);
+          if (!Array.isArray(parsed.tasks) || !parsed.weekStart) return cloneSeed();
+          return parsed;
+        } catch {
+          return cloneSeed();
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function parseDate(value) {
+        const [year, month, day] = value.split("-").map(Number);
+        return new Date(year, month - 1, day);
+      }
+
+      function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function addDays(date, amount) {
+        const next = new Date(date);
+        next.setDate(next.getDate() + amount);
+        return next;
+      }
+
+      function displayDate(date) {
+        return `${date.getMonth() + 1}月${date.getDate()}日`;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function getWeekTasks() {
+        return state.tasks.filter((task) => task.weekStart === state.weekStart);
+      }
+
+      function getFilteredTasks() {
+        const query = elements.searchInput.value.trim().toLowerCase();
+        const project = elements.projectFilter.value;
+        const priority = elements.priorityFilter.value;
+        return getWeekTasks().filter((task) => {
+          const matchesQuery =
+            !query ||
+            [task.project, task.owner, task.title, task.detail]
+              .join(" ")
+              .toLowerCase()
+              .includes(query);
+          const matchesProject = project === "all" || task.project === project;
+          const matchesPriority = priority === "all" || task.priority === priority;
+          const matchesStatus =
+            statusFilter === "all" ||
+            (statusFilter === "done" && task.status === "done") ||
+            (statusFilter === "open" && task.status !== "done");
+          return matchesQuery && matchesProject && matchesPriority && matchesStatus;
+        });
+      }
+
+      function render() {
+        renderWeekLabel();
+        renderFilters();
+        renderStats();
+        renderMatrix();
+        renderFocus();
+        renderRisks();
+        renderViewHeading();
+        elements.headerTitle.textContent = state.reportName || "组织周工作汇报";
+      }
+
+      function renderWeekLabel() {
+        const start = parseDate(state.weekStart);
+        const end = addDays(start, 6);
+        elements.weekRange.textContent = `${start.getFullYear()}年 ${displayDate(start)} — ${displayDate(end)}`;
+
+        elements.taskDay.innerHTML = DAY_NAMES.map((name, index) => {
+          const date = addDays(start, index);
+          return `<option value="${index}">${name} · ${displayDate(date)}</option>`;
+        }).join("");
+      }
+
+      function renderFilters() {
+        const selected = elements.projectFilter.value || "all";
+        const projects = [...new Set(getWeekTasks().map((task) => task.project))].sort(
+          (a, b) => a.localeCompare(b, "zh-CN"),
+        );
+        elements.projectFilter.innerHTML =
+          '<option value="all">全部项目</option>' +
+          projects
+            .map(
+              (project) =>
+                `<option value="${escapeHtml(project)}">${escapeHtml(project)}</option>`,
+            )
+            .join("");
+        elements.projectFilter.value = projects.includes(selected) ? selected : "all";
+      }
+
+      function renderStats() {
+        const tasks = getWeekTasks();
+        const done = tasks.filter((task) => task.status === "done").length;
+        const doing = tasks.filter((task) => task.status === "doing").length;
+        const blocked = tasks.filter(
+          (task) => task.status === "blocked" || task.priority === "P0",
+        ).length;
+        const projects = new Set(tasks.map((task) => task.project)).size;
+        const rate = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+
+        elements.totalCount.textContent = tasks.length;
+        elements.projectCount.textContent = `${projects} 个项目`;
+        elements.doneCount.textContent = done;
+        elements.doingCount.textContent = doing;
+        elements.blockedCount.textContent = blocked;
+        elements.doneRate.textContent = `完成率 ${rate}%`;
+        elements.progressValue.style.width = `${rate}%`;
+        elements.progressLabel.textContent = `${rate}%`;
+      }
+
+      function renderMatrix() {
+        const start = parseDate(state.weekStart);
+        const today = new Date();
+        elements.matrixHeader.innerHTML =
+          "<th>项目 / 工作线</th>" +
+          DAY_NAMES.map((name, index) => {
+            const date = addDays(start, index);
+            const isToday =
+              date.getFullYear() === today.getFullYear() &&
+              date.getMonth() === today.getMonth() &&
+              date.getDate() === today.getDate();
+            return `<th class="${isToday ? "today" : ""}">
+              <span class="day-name">${name}</span>
+              <span class="day-date">${displayDate(date)}</span>
+            </th>`;
+          }).join("");
+
+        const tasks = getFilteredTasks();
+        const projects = [...new Set(tasks.map((task) => task.project))].sort((a, b) =>
+          a.localeCompare(b, "zh-CN"),
+        );
+
+        if (!projects.length) {
+          elements.matrixBody.innerHTML = `<tr><td colspan="8">
+            <div class="empty-state">
+              <strong>当前条件下没有工作事项</strong>
+              <span>调整筛选条件，或点击右上角新建事项。</span>
+            </div>
+          </td></tr>`;
+          return;
+        }
+
+        elements.matrixBody.innerHTML = projects
+          .map((project) => {
+            const projectTasks = tasks.filter((task) => task.project === project);
+            const owners = [...new Set(projectTasks.map((task) => task.owner))].join("、");
+            const cells = DAY_NAMES.map((_, day) => {
+              const dayTasks = projectTasks.filter((task) => Number(task.day) === day);
+              if (!dayTasks.length) {
+                return '<td><div class="empty-cell">—</div></td>';
+              }
+              return `<td>${dayTasks.map(taskCardHtml).join("")}</td>`;
+            }).join("");
+            return `<tr>
+              <td>
+                <span class="project-name">${escapeHtml(project)}</span>
+                <span class="project-owner">${escapeHtml(owners || "未分配")}</span>
+              </td>
+              ${cells}
+            </tr>`;
+          })
+          .join("");
+
+        elements.matrixBody.querySelectorAll(".task-card").forEach((card) => {
+          card.addEventListener("click", (event) => {
+            const taskId = card.dataset.taskId;
+            if (event.target.closest(".task-check")) {
+              toggleTaskDone(taskId);
+              return;
+            }
+            openTaskModal(taskId);
+          });
+        });
+      }
+
+      function taskCardHtml(task) {
+        const classes = [
+          "task-card",
+          task.priority.toLowerCase(),
+          task.status === "done" ? "done" : "",
+          task.status === "blocked" ? "blocked" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+        return `<article class="${classes}" data-task-id="${task.id}" title="点击编辑">
+          <span class="task-check ${task.status === "done" ? "checked" : ""}" aria-label="切换完成状态"></span>
+          <span class="task-title">${escapeHtml(task.title)}</span>
+          <span class="task-meta">
+            <span>${escapeHtml(task.priority)}</span>
+            <span>${escapeHtml(task.owner)}</span>
+            <span>${escapeHtml(STATUS_LABELS[task.status] || task.status)}</span>
+          </span>
+        </article>`;
+      }
+
+      function renderFocus() {
+        const focusTasks = getWeekTasks()
+          .filter((task) => task.priority === "P0")
+          .sort((a, b) => Number(a.day) - Number(b.day));
+        if (!focusTasks.length) {
+          elements.focusGrid.innerHTML = emptyStateHtml(
+            "本周没有 P0 重点事项",
+            "把事项优先级设置为 P0 后，会自动出现在这里。",
+          );
+          return;
+        }
+
+        elements.focusGrid.innerHTML = focusTasks
+          .map(
+            (task, index) => `<article class="focus-item" data-task-id="${task.id}">
+              <span class="focus-number">${String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h3>${escapeHtml(task.project)} · ${escapeHtml(task.title)}</h3>
+                <p>${escapeHtml(task.detail || "暂无补充说明")}<br />负责人：${escapeHtml(task.owner)} · ${escapeHtml(task.due || DAY_NAMES[task.day])}</p>
+              </div>
+              <span class="priority-tag">P0</span>
+            </article>`,
+          )
+          .join("");
+
+        elements.focusGrid.querySelectorAll("[data-task-id]").forEach((item) => {
+          item.addEventListener("click", () => openTaskModal(item.dataset.taskId));
+        });
+      }
+
+      function renderRisks() {
+        const risks = getWeekTasks().filter((task) => task.status === "blocked");
+        if (!risks.length) {
+          elements.riskList.innerHTML = emptyStateHtml(
+            "本周没有阻塞事项",
+            "将事项状态设为“已阻塞”后，会自动进入风险清单。",
+          );
+          return;
+        }
+
+        elements.riskList.innerHTML = risks
+          .map(
+            (task) => `<article class="risk-item" data-task-id="${task.id}">
+              <span class="risk-line"></span>
+              <div>
+                <h3>${escapeHtml(task.project)} · ${escapeHtml(task.title)}</h3>
+                <p>${escapeHtml(task.detail || "暂无阻塞说明")}<br />责任人：${escapeHtml(task.owner)} · 计划：${escapeHtml(task.due || DAY_NAMES[task.day])}</p>
+              </div>
+              <span class="status-tag">待解除</span>
+            </article>`,
+          )
+          .join("");
+
+        elements.riskList.querySelectorAll("[data-task-id]").forEach((item) => {
+          item.addEventListener("click", () => openTaskModal(item.dataset.taskId));
+        });
+      }
+
+      function emptyStateHtml(title, text) {
+        return `<div class="empty-state">
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml(text)}</span>
+        </div>`;
+      }
+
+      function renderViewHeading() {
+        const content = {
+          weekly: ["本周工作计划与进展", "按项目查看每天的工作安排和完成情况"],
+          focus: ["本周重点关注", "自动汇总所有 P0 事项，集中跟进关键结果"],
+          risks: ["风险与阻塞", "自动汇总已阻塞事项，明确责任人与解除时间"],
+        };
+        const [title, subtitle] = content[currentView];
+        elements.reportTitle.textContent = title;
+        elements.reportSubtitle.textContent = subtitle;
+      }
+
+      function switchView(view) {
+        currentView = view;
+        document.querySelectorAll(".side-nav button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === view);
+        });
+        document.querySelectorAll(".view").forEach((section) => {
+          section.classList.remove("active");
+        });
+        document.getElementById(`${view}View`).classList.add("active");
+        renderViewHeading();
+      }
+
+      function shiftWeek(amount) {
+        state.weekStart = formatDate(addDays(parseDate(state.weekStart), amount * 7));
+        saveState();
+        render();
+      }
+
+      function openTaskModal(taskId = null) {
+        editingTaskId = taskId;
+        const task = taskId ? state.tasks.find((item) => item.id === taskId) : null;
+        elements.modalTitle.textContent = task ? "编辑事项" : "新建事项";
+        elements.deleteTaskButton.style.visibility = task ? "visible" : "hidden";
+        elements.taskProject.value = task?.project || "";
+        elements.taskOwner.value = task?.owner || "";
+        elements.taskTitle.value = task?.title || "";
+        elements.taskDetail.value = task?.detail || "";
+        elements.taskDay.value = String(task?.day ?? 0);
+        elements.taskPriority.value = task?.priority || "P2";
+        elements.taskStatus.value = task?.status || "todo";
+        elements.taskDue.value = task?.due || "";
+        elements.taskModal.classList.add("open");
+        elements.taskModal.setAttribute("aria-hidden", "false");
+        setTimeout(() => elements.taskProject.focus(), 0);
+      }
+
+      function closeTaskModal() {
+        elements.taskModal.classList.remove("open");
+        elements.taskModal.setAttribute("aria-hidden", "true");
+        editingTaskId = null;
+        elements.taskForm.reset();
+      }
+
+      function saveTask(event) {
+        event.preventDefault();
+        const payload = {
+          project: elements.taskProject.value.trim(),
+          owner: elements.taskOwner.value.trim(),
+          title: elements.taskTitle.value.trim(),
+          detail: elements.taskDetail.value.trim(),
+          day: Number(elements.taskDay.value),
+          priority: elements.taskPriority.value,
+          status: elements.taskStatus.value,
+          due: elements.taskDue.value.trim(),
+        };
+        if (!payload.project || !payload.owner || !payload.title) return;
+
+        if (editingTaskId) {
+          const task = state.tasks.find((item) => item.id === editingTaskId);
+          Object.assign(task, payload);
+          showToast("事项已更新");
+        } else {
+          state.tasks.push({
+            id: `task-${Date.now()}`,
+            weekStart: state.weekStart,
+            ...payload,
+          });
+          showToast("事项已创建");
+        }
+        saveState();
+        closeTaskModal();
+        render();
+      }
+
+      function deleteTask() {
+        if (!editingTaskId) return;
+        state.tasks = state.tasks.filter((task) => task.id !== editingTaskId);
+        saveState();
+        closeTaskModal();
+        render();
+        showToast("事项已删除");
+      }
+
+      function toggleTaskDone(taskId) {
+        const task = state.tasks.find((item) => item.id === taskId);
+        if (!task) return;
+        task.status = task.status === "done" ? "todo" : "done";
+        saveState();
+        render();
+        showToast(task.status === "done" ? "已标记完成" : "已恢复为待开始");
+      }
+
+      function exportState() {
+        const blob = new Blob([JSON.stringify(state, null, 2)], {
+          type: "application/json;charset=utf-8",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `工作汇报备份_${state.weekStart}.json`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast("备份文件已导出");
+      }
+
+      function importState(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            if (!parsed.weekStart || !Array.isArray(parsed.tasks)) {
+              throw new Error("invalid");
+            }
+            state = parsed;
+            saveState();
+            render();
+            showToast("备份已导入");
+          } catch {
+            showToast("文件内容不正确");
+          }
+        };
+        reader.readAsText(file, "utf-8");
+      }
+
+      async function copySummary() {
+        const tasks = getWeekTasks();
+        const done = tasks.filter((task) => task.status === "done").length;
+        const doing = tasks.filter((task) => task.status === "doing").length;
+        const blocked = tasks.filter((task) => task.status === "blocked");
+        const p0 = tasks.filter((task) => task.priority === "P0");
+        const summary = [
+          `${state.reportName}｜${elements.weekRange.textContent}`,
+          `本周共 ${tasks.length} 项：已完成 ${done} 项，进行中 ${doing} 项，阻塞 ${blocked.length} 项。`,
+          "",
+          "重点事项：",
+          ...(p0.length
+            ? p0.map(
+                (task, index) =>
+                  `${index + 1}. ${task.project}｜${task.title}｜${STATUS_LABELS[task.status]}｜${task.owner}`,
+              )
+            : ["无"]),
+          "",
+          "风险与阻塞：",
+          ...(blocked.length
+            ? blocked.map(
+                (task, index) =>
+                  `${index + 1}. ${task.project}｜${task.title}｜${task.detail || "待补充原因"}`,
+              )
+            : ["无"]),
+        ].join("\n");
+
+        try {
+          await navigator.clipboard.writeText(summary);
+          showToast("本周摘要已复制");
+        } catch {
+          showToast("复制失败，请使用导出功能");
+        }
+      }
+
+      let toastTimer;
+      function showToast(message) {
+        clearTimeout(toastTimer);
+        elements.toast.textContent = message;
+        elements.toast.classList.add("show");
+        toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 1800);
+      }
+
+      document.querySelectorAll(".side-nav button").forEach((button) => {
+        button.addEventListener("click", () => switchView(button.dataset.view));
+      });
+      document.querySelectorAll(".segments button").forEach((button) => {
+        button.addEventListener("click", () => {
+          statusFilter = button.dataset.status;
+          document.querySelectorAll(".segments button").forEach((item) => {
+            item.classList.toggle("active", item === button);
+          });
+          renderMatrix();
+        });
+      });
+      document.getElementById("previousWeek").addEventListener("click", () => shiftWeek(-1));
+      document.getElementById("nextWeek").addEventListener("click", () => shiftWeek(1));
+      document.getElementById("newTaskButton").addEventListener("click", () => openTaskModal());
+      document.getElementById("closeModalButton").addEventListener("click", closeTaskModal);
+      document.getElementById("cancelButton").addEventListener("click", closeTaskModal);
+      elements.taskModal.addEventListener("click", (event) => {
+        if (event.target === elements.taskModal) closeTaskModal();
+      });
+      elements.taskForm.addEventListener("submit", saveTask);
+      elements.deleteTaskButton.addEventListener("click", deleteTask);
+      elements.searchInput.addEventListener("input", renderMatrix);
+      elements.projectFilter.addEventListener("change", renderMatrix);
+      elements.priorityFilter.addEventListener("change", renderMatrix);
+      document.getElementById("printButton").addEventListener("click", () => window.print());
+      document.getElementById("exportButton").addEventListener("click", exportState);
+      document.getElementById("copySummaryButton").addEventListener("click", copySummary);
+      document.getElementById("importButton").addEventListener("click", () => {
+        document.getElementById("importInput").click();
+      });
+      document.getElementById("importInput").addEventListener("change", (event) => {
+        importState(event.target.files[0]);
+        event.target.value = "";
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && elements.taskModal.classList.contains("open")) {
+          closeTaskModal();
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>
