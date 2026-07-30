@@ -1,0 +1,44 @@
+name: Deploy lighting work report
+
+on:
+  push:
+    branches:
+      - codex/lighting-work-report
+    paths:
+      - "lighting-work-report/**"
+      - ".github/workflows/lighting-work-report-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+environment:
+  name: github-pages
+  url: ${{ steps.deployment.outputs.page_url }}
+
+concurrency:
+  group: lighting-work-report-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out report branch
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload report
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: lighting-work-report
+
+      - name: Deploy report
+        id: deployment
+        uses: actions/deploy-pages@v4
